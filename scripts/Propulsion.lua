@@ -10,8 +10,8 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
-local PROPULSION_FACTOR = 800000
-local DESIRED_VEL = 1000
+local PROPULSION_FACTOR = 3200000
+local DESIRED_VEL = 2000
 local MAX_FORCE_FACTOR = 2.0
 
 EngineSaveName = "engine"
