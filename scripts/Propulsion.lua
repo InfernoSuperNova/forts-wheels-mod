@@ -171,7 +171,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
             else
                 force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
             end
-
+            
             dlc2_ApplyForce(nodeA, force)
             dlc2_ApplyForce(nodeB, force)
         end
