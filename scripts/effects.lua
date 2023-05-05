@@ -5,7 +5,7 @@ end
 
 function WheelSmoke()
     for structure, wheels in pairs(data.wheelsTouchingGround) do
-        for deviceId, _ in pairs(wheels) do
+        for _, deviceId in pairs(wheels) do
             
             local nodeA = GetDevicePlatformA(deviceId)
             BetterLog(nodeA)
