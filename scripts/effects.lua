@@ -12,7 +12,6 @@ function WheelSmoke()
             local nodeB = GetDevicePlatformB(deviceId)
             local velocity = NodeVelocity(nodeA)
             local velocityMag = VecMagnitude(velocity)
-            BetterLog(velocity)
             if velocityMag > 50 then
                 local pos = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), WheelSuspensionHeight + WheelRadius)
                 SpawnEffect(path .. "/effects/smoke_poof.lua", pos)
