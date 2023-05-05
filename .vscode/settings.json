@@ -27,7 +27,18 @@
         "LogToFile",
         "NodePosition",
         "towstring",
-        "L"
+        "L",
+        "FindDevice",
+        "GetControlAbsolutePos",
+        "SpawnEffect",
+        "GetLocalSelectedDeviceId",
+        "LoadControl",
+        "SendScriptEvent",
+        "SetControlRelativePos",
+        "GetControlRelativePos",
+        "DeleteControl",
+        "GetStructureTeam",
+        "GetRandomInteger"
     ],
     "Lua.diagnostics.disable": [
         "deprecated"
