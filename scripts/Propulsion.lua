@@ -45,7 +45,7 @@ function ThrottleControl()
     end
     
     --If the controller device is selected
-    if GetDeviceType(selectedDevice) == ControllerSaveName then
+    if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() then
         if not ControlExists("root", "PropulsionSlider") then
             
             LoadControl(path .. "/ui/controls.lua", "root")
@@ -137,44 +137,44 @@ end
 
 
 
-    function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
-        for deviceKey, device in pairs(devices) do
-            if data.wheelsTouchingGround[structureKey][deviceKey] then
-                local nodeA = GetDevicePlatformA(device)
-                local nodeB = GetDevicePlatformB(device)
-                local velocity = NodeVelocity(nodeA)
-                local velocityMag = VecMagnitudeDir(velocity)
-                local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
-                local direction = NormalizeVector(direction)
-                local desiredVel = DESIRED_VEL * throttle
-                
+function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
+    for deviceKey, device in pairs(devices) do
+        if data.wheelsTouchingGround[structureKey][deviceKey] then
+            local nodeA = GetDevicePlatformA(device)
+            local nodeB = GetDevicePlatformB(device)
+            local velocity = NodeVelocity(nodeA)
+            local velocityMag = VecMagnitudeDir(velocity)
+            local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
+            local direction = NormalizeVector(direction)
+            local desiredVel = DESIRED_VEL * throttle
+            
 
-                local deltaVel = desiredVel - velocityMag
-                local mag = 1
-                if desiredVel ~= 0 then
-                    mag = deltaVel / desiredVel
-                else
-                    mag = 0
-                end 
-                mag = Clamp(mag, -1, 1)
-                --if our velocity is 50, and our desired is -500
-                --delta is -550
-                --this produces a magnitude of 1.1
-                --if our velocity is 0, and our desired is -500
-                --delta is -550
+            local deltaVel = desiredVel - velocityMag
+            local mag = 1
+            if desiredVel ~= 0 then
+                mag = deltaVel / desiredVel
+            else
+                mag = 0
+            end 
+            mag = Clamp(mag, -1, 1)
+            --if our velocity is 50, and our desired is -500
+            --delta is -550
+            --this produces a magnitude of 1.1
+            --if our velocity is 0, and our desired is -500
+            --delta is -550
 
-                local force
-                --right
-                if desiredVel > 0 then
-                    force = {x = direction.x * mag * enginePower, y = direction.y * mag * enginePower}
+            local force
+            --right
+            if desiredVel > 0 then
+                force = {x = direction.x * mag * enginePower, y = direction.y * mag * enginePower}
 
-                --left
-                else
-                    force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
-                end
-
-                dlc2_ApplyForce(nodeA, force)
-                dlc2_ApplyForce(nodeB, force)
+            --left
+            else
+                force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
             end
+
+            dlc2_ApplyForce(nodeA, force)
+            dlc2_ApplyForce(nodeB, force)
         end
     end
+end
