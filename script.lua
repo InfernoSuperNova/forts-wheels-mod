@@ -92,8 +92,8 @@ end
 
 
 
---rgbaToHex, courtesy of Harder_天使的花园
-function rgbaToHex(r, g, b, a, UTF16)
+--RGBAtoHex, courtesy of Harder_天使的花园
+function RGBAtoHex(r, g, b, a, UTF16)
     local hex = string.format("%02X%02X%02X%02X", r, g, b, a)
     if UTF16 == true then
         return L "[HL=" .. towstring(hex) .. L "]"
