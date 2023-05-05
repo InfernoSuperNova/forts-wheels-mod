@@ -10,6 +10,7 @@ Fix global wheel controls
 Optimize track spawning
 Fix conflicting applyforces
 finish effects.lua
+upgrade engine to weapon
 
 
 DONE - engine device
