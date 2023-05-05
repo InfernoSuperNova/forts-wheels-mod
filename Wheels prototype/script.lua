@@ -4,15 +4,15 @@
 
 
 dofile("scripts/forts.lua")
-dofile(path .. "scripts/debugMagic.lua")
-dofile(path .. "scripts/BetterLog.lua")
-dofile(path .. "scripts/VectorFunctions.lua")
-dofile(path .. "scripts/graphing.lua")
-dofile(path .. "scripts/Tracks.lua")
-dofile(path .. "scripts/WheelCollision.lua")
-dofile(path .. "scripts/PID.lua")
-dofile(path .. "scripts/helperDebug.lua")
-dofile(path .. "scripts/Propulsion.lua")
+dofile(path .. "/scripts/debugMagic.lua")
+dofile(path .. "/scripts/BetterLog.lua")
+dofile(path .. "/scripts/VectorFunctions.lua")
+dofile(path .. "/scripts/graphing.lua")
+dofile(path .. "/scripts/Tracks.lua")
+dofile(path .. "/scripts/WheelCollision.lua")
+dofile(path .. "/scripts/PID.lua")
+dofile(path .. "/scripts/helperDebug.lua")
+dofile(path .. "/scripts/Propulsion.lua")
 
 Displacement = {}
 WheelPos = {}
