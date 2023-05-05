@@ -1,0 +1,35 @@
+{
+    "Lua.diagnostics.globals": [
+        "Log",
+        "FindFunctionName",
+        "data",
+        "SpawnLine",
+        "Vec3",
+        "path",
+        "GetDeviceCountSide",
+        "GetDeviceIdSide",
+        "GetDeviceType",
+        "GetDevicePosition",
+        "NodeVelocity",
+        "GetDevicePlatformA",
+        "vector2PID",
+        "dlc2_ApplyForce",
+        "GetDevicePlatformB",
+        "GetBlockCount",
+        "GetBlockVertexCount",
+        "GetBlockVertexPos",
+        "SpawnCircle",
+        "continue",
+        "GetDeviceStructureId",
+        "InsertDeviceBehind",
+        "IsDeviceFullyBuilt",
+        "SpawnEffectEx",
+        "LogToFile",
+        "NodePosition",
+        "towstring",
+        "L"
+    ],
+    "Lua.diagnostics.disable": [
+        "deprecated"
+    ]
+}
