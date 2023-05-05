@@ -10,20 +10,8 @@ Terrain = {}
 
 function WheelCollisionHandler()
     data.wheelsTouchingGround = {}
-    local structures = {}
-    for side = 1, 2 do
-        local deviceCount = GetDeviceCountSide(side)
+    local structures = GetDeviceStructureGroups()
 
-        
-        for index = 0, deviceCount do
-            local device = GetDeviceIdSide(side, index)
-            if GetDeviceType(device) == WheelSaveName and IsDeviceFullyBuilt(device) then
-                local structureId = GetDeviceStructureId(device)
-                if not structures[structureId] then structures[structureId] = {} end
-                table.insert(structures[structureId], device)
-            end
-        end
-    end
 
     --section off into structures
 
@@ -49,8 +37,23 @@ function WheelCollisionHandler()
     data.structures = structures
 
 end
+function GetDeviceStructureGroups()
+    local structures = {}
+    for side = 1, 2 do
+        local deviceCount = GetDeviceCountSide(side)
 
 
+        for index = 0, deviceCount do
+            local device = GetDeviceIdSide(side, index)
+            if GetDeviceType(device) == WheelSaveName and IsDeviceFullyBuilt(device) then
+                local structureId = GetDeviceStructureId(device)
+                if not structures[structureId] then structures[structureId] = {} end
+                table.insert(structures[structureId], device)
+            end
+        end
+    end
+    return structures
+end
 
 function CheckBoundingBoxCollisions(devices)
 
