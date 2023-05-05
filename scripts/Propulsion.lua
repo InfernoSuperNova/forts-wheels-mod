@@ -11,8 +11,7 @@
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
 local PROPULSION_FACTOR = 3200000
-local DESIRED_VEL = 2000
-local MAX_FORCE_FACTOR = 2.0
+local DESIRED_VEL = 1000
 
 EngineSaveName = "engine"
 
@@ -92,7 +91,7 @@ function LoopStructures()
         local motorCount = Motors[structureKey] or 0
         local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelCount
         local throttle = NormalizeThrottleVal(structureKey)
-        
+
         ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle)
     end
 end
@@ -173,6 +172,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
                 force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
             end
 
+            BetterLog(force)
             dlc2_ApplyForce(nodeA, force)
             dlc2_ApplyForce(nodeB, force)
         end
