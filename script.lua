@@ -1,5 +1,4 @@
---script.lua
---- forts script API ---
+--- forts script API --- --script.lua
 
 
 
@@ -109,7 +108,6 @@ function DebugLog(string)
 end
 
 function ControlExists(parent, control)
-
     if GetControlAbsolutePos(parent, control).x == 0 then
         return false
     end
