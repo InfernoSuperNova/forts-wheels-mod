@@ -1,14 +1,19 @@
 in no particular order
 Stop wheel spinning being broken
 fix jarvis wrapping
-DONE - propulsion UI
 Fix propulsion UI
-DONE - engine device
 engine devices maybe?
 gearboxes?
 add tracks to outsides of wheels
-DONE - optimize collision math
 optimize collision math further
-DONE - Fix wheels getting eaten by ground (use previous wheel position for determining what vertex to attempt collisions with?)
 Fix global wheel controls
+Optimize track spawning
+Fix conflicting applyforces
+finish effects.lua
+
+
+DONE - engine device
+DONE - optimize collision math
 DONE - fix mid air propulsion
+DONE - propulsion UI
+DONE - Fix wheels getting eaten by ground (use previous wheel position for determining what vertex to attempt collisions with?)
