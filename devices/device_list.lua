@@ -41,7 +41,16 @@ local engine =
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
     HasDummy = false,
-    ClaimsStructure = true
+    ClaimsStructure = true,
+    Upgrades =
+	{
+		{
+			Enabled = true,
+			SaveName = "engine_wep",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
 }
 
 

@@ -29,6 +29,9 @@ ModDebug = false
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    for side = 1, 2 do
+        EnableWeapon("engine_wep", false, side)
+    end
     InitializeTracks()
     InitializePropulsion()
     GraphingStart()
@@ -63,6 +66,20 @@ function Update(frame)
 
     
     
+end
+
+function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
+	if (saveName == "engine") then
+		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+		ApplyDamageToDevice(deviceId, 1000000)
+	end
+end
+
+--I stole this from fortships >:)
+function CreateControllerWeapon(teamId, deviceId, saveName, nodeA, nodeB, t, side)
+	EnableWeapon("engine_wep", true, side)
+	CreateDevice(teamId, "engine_wep", nodeA, nodeB, t)
+	EnableWeapon("engine_wep", false, side)
 end
 
 function OnRestart()
