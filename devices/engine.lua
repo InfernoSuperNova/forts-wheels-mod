@@ -1,13 +1,13 @@
 -- fort wars device file
 
-ConstructEffect = "effects/device_construct.lua"
+ConstructEffect = nil
 CompleteEffect = "effects/device_complete.lua"
-DestroyEffect = "effects/device_explode.lua"
+DestroyEffect = ""
 Scale = 1
 SelectionWidth = 80
 SelectionHeight = 40
 SelectionOffset = { 0.0, -40.5 }
-Mass = 125.0
+Mass = 200.0
 HitPoints = 350.0
 DestroyProjectile = nil
 EnergyProductionRate = 0.0

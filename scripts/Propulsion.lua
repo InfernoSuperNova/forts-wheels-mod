@@ -10,12 +10,12 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
-local PROPULSION_FACTOR = 3200000
+local PROPULSION_FACTOR = 1600000
 local DESIRED_VEL = 1000
 
-EngineSaveName = "engine"
+EngineSaveName = "engine_wep"
 
-ControllerSaveName = "engine"
+ControllerSaveName = "engine_wep"
 
 
 Motors = {}
@@ -44,7 +44,7 @@ function ThrottleControl()
     end
     
     --If the controller device is selected
-    if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() then
+    if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() and IsDeviceFullyBuilt(selectedDevice) then
         if not ControlExists("root", "PropulsionSlider") then
             
             LoadControl(path .. "/ui/controls.lua", "root")
@@ -120,7 +120,7 @@ function IndexMotors()
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             local structureId = GetDeviceStructureId(id)
-            if  GetDeviceType(id) == EngineSaveName then
+            if  GetDeviceType(id) == EngineSaveName and IsDeviceFullyBuilt(id) then
                 if not Motors[structureId] then 
                     Motors[structureId] = 1 
                 else
@@ -177,3 +177,4 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
         end
     end
 end
+
