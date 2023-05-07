@@ -1,2 +1,0 @@
-- name: steam-workshop-upload
-  uses: Weilbyte/steam-workshop-upload@v1.1
