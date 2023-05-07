@@ -15,7 +15,7 @@ table.insert(Weapons, 1,
 	EnergyRepairCost = 200,
 	SpotterFactor = 0,
 	MaxSpotterAssistance = 0.1, -- small benefit from other spotters
-	MaxUpAngle = StandardMaxUpAngle,
+	MaxUpAngle = 45,
 	BuildOnGroundOnly = false,
 	DrawBlurredProjectile = true,
 	SelectEffect = "ui/hud/weapons/ui_weapons",
