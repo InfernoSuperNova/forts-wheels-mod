@@ -42,37 +42,37 @@ function ThrottleControl()
     if selectedDevice ~= -1 then
         deviceStructureId = GetDeviceStructureId(selectedDevice)
     end
-    
     --If the controller device is selected
     if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() and IsDeviceFullyBuilt(selectedDevice) then
+        --if it doesn't exist in it's current instance, create it
         if not ControlExists("root", "PropulsionSlider") then
-            
             LoadControl(path .. "/ui/controls.lua", "root")
             --initialize throttle
             local pos = {x = 273.5, y = 15}
+            --if the structure doesn't already have a throttle, create it
             if not data.throttles[deviceStructureId] then
-                SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                if ControlExists("root", "PropulsionSlider") then
+                    SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                end
                 SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
             end
-            
-            
+            --set the device slider to whatever the throttle is in the structure throttles table
             if data.throttles[deviceStructureId] then
                 SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
             end
-            
         end
-
+        --Get the pos from the slider
         local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
-        SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+        --send the pos to the throttles table
+        if ControlExists("root", "PropulsionSlider") then
+            SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+        end
     else
-        if ControlExists("root", "PropulsionSlider")then
+        --once done with throttle widget, delete it
+        if ControlExists("root", "PropulsionSlider") then
             DeleteControl("root", "PropulsionSlider")
         end
-        
-        
-        
     end
-    
 end
 
 function UpdateThrottles(inx, iny, deviceStructureId)
