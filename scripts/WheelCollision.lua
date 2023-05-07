@@ -153,8 +153,9 @@ function ApplyFinalForce(device, velocity, displacement)
     --     x = data.previousVals[device].output.x,
     --     y = data.previousVals[device].output.y
     -- }
-    dlc2_ApplyForce(GetDevicePlatformA(device), DampenedForce)
-    dlc2_ApplyForce(GetDevicePlatformB(device), DampenedForce)
+    FinalSuspensionForces[device] = DampenedForce
+    --dlc2_ApplyForce(GetDevicePlatformA(device), DampenedForce)
+    --dlc2_ApplyForce(GetDevicePlatformB(device), DampenedForce)
 end
 
 function IndexTerrainBlocks()
