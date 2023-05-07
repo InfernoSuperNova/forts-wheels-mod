@@ -7,11 +7,13 @@ engine devices maybe?
 gearboxes?
 add tracks to outsides of wheels
 optimize collision math further
-Fix global wheel controls
+
 Optimize track spawning
 finish effects.lua
 Some sort of implementation of simultaneous sell material
+Fix throttle slider values resetting on deselection
 
+DONE? - Fix global wheel controls
 DONE - upgrade engine to weapon
 DONE - Fix conflicting applyforces
 DONE - Fix vibrating a low throttles

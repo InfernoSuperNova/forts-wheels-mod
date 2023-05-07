@@ -10,7 +10,7 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
-local PROPULSION_FACTOR = 1600000
+local PROPULSION_FACTOR = 6400000
 local DESIRED_VEL = 1000
 
 EngineSaveName = "engine_wep"
