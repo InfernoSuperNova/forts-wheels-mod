@@ -42,15 +42,6 @@ local engine =
     SelectEffect = "ui/hud/devices/ui_devices",
     HasDummy = false,
     ClaimsStructure = true,
-    Upgrades =
-	{
-		{
-			Enabled = true,
-			SaveName = "engine_wep",
-			MetalCost = 0,
-			EnergyCost = 0,
-		},
-	},
 }
 
 
