@@ -1,5 +1,6 @@
 in no particular order
 
+Add control device
 fix jarvis wrapping
 Fix propulsion UI
 engine devices maybe?
@@ -9,10 +10,9 @@ optimize collision math further
 Fix global wheel controls
 Optimize track spawning
 finish effects.lua
-upgrade engine to weapon
 Some sort of implementation of simultaneous sell material
 
-
+DONE - upgrade engine to weapon
 DONE - Fix conflicting applyforces
 DONE - Fix vibrating a low throttles
 DONE - Stop wheel spinning being broken
