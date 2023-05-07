@@ -79,7 +79,8 @@ function SortTracks()
 end
 
 function GetTrackSetPositions()
-    for k, trackSet in pairs(PushedTracks) do
+    TrackOffsets = {}
+    for k, trackSet in pairs(Tracks) do
         local pos = AverageCoordinates(trackSet)
         TrackOffsets[k] = pos
     end
