@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{1768482f-5616-44ad-a6a4-89cdeb24bdc9}">
+		<property name="name">
+			<value>Cloaked Gain</value>
+		</property>
+		<relationship name="folder">
+			<destination>{b2c01394-e3b2-4bf9-b9f7-449857455f61}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{f4532154-5bbc-4b34-8ef4-0c3b733ee1e6}</destination>
+		</relationship>
+	</object>
+	<object class="GainEffect" id="{f4532154-5bbc-4b34-8ef4-0c3b733ee1e6}">
+		<relationship name="automators">
+			<destination>{1cb0683b-416b-4487-acde-85015d95baa6}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{1cb0683b-416b-4487-acde-85015d95baa6}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>gain</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{2cdd1a0d-0d62-4877-958a-631025785924}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationCurve" id="{2cdd1a0d-0d62-4877-958a-631025785924}">
+		<relationship name="parameter">
+			<destination>{9136f95c-a5cb-4317-a757-fc39449a7679}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{12adc5b1-1482-4f2c-b5bf-dd6679a5ff29}</destination>
+			<destination>{fcbcf2db-f53f-456a-9028-1bdbf2db48ae}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{12adc5b1-1482-4f2c-b5bf-dd6679a5ff29}">
+		<property name="position">
+			<value>2</value>
+		</property>
+		<property name="value">
+			<value>-80</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{fcbcf2db-f53f-456a-9028-1bdbf2db48ae}">
+		<property name="position">
+			<value>1.9031737493275953</value>
+		</property>
+		<property name="value">
+			<value>3.81469727e-06</value>
+		</property>
+	</object>
+</objects>

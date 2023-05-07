@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{cdac7b16-3f91-41bb-b62f-40278bf2de45}">
+		<property name="name">
+			<value>2k - 10k Log Spatializer</value>
+		</property>
+		<relationship name="folder">
+			<destination>{b2c01394-e3b2-4bf9-b9f7-449857455f61}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{b5e337eb-d35c-4d1c-979b-d07fb8b3396e}</destination>
+		</relationship>
+	</object>
+	<object class="SpatialiserEffect" id="{b5e337eb-d35c-4d1c-979b-d07fb8b3396e}">
+		<property name="distanceRolloffType">
+			<value>1</value>
+		</property>
+		<property name="minimumDistance">
+			<value>2000</value>
+		</property>
+		<property name="maximumDistance">
+			<value>10000</value>
+		</property>
+		<property name="overrideRange">
+			<value>true</value>
+		</property>
+		<property name="soundSize">
+			<value>8000</value>
+		</property>
+		<property name="minimumExtent">
+			<value>45</value>
+		</property>
+	</object>
+</objects>
