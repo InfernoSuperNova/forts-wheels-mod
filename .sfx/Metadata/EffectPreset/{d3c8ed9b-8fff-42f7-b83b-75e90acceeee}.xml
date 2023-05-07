@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="EffectPreset" id="{d3c8ed9b-8fff-42f7-b83b-75e90acceeee}">
+		<property name="name">
+			<value>Cloaked Multiband EQ</value>
+		</property>
+		<relationship name="folder">
+			<destination>{b2c01394-e3b2-4bf9-b9f7-449857455f61}</destination>
+		</relationship>
+		<relationship name="effect">
+			<destination>{c1e73f9f-02e1-497c-8eba-423511608920}</destination>
+		</relationship>
+	</object>
+	<object class="MultibandEqEffect" id="{c1e73f9f-02e1-497c-8eba-423511608920}">
+		<property name="filterTypeA">
+			<value>3</value>
+		</property>
+		<property name="frequencyA">
+			<value>266.566376</value>
+		</property>
+		<property name="qualityA">
+			<value>0.518620729</value>
+		</property>
+		<relationship name="automators">
+			<destination>{570c06c9-93fe-43e8-aade-760cd74d2a72}</destination>
+		</relationship>
+		<relationship name="modulators">
+			<destination>{828ddd16-2e0b-4b30-bb8a-fcfa901124d9}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{570c06c9-93fe-43e8-aade-760cd74d2a72}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>frequencyA</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{2f327e95-c64e-4869-8476-927bfec71b1a}</destination>
+		</relationship>
+	</object>
+	<object class="ADSRModulator" id="{828ddd16-2e0b-4b30-bb8a-fcfa901124d9}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>frequencyA</value>
+		</property>
+		<property name="attackTime">
+			<value>0</value>
+		</property>
+		<property name="peakValue">
+			<value>46</value>
+		</property>
+		<property name="holdTime">
+			<value>0</value>
+		</property>
+		<property name="decayTime">
+			<value>120</value>
+		</property>
+		<property name="releaseTime">
+			<value>0</value>
+		</property>
+	</object>
+	<object class="AutomationCurve" id="{2f327e95-c64e-4869-8476-927bfec71b1a}">
+		<relationship name="parameter">
+			<destination>{9136f95c-a5cb-4317-a757-fc39449a7679}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{ecadfe9c-c4a5-4f0f-96e2-4a77222074ca}</destination>
+			<destination>{f60ed866-57d7-4744-ac90-40379b0f08e9}</destination>
+			<destination>{f1efd2a3-863c-4a68-a7bc-ca9bf92a564c}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationPoint" id="{ecadfe9c-c4a5-4f0f-96e2-4a77222074ca}">
+		<property name="position">
+			<value>0.90263582571274881</value>
+		</property>
+		<property name="value">
+			<value>22000</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{f60ed866-57d7-4744-ac90-40379b0f08e9}">
+		<property name="position">
+			<value>0.14631522323830015</value>
+		</property>
+		<property name="value">
+			<value>22000</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{f1efd2a3-863c-4a68-a7bc-ca9bf92a564c}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>266.566437</value>
+		</property>
+	</object>
+</objects>
