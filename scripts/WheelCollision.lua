@@ -1,7 +1,7 @@
 --WheelCollision.lua
 --- forts script API ---
 local springConst = 30000
-local dampening = 1000
+local dampening = 3000
 
 Terrain = {}
 
