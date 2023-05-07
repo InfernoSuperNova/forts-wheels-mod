@@ -146,7 +146,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
             local desiredVel = DESIRED_VEL * throttle
-            
+            enginePower = enginePower * math.abs(throttle)
 
             local deltaVel = desiredVel - velocityMag
             local mag = 1
@@ -171,9 +171,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
             else
                 force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
             end
-            
-            dlc2_ApplyForce(nodeA, force)
-            dlc2_ApplyForce(nodeB, force)
+            FinalPropulsionForces[device] = force
         end
     end
 end

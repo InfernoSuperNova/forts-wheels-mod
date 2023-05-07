@@ -16,6 +16,9 @@ dofile(path .. "/scripts/effects.lua")
 
 Displacement = {}
 WheelPos = {}
+FinalSuspensionForces = {}
+FinalPropulsionForces = {}
+FinalAddedForces = {}
 WheelRadius = 75
 WheelSuspensionHeight = 150
 
@@ -60,26 +63,12 @@ function Update(frame)
     DebugLog("Update graphs good")
     UpdateEffects()
     DebugLog("Update effects good")
-    
+    ApplyForces()
     
 
 
     
     
-end
-
-function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
-	if (saveName == "engine") then
-		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
-		ApplyDamageToDevice(deviceId, 1000000)
-	end
-end
-
---I stole this from fortships >:)
-function CreateControllerWeapon(teamId, deviceId, saveName, nodeA, nodeB, t, side)
-	EnableWeapon("engine_wep", true, side)
-	CreateDevice(teamId, "engine_wep", nodeA, nodeB, t)
-	EnableWeapon("engine_wep", false, side)
 end
 
 function OnRestart()
@@ -90,10 +79,49 @@ function OnSeek()
 end
 function OnDraw()
 
-    
-
-
 end
+
+function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
+	if (saveName == "engine") then
+		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+		ApplyDamageToDevice(deviceId, 1000000)
+	end
+end
+
+function ApplyForces()
+    for device, force in pairs(FinalSuspensionForces) do
+        if FinalPropulsionForces[device] then
+
+            --Don't ask me why I have to do it like this, just trust that I do have to
+            local newForceX = force.x + FinalPropulsionForces[device].x
+            local newForceY = force.y + FinalPropulsionForces[device].y
+            
+            FinalAddedForces[device] = {x = newForceX, y = newForceY}
+        else
+            FinalAddedForces[device] = force
+        end
+        
+    end
+    
+    for device, force in pairs(FinalAddedForces) do
+        local nodeA = GetDevicePlatformA(device)
+        local nodeB = GetDevicePlatformB(device)
+        dlc2_ApplyForce(nodeA, force)
+        dlc2_ApplyForce(nodeB, force)
+    end
+    FinalSuspensionForces = {}
+    FinalPropulsionForces = {}
+    FinalAddedForces = {}
+end
+
+--I stole this from fortships >:)
+function CreateControllerWeapon(teamId, deviceId, saveName, nodeA, nodeB, t, side)
+	EnableWeapon("engine_wep", true, side)
+	CreateDevice(teamId, "engine_wep", nodeA, nodeB, t)
+	EnableWeapon("engine_wep", false, side)
+end
+
+
 
 function ReinsertKeys(t)
     local newTable = {}
@@ -102,11 +130,6 @@ function ReinsertKeys(t)
     end
     return newTable
 end
-
-
-
-
-
 
 
 --RGBAtoHex, courtesy of Harder_天使的花园
