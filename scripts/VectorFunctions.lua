@@ -198,40 +198,24 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
     return points
 end
 
-function GetArc(center, radius, vector1, vector2, resolution, offset)
-    local arc = {}
-    local angle = math.acos((vector1.x * vector2.x + vector1.y * vector2.y) / (math.sqrt(vector1.x^2 + vector1.y^2) * math.sqrt(vector2.x^2 + vector2.y^2)))
-    local startAngle = math.atan2(vector1.y, vector1.x)
-    local endAngle = startAngle + angle
-    local segmentAngle = angle / resolution
-
-    for i = 0, resolution do
-        local angle = startAngle + segmentAngle * i
-        local x = center.x + radius * math.cos(angle)
-        local y = center.y + radius * math.sin(angle)
-        local tangentVector = { x = -math.sin(angle), y = math.cos(angle) }
-        local offsetVector = { x = tangentVector.x * offset, y = tangentVector.y * offset }
-        table.insert(arc, { x = x + offsetVector.x, y = y + offsetVector.y })
+    function PointsAroundArc(center, radius, p1, p2, spacing, offset)
+        local angle1 = math.atan2(p1.y - center.y, p1.x - center.x)
+        local angle2 = math.atan2(p2.y - center.y, p2.x - center.x) * 0.65
+        local angle_diff = angle2 - angle1
+        local arc_length = angle_diff * radius
+        local num_points = math.ceil(arc_length / spacing)
+        local angle_incr = angle_diff / (num_points - 1)
+        local start_angle = angle1 + offset
+        local points = {}
+        for i = 1, num_points do
+            local angle = start_angle + (i - 1) * angle_incr
+            local x = center.x + radius * math.cos(angle)
+            local y = center.y + radius * math.sin(angle)
+            table.insert(points, {x = x, y = y})
+        end
+        return points
     end
 
-    return arc
-end
-
-function GetPointsOnCircleBetweenPoints(center, radius, point1, point2, resolution)
-    local circlePoints = {}
-    local startAngle = math.atan2(point1.y - center.y, point1.x - center.x)
-    local endAngle = math.atan2(point2.y - center.y, point2.x - center.x)
-    local segmentAngle = (endAngle - startAngle) / resolution
-
-    for i = 0, resolution do
-        local angle = startAngle + segmentAngle * i
-        local x = center.x + radius * math.cos(angle)
-        local y = center.y + radius * math.sin(angle)
-        table.insert(circlePoints, { x = x, y = y })
-    end
-
-    return circlePoints
-end
 
 
 function AngleToVector(angle)
