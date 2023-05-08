@@ -1,9 +1,9 @@
 --- forts script API --- --script.lua
 
-
+dofile(path .. "/scripts/debugMagic.lua")
 
 dofile("scripts/forts.lua")
-dofile(path .. "/scripts/debugMagic.lua")
+
 dofile(path .. "/scripts/BetterLog.lua")
 dofile(path .. "/scripts/VectorFunctions.lua")
 dofile(path .. "/scripts/graphing.lua")
@@ -32,6 +32,7 @@ ModDebug = false
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+   
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
     end
