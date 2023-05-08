@@ -4,15 +4,13 @@ Add control device
 fix jarvis wrapping
 engine devices maybe?
 gearboxes?
-
 optimize collision math further
-
 Optimize track spawning
 finish effects.lua
 Some sort of implementation of simultaneous sell material
 Fix throttle slider values resetting on deselection
-
 Add throttle gunning protection (ramp up)
+Make phantom tracks invisible
 
 DONE - add tracks to outsides of wheels
 DUCTAPE - Lock screen panning when touching the slider
