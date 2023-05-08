@@ -4,6 +4,7 @@ TrackOffsets = {}
 SpecialFrame = 1
 TrackLinkDistance = 30
 Tracks = {}
+SortedTracks = {}
 PushedTracks = {}
 LocalEffects = {}
 function InitializeTracks()
@@ -38,7 +39,11 @@ end
 function FillTracks()
     --clear tracks table
     Tracks = {}
+    SortedTracks = {}
     PushedTracks = {}
+
+    
+    
     --insert new entries
     for side = 1, 2 do
         --get the count of devices on a side
@@ -71,11 +76,12 @@ end
 
 function SortTracks()
     for k, trackSet in pairs(Tracks) do
-        local temp = JarvisWrapping(trackSet)
+        SortedTracks[k] = JarvisWrapping(trackSet)
         DebugLog("Jarvis wrapping good")
-        PushedTracks[k] = PushOutTracks(temp, WheelRadius)
+        PushedTracks[k] = PushOutTracks(SortedTracks[k], WheelRadius)
         DebugLog("Track pushing good")
     end
+
 end
 
 function GetTrackSetPositions()
@@ -103,30 +109,37 @@ function DrawTrackSprockets(base)
     end
 end
 
-function DrawTrackTreads(trackSet, correspondingDevice)
+function DrawTrackTreads(trackSet, base)
     --loop through segments of the tracks
     for wheel = 1, #trackSet, 2 do
         --Only if there's more than 2 points (1 wheel) in set
         if #trackSet > 2 then
-            DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
+            DrawTrackTreadsFlat(trackSet, wheel, base)
         end
     end
     for wheel = 2, #trackSet, 2 do
-        local center = FindWheel(correspondingDevice)
-
-        if #trackSet > 0 then
-            DrawTrackTreadsRound(center, trackSet[wheel], trackSet[wheel % #trackSet + 1], correspondingDevice)
+        local index = (wheel / 2 - 1) % #SortedTracks[base] + 1
+        local center = SortedTracks[base][index]
+        if #trackSet > 2 then
+            DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
         end
     end
 end
 
-function FindWheel(device)
-    for k, trackSet in pairs(Tracks) do
-        if trackSet[device] then
-            return trackSet[device]
-        end
+function DrawTrackTreadsRound(center, track1, track2, base)
+
+    --HighlightPolygon({center, track1, track2})
+    local offset = TrackOffsets[base].x % TrackLinkDistance
+    local offset_length = offset / WheelRadius * 1.2
+
+    local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
+    
+    for point = 1, #arc do
+
+        local effect = SpawnEffectEx(path .. "/effects/track_link.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
     end
 end
+
 
 function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
     local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
@@ -140,14 +153,7 @@ function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
     end
 end
 
-function DrawTrackTreadsRound(center, track1, track2, device)
-    -- local arc = GetPointsOnCircleBetweenPoints(center, WheelRadius, track1, track2, 10)
-    -- BetterLog(center)
-    -- for point = 1, #arc do
 
-    --     local effect = SpawnEffectEx(path .. "/effects/track_link.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
-    -- end
-end
 
 function JarvisWrapping(points)
     -- Check if all points have the same Y level
