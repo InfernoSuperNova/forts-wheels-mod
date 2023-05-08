@@ -46,7 +46,9 @@ function ThrottleControl()
     if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() and IsDeviceFullyBuilt(selectedDevice) then
         --if it doesn't exist in it's current instance, create it
         if not ControlExists("root", "PropulsionSlider") then
+            SetControlFrame(0)
             LoadControl(path .. "/ui/controls.lua", "root")
+            
             --initialize throttle
             local pos = {x = 273.5, y = 15}
             --if the structure doesn't already have a throttle, create it
