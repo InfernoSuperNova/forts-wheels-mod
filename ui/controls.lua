@@ -18,7 +18,7 @@ Root =
                 Control =
                 {
                     ClipChildren = true,
-                    Position = { 230, 450, },
+                    Position = { 230, 480, },
                     Size = { 600, 30, },
                     TabStop = 6,
                     Children =
