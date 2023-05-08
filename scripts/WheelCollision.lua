@@ -1,7 +1,7 @@
 --WheelCollision.lua
 --- forts script API ---
 local springConst = 30000
-local dampening = 3000
+local dampening = 1500
 
 Terrain = {}
 
@@ -177,6 +177,11 @@ function IndexTerrainBlocks()
 end
 
 function CheckCollisionsOnBlock(terrain, pos, radius)
+    --Fix for single node blocks
+    if #terrain < 2 then
+        return nil
+    end
+
     local newPos = pos
     if PointInsidePolygon(pos, terrain) then
         local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
