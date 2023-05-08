@@ -14,6 +14,7 @@ Some sort of implementation of simultaneous sell material
 Fix throttle slider values resetting on deselection
 Fix crash when colliding with single node blocks
 Add throttle gunning protection (ramp up)
+Lock screen panning when touching the slider
 
 DONE? - Fix global wheel controls
 DONE - upgrade engine to weapon
