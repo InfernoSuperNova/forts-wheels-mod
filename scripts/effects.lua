@@ -8,7 +8,6 @@ function WheelSmoke()
     --     for deviceId, _ in pairs(wheels) do
             
     --         local nodeA = GetDevicePlatformA(deviceId)
-    --         BetterLog(deviceId)
     --         local nodeB = GetDevicePlatformB(deviceId)
     --         local velocity = NodeVelocity(nodeA)
     --         local velocityMag = VecMagnitude(velocity)
