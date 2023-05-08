@@ -1,7 +1,4 @@
 --debugMagic.lua
---- forts script API ---
----@diagnostic disable: lowercase-global
-
 
 if preG == nil then
     preG = {}
@@ -13,12 +10,10 @@ else
         local extractFunctionPosition = function(line)
             line = line:match '^%s*(.*%S)' or '' -- trim
             local s, e = line:find('..."]:')
-            local fileNameComment = line:sub(10, s - 1)
             local remainingLine = line:sub(e + 1)
             local rs, re = remainingLine:find(':')
             return {
-                fileName = fileNameComment:sub(1, 2) == '--' and fileNameComment:sub(3) or
-                "(file starting with '" .. line:sub(10, s - 1) .. "')",
+                fileName = "(file starting with '" .. line:sub(10, s - 1) .. "')",
                 lineNo   = remainingLine:sub(1, re - 1),
             }
         end
@@ -102,10 +97,3 @@ else
         end
     end
 end
-
-
-
-
-
-
-
