@@ -128,15 +128,35 @@ end
 
 function DrawTrackTreadsRound(center, track1, track2, base)
 
+
+    
     --HighlightPolygon({center, track1, track2})
     local offset = TrackOffsets[base].x % TrackLinkDistance
     local offset_length = offset / WheelRadius * 1.2
 
     local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
+
+    -- BetterLog("center =")
+    -- BetterLog(center)
+    -- BetterLog("radius = ")
+    -- BetterLog(WheelRadius)
+    -- BetterLog("p1 = ")
+    -- BetterLog(track2)
+    -- BetterLog("p2 = ")
+    -- BetterLog(track1)
+    -- BetterLog("spacing = ")
+    -- BetterLog(TrackLinkDistance)
+    -- BetterLog("offset = ")
+    -- BetterLog(offset_length)
+
+    -- BetterLog("arc =")
+    -- BetterLog(arc)
+
+
     
     for point = 1, #arc do
 
-        local effect = SpawnEffectEx(path .. "/effects/track_link.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
+        SpawnEffectEx(path .. "/effects/track_link.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
     end
 end
 
