@@ -1,9 +1,11 @@
+table.insert(Sprites, ButtonSprite("hud-suspension-icon", "HUD/HUD-suspension", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-suspension", "suspension", path))
 local suspension = 
 {
     SaveName = "suspension",
     FileName = path .. "/devices/suspension.lua",
-    Icon = "hud-sandbags-icon",
-    Detail = "hud-detail-sandbags",
+    Icon = "hud-suspension-icon",
+    Detail = "hud-detail-suspension",
     BuildTimeComplete = 25,
     ScrapPeriod = 8,
     MetalCost = 150,
@@ -21,12 +23,15 @@ local suspension =
 }
 
 InsertDeviceBehind("sandbags", suspension)
+
+table.insert(Sprites, ButtonSprite("hud-engine-icon", "HUD/HUD-engine", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-engine", "engine", path))
 local engine = 
 {
     SaveName = "engine",
     FileName = path .. "/devices/engine.lua",
-    Icon = "hud-battery-icon",
-    Detail = "hud-detail-sandbags",
+    Icon = "hud-engine-icon",
+    Detail = "hud-detail-engine",
     BuildTimeComplete = 25,
     ScrapPeriod = 8,
     MetalCost = 200,
