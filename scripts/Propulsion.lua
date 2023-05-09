@@ -40,41 +40,42 @@ function ThrottleControl()
     local selectedDevice = GetLocalSelectedDeviceId()
     local deviceStructureId = -1
     if selectedDevice ~= -1 then
-        deviceStructureId = GetDeviceStructureId(selectedDevice)
+         -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
+        deviceStructureId = NodeStructureId(GetDevicePlatformA(selectedDevice))
     end
-    --If the controller device is selected
-    if GetDeviceType(selectedDevice) == ControllerSaveName and GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId() and IsDeviceFullyBuilt(selectedDevice) then
-        --if it doesn't exist in it's current instance, create it
-        if not ControlExists("root", "PropulsionSlider") then
-            SetControlFrame(0)
-            LoadControl(path .. "/ui/controls.lua", "root")
-            
-            --initialize throttle
-            local pos = {x = 273.5, y = 15}
-            --if the structure doesn't already have a throttle, create it
-            if not data.throttles[deviceStructureId] then
-                if ControlExists("root", "PropulsionSlider") then
-                    SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+        --If the controller device is selected
+        if GetDeviceType(selectedDevice) == ControllerSaveName and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId()) then
+            --if it doesn't exist in it's current instance, create it
+            if not ControlExists("root", "PropulsionSlider") then
+                SetControlFrame(0)
+                LoadControl(path .. "/ui/controls.lua", "root")
+                
+                --initialize throttle
+                local pos = {x = 273.5, y = 15}
+                --if the structure doesn't already have a throttle, create it
+                if not data.throttles[deviceStructureId] then
+                    if ControlExists("root", "PropulsionSlider") then
+                        SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                    end
+                    SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
                 end
-                SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
+                --set the device slider to whatever the throttle is in the structure throttles table
+                if data.throttles[deviceStructureId] then
+                    SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
+                end
             end
-            --set the device slider to whatever the throttle is in the structure throttles table
-            if data.throttles[deviceStructureId] then
-                SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
+            --Get the pos from the slider
+            local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
+            --send the pos to the throttles table
+            if ControlExists("root", "PropulsionSlider") then
+                SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+            end
+        else
+            --once done with throttle widget, delete it
+            if ControlExists("root", "PropulsionSlider") then
+                DeleteControl("root", "PropulsionSlider")
             end
         end
-        --Get the pos from the slider
-        local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
-        --send the pos to the throttles table
-        if ControlExists("root", "PropulsionSlider") then
-            SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-        end
-    else
-        --once done with throttle widget, delete it
-        if ControlExists("root", "PropulsionSlider") then
-            DeleteControl("root", "PropulsionSlider")
-        end
-    end
 end
 
 function UpdateThrottles(inx, iny, deviceStructureId)
