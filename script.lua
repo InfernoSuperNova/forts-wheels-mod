@@ -1,6 +1,6 @@
 --- forts script API --- --script.lua
 
-dofile(path .. "/scripts/debugMagic.lua")
+dofile(path .. "/debugMagic.lua")
 
 dofile("scripts/forts.lua")
 
@@ -16,6 +16,7 @@ dofile(path .. "/scripts/effects.lua")
 
 Displacement = {}
 WheelPos = {}
+TracksId = {}
 FinalSuspensionForces = {}
 FinalPropulsionForces = {}
 FinalAddedForces = {}
@@ -173,5 +174,16 @@ function Clamp(val, min, max)
     if val > max then return max end
     if val < min then return min end
     return val
+end
+
+function GetDeviceKeyFromId(structure, Id)
+
+    for key, value in pairs(data.structures[structure]) do
+        if value == Id then return key end
+    end
+end
+
+function GetDeviceIdFromKey(structure, key)
+    return data.structures[structure][key]
 end
 dofile(path .. "/debugMagic.lua")
