@@ -105,7 +105,7 @@ end
 
 function ClearOldStructures()
     for structure, value in pairs(data.throttles) do
-        local result = GetStructureTeam(structure)
+        local result = GetStructureTeam(structure) % MAX_SIDES
 
         if result ~= 1 and result ~= 2 then
             data.throttles[structure] = nil
@@ -148,7 +148,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle, max
         if data.wheelsTouchingGround[structureKey][deviceKey] then
             local nodeA = GetDevicePlatformA(device)
             local nodeB = GetDevicePlatformB(device)
-            local velocity = NodeVelocity(nodeA)
+            local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
             local velocityMag = VecMagnitudeDir(velocity)
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
