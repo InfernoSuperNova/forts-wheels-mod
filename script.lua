@@ -142,6 +142,10 @@ function ReinsertKeys(t)
     return newTable
 end
 
+function math.sign(x)
+    return x > 0 and 1 or x < 0 and -1 or 0
+  end
+  
 
 --RGBAtoHex, courtesy of Harder_天使的花园
 function RGBAtoHex(r, g, b, a, UTF16)
