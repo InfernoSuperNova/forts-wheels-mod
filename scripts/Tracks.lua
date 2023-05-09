@@ -38,6 +38,7 @@ end
 
 function FillTracks()
     --clear tracks table
+    TracksId = {}
     Tracks = {}
     SortedTracks = {}
     PushedTracks = {}
@@ -63,13 +64,14 @@ function PlaceSuspensionPosInTable(id)
         local actualPos = WheelPos[id]
         --put it into a table unique to that structure...
         if not Tracks[structureId] then Tracks[structureId] = {} end
+        
         local suspensionPos = {
             x = actualPos.x + Displacement[id].x,
             y = actualPos.y + Displacement[id].y,
         }
         --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
-
-        --Tracks[structureId][id] = suspensionPos
+        if not TracksId[structureId] then TracksId[structureId] = {} end
+        TracksId[structureId][id] = suspensionPos
         table.insert(Tracks[structureId], suspensionPos)
     end
 end
@@ -136,21 +138,6 @@ function DrawTrackTreadsRound(center, track1, track2, base)
 
     local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
 
-    -- BetterLog("center =")
-    -- BetterLog(center)
-    -- BetterLog("radius = ")
-    -- BetterLog(WheelRadius)
-    -- BetterLog("p1 = ")
-    -- BetterLog(track2)
-    -- BetterLog("p2 = ")
-    -- BetterLog(track1)
-    -- BetterLog("spacing = ")
-    -- BetterLog(TrackLinkDistance)
-    -- BetterLog("offset = ")
-    -- BetterLog(offset_length)
-
-    -- BetterLog("arc =")
-    -- BetterLog(arc)
 
 
     
