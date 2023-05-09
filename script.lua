@@ -64,7 +64,7 @@ function Update(frame)
     DebugLog("Update tracks good")
     UpdateGraphs()
     DebugLog("Update graphs good")
-    UpdateEffects()
+    UpdateEffects(frame)
     DebugLog("Update effects good")
     ApplyForces()
     JustJoined = false
