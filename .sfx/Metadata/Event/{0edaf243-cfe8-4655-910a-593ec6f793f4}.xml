@@ -194,10 +194,10 @@
 	</object>
 	<object class="SingleSound" id="{517e893e-ad2e-4e58-b9ae-92e694788236}">
 		<property name="start">
-			<value>500</value>
+			<value>200</value>
 		</property>
 		<property name="length">
-			<value>2200</value>
+			<value>2500</value>
 		</property>
 		<property name="startOffset">
 			<value>50</value>
@@ -226,7 +226,7 @@
 	</object>
 	<object class="SingleSound" id="{f61fafe2-b685-46f0-a8b2-fdf03e12c2a0}">
 		<property name="length">
-			<value>500</value>
+			<value>200</value>
 		</property>
 		<relationship name="audioFile">
 			<destination>{c58269d0-4ad7-4b3f-96b9-3f3e8d98d291}</destination>
@@ -621,11 +621,12 @@
 		<relationship name="automationPoints">
 			<destination>{9e9bfcbc-b25b-4fa7-9ae9-8816d5524edd}</destination>
 			<destination>{2a2225f9-06e1-4325-88d0-d2e6a6b6926a}</destination>
+			<destination>{a4710bdc-f0e0-4074-aa88-6225e40b7742}</destination>
 		</relationship>
 	</object>
 	<object class="AutomationPoint" id="{7727f18e-4207-492e-a0ed-37fc8fef65ea}">
 		<property name="position">
-			<value>500</value>
+			<value>200</value>
 		</property>
 		<property name="value">
 			<value>0</value>
@@ -636,7 +637,7 @@
 	</object>
 	<object class="AutomationPoint" id="{1bfda291-c1f1-4694-8578-dc3b81e1af31}">
 		<property name="position">
-			<value>600</value>
+			<value>300</value>
 		</property>
 		<property name="value">
 			<value>1</value>
@@ -797,7 +798,7 @@
 	</object>
 	<object class="AutomationPoint" id="{9e9bfcbc-b25b-4fa7-9ae9-8816d5524edd}">
 		<property name="position">
-			<value>697.86535303776679</value>
+			<value>600</value>
 		</property>
 		<property name="value">
 			<value>0</value>
@@ -809,6 +810,17 @@
 		</property>
 		<property name="value">
 			<value>3</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{a4710bdc-f0e0-4074-aa88-6225e40b7742}">
+		<property name="position">
+			<value>262.72577996715927</value>
+		</property>
+		<property name="value">
+			<value>-4</value>
+		</property>
+		<property name="curveShape">
+			<value>-0.422861755</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{5dcd5627-3f68-4099-8caf-d263498501c7}">
