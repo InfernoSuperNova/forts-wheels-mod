@@ -25,7 +25,7 @@ WheelSuspensionHeight = 150
 WheelSaveName = "suspension"
 
 ModDebug = false
-
+JustJoined = true --to run something once upon joining through Update. (used for effects)
 
 
 --for every wheel, calculate the distance between it and every terrain block median center
@@ -38,6 +38,7 @@ function Load(GameStart)
     end
     InitializeTracks()
     InitializePropulsion()
+    InitializeEffects()
     GraphingStart()
     data.terrainCollisionBoxes = {}
     data.previousVals = {}
@@ -65,7 +66,7 @@ function Update(frame)
     UpdateEffects()
     DebugLog("Update effects good")
     ApplyForces()
-    
+    JustJoined = false
 
 
     
@@ -87,6 +88,15 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
 		ApplyDamageToDevice(deviceId, 1000000)
 	end
+end
+function OnDeviceCompleted(teamId, deviceId, saveName)
+    EngineSoundAdd(saveName, deviceId)
+end
+function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
+    EngineSoundRemove(saveName, deviceId)
+end
+function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
+    EngineSoundRemove(saveName, deviceId)
 end
 
 function ApplyForces()
