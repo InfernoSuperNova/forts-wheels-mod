@@ -100,7 +100,8 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
         SendDisplacementToTracks(displacement, device)
         if displacement.y ~= 0 then
-            --BetterLog(displacement)
+
+            
             ApplyFinalForce(device, velocity, displacement)
             
             if math.abs(returnVal.y) < math.abs(displacement.y) then 
