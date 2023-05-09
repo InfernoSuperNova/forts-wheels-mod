@@ -10,8 +10,8 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
-local PROPULSION_FACTOR = 6400000
-local DESIRED_VEL = 1000
+local PROPULSION_FACTOR = 5000000
+local VEL_PER_ENGINE = 2000
 
 EngineSaveName = "engine_wep"
 
@@ -22,6 +22,7 @@ Motors = {}
 
 function InitializePropulsion()
     data.throttles = {}
+    data.previousThrottleMags = {}
     
 end
 function UpdatePropulsion()
@@ -86,16 +87,19 @@ function LoopStructures()
     
     for structureKey, devices in pairs(data.structures) do
         local wheelCount = 0
+        local wheelTouchingGroundCount = 0
         for deviceKey, device in pairs(devices) do
             if data.wheelsTouchingGround[structureKey][deviceKey] then
-                wheelCount = wheelCount + 1
+                wheelTouchingGroundCount = wheelTouchingGroundCount + 1
             end
+            wheelCount = wheelCount + 1
         end
         local motorCount = Motors[structureKey] or 0
-        local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelCount
+        local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount
+        local maxSpeed = VEL_PER_ENGINE * motorCount / wheelCount
         local throttle = NormalizeThrottleVal(structureKey)
 
-        ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle)
+        ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle, maxSpeed)
     end
 end
 
@@ -139,7 +143,7 @@ end
 
 
 
-function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
+function ApplyPropulsionForces(devices, structureKey, enginePower, throttle, maxSpeed)
     for deviceKey, device in pairs(devices) do
         if data.wheelsTouchingGround[structureKey][deviceKey] then
             local nodeA = GetDevicePlatformA(device)
@@ -148,7 +152,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
             local velocityMag = VecMagnitudeDir(velocity)
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
-            local desiredVel = DESIRED_VEL * throttle
+            local desiredVel = maxSpeed * throttle
             enginePower = enginePower * math.abs(throttle)
 
             local deltaVel = desiredVel - velocityMag
@@ -158,13 +162,19 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle)
             else
                 mag = 0
             end 
-            mag = Clamp(mag, -1, 1)
+            mag = Clamp(mag, -1.1, 1.1)
+            --get average between new magnitude and previous one to reduce vibrations
+            if data.previousThrottleMags[structureKey] and data.previousThrottleMags[structureKey][deviceKey] then
+                mag = (mag + data.previousThrottleMags[structureKey][deviceKey]) / 2
+            elseif not data.previousThrottleMags[structureKey] then data.previousThrottleMags[structureKey] = {} end
+                
+            
+            data.previousThrottleMags[structureKey][deviceKey] = mag
             --if our velocity is 50, and our desired is -500
             --delta is -550
             --this produces a magnitude of 1.1
             --if our velocity is 0, and our desired is -500
             --delta is -550
-
             local force
             --right
             if desiredVel > 0 then
