@@ -1,12 +1,12 @@
 
-
+table.insert(Sprites, ButtonSprite("hud-group-throttle", "groups/Group-throttle", GroupButtonSpriteBottom, GroupButtonSpriteBottom, nil, nil, path))
 table.insert(Weapons, 1,
 {
 	SaveName = "engine_wep",
 	FileName = path .. "/weapons/engine.lua",
-	Icon = "hud-flak-icon",
-	GroupButton = "hud-group-flak",
-	Detail = "hud-detail-flak",
+	Icon = "hud-engine-icon",
+	GroupButton = "hud-group-throttle",
+	Detail = "hud-detail-engine",
 	BuildTimeComplete = 25.0,
 	ScrapPeriod = 5,
 	MetalCost = 0,
