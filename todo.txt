@@ -6,12 +6,12 @@ engine devices maybe?
 gearboxes?
 optimize collision math further
 Optimize track spawning
-
+Add more smoke particles without them becoming unoptimized
 Some sort of implementation of simultaneous sell material
-Fix throttle slider values resetting on deselection
+
 Add throttle gunning protection (ramp up)
 Make phantom commander tracks invisible
-
+DONE - Fix throttle slider values resetting on deselection
 DONE - fix vibration hopefully
 DONE - finish smoke effects
 DONE - add tracks to outsides of wheels
