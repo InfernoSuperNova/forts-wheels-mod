@@ -211,7 +211,6 @@ end
             angle_diff = (math.pi * 2 + angle_diff)
             start_angle = angle2 + offset
         end
-        BetterLog(angle_diff)
         local trackFactor = 1.4
         local arc_length = angle_diff * radius
         local num_points = math.ceil(arc_length / spacing)
