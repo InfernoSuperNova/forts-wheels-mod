@@ -199,15 +199,27 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
 end
 
     function PointsAroundArc(center, radius, p1, p2, spacing, offset)
+
+        
         local angle1 = math.atan2(p1.y - center.y, p1.x - center.x)
-        local angle2 = math.atan2(p2.y - center.y, p2.x - center.x) * 0.65
+        local angle2 = math.atan2(p2.y - center.y, p2.x - center.x)
         local angle_diff = angle2 - angle1
+        local start_angle = angle1 + offset
+        if math.sign(angle_diff) == -1 then 
+            angle1, angle2 = angle2, angle1
+            angle_diff = angle1 - angle2
+            angle_diff = (math.pi * 2 + angle_diff)
+            start_angle = angle2 + offset
+        end
+        BetterLog(angle_diff)
+        local trackFactor = 1.4
         local arc_length = angle_diff * radius
         local num_points = math.ceil(arc_length / spacing)
+        if num_points == 0 then return {} end
         local angle_incr = angle_diff / (num_points - 1)
-        local start_angle = angle1 + offset
+
         local points = {}
-        for i = 1, num_points do
+        for i = 1, num_points - 1, math.sign(num_points) do
             local angle = start_angle + (i - 1) * angle_incr
             local x = center.x + radius * math.cos(angle)
             local y = center.y + radius * math.sin(angle)
