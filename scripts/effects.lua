@@ -67,7 +67,9 @@ function EngineSoundRemove(saveName, deviceId)
     
     --removes an effect when an engine device is removed
     if saveName == ControllerSaveName then
-        CancelEffect(EffectsList.engine[tostring(deviceId)])
+        if EffectsList.engine[tostring(deviceId)] then
+            CancelEffect(EffectsList.engine[tostring(deviceId)])
+        end
         EffectsList.engine[tostring(deviceId)] = nil
     end
 end
