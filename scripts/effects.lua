@@ -1,3 +1,4 @@
+VelocityToSpawnSmoke = 200
 function UpdateEffects()
 
     WheelSmoke()
@@ -11,20 +12,24 @@ function InitializeEffects()
 	}
 end
 function WheelSmoke()
-    -- for structure, wheels in pairs(data.structures) do
-    --     for deviceId, _ in pairs(wheels) do
-            
-    --         local nodeA = GetDevicePlatformA(deviceId)
-    --         local nodeB = GetDevicePlatformB(deviceId)
-    --         local velocity = NodeVelocity(nodeA)
-    --         local velocityMag = VecMagnitude(velocity)
-    --         if velocityMag > 50 then
-    --             local pos = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), WheelSuspensionHeight + WheelRadius)
-    --             SpawnEffect(path .. "/effects/smoke_poof.lua", pos)
-                
-    --         end
-    --     end
-    -- end
+    for structure, wheels in pairs(TracksId) do
+        for deviceId, pos in pairs(wheels) do
+            local wheelIsTouchingGround = data.wheelsTouchingGround[structure][GetDeviceKeyFromId(structure, deviceId)]
+
+            local nodeA = GetDevicePlatformA(deviceId)
+            local nodeB = GetDevicePlatformB(deviceId)
+
+            local velocity = NodeVelocity(nodeA)
+            local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), 75)
+            local finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
+            if wheelIsTouchingGround then
+                local velocityMag = VecMagnitude(velocity)
+                if velocityMag and velocityMag > VelocityToSpawnSmoke then
+                    SpawnEffect(path .. "/effects/smoke_poof.lua", finalOffset)
+                end
+            end
+        end
+    end
 end
 
 function EngineSoundUpdate()
