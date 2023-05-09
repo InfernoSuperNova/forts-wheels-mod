@@ -94,7 +94,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
         --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
         displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius)
-        local velocity = NodeVelocity(GetDevicePlatformA(device))
+
+        local nodeA = GetDevicePlatformA(device)
+        local nodeB = GetDevicePlatformB(device)
+        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
 
 
 
