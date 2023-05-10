@@ -12,7 +12,7 @@ Sprites =
 			{
 				Frames =
 				{
-					{ texture = path .. "/effects/media/sprocket.png" },
+					{ texture = path .. "/effects/media/sprocket2.png" },
 					
 
 					duration = 0.04,
@@ -32,7 +32,7 @@ Effects =
 	{
 		Type = "sprite",
 		TimeToTrigger = 0,
-		LocalPosition = { x = 0, y = 0, z = 0 },
+		LocalPosition = { x = 0, y = 0, z = -0.1 },
 		LocalVelocity = { x = 0, y = 0, z = 0 },
 		Acceleration = { x = 0, y = 0, z = 0 },
 		Drag = 0.0,
@@ -40,7 +40,7 @@ Effects =
 		Additive = false,
 		TimeToLive = 0.05,
 		Angle = 0,
-		InitialSize = 2.3,
+		InitialSize = 1.3,
 		ExpansionRate = 0,
 		AngularVelocity = 0,
 		RandomAngularVelocityMagnitude = 0,
