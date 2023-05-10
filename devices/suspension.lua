@@ -32,7 +32,7 @@ Sprites =
 		Name = "suspension-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension2.png" }, mipmap = true, }, },
 		},
 	},
     {
@@ -43,8 +43,8 @@ Sprites =
             { 
                 Frames = 
                 { 
-                    { texture = path .. "/effects/media/sprocket.png", colour = { 1, 1, 1, 0.8 },}, 
-                    { texture = path .. "/effects/media/sprocket.png", colour = { 1, 1, 1, 0.6 },},
+                    { texture = path .. "/effects/media/sprocket2.png", colour = { 1, 1, 1, 0.8 },}, 
+                    { texture = path .. "/effects/media/sprocket2.png", colour = { 1, 1, 1, 0.6 },},
 					duration = 0.5,
 					blendColour = true,
 					mipmap = true,
@@ -59,10 +59,10 @@ Root =
 {
 	Name = "suspension",
 	Angle = 0,
-	Pivot = { 0, 0.5 },
+	Pivot = { 0, 0.4 },
 	PivotOffset = { 0, 0 },
 	Sprite = "suspension-base",
-    Scale = 2.3,
+    Scale = 1.3,
     UserData = 0,
 
 	ChildrenInFront =
