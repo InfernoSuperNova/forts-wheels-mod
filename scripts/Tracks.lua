@@ -2,7 +2,7 @@
 --- forts script API ---
 TrackOffsets = {}
 SpecialFrame = 1
-TrackLinkDistance = 30
+TrackLinkDistance = 40
 Tracks = {}
 SortedTracks = {}
 PushedTracks = {}
@@ -97,8 +97,9 @@ end
 function DrawTracks()
     --loop through list of track sets
     for base, trackSet in pairs(PushedTracks) do
-        DrawTrackSprockets(base)
+
         DrawTrackTreads(trackSet, base)
+        DrawTrackSprockets(base)
     end
 end
 
@@ -143,7 +144,12 @@ function DrawTrackTreadsRound(center, track1, track2, base)
     
     for point = 1, #arc do
 
-        SpawnEffectEx(path .. "/effects/track_link.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
+        SpawnEffectEx(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
+        if arc[point + 1] then
+            local newPos = AverageCoordinates({arc[point], arc[point + 1]})
+            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center))
+        end
+        
     end
 end
 
@@ -155,7 +161,12 @@ function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
         -TrackOffsets[correspondingDevice].x % TrackLinkDistance)
     --loop through points on the track
     for point = 1, #points do
-        SpawnEffectEx(path .. "/effects/track_link.lua", points[point], angle)
+        SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
+
+        if points[point + 1] then
+            local newPos = AverageCoordinates({points[point], points[point + 1]})
+            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, angle)
+        end
         --SpawnCircle(point, 5, { r = 255, g = 255, b = 255, a = 255 }, 0.05)
     end
 end
