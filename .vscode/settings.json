@@ -41,6 +41,10 @@
         "GetRandomInteger"
     ],
     "Lua.diagnostics.disable": [
-        "deprecated"
+        "deprecated",
+        "param-type-mismatch"
+    ],
+    "Lua.workspace.library": [
+        "c:\\Users\\SamsterBirdies\\.vscode-oss\\extensions\\tretinv3.forts-api-extention-0.3.0\\fortsAPI"
     ]
 }
