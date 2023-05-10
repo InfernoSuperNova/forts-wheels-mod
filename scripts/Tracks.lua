@@ -218,8 +218,7 @@ function JarvisWrapping(points)
             --BetterLog("Error: " .. rgbaToHex(255, 255, 255, 255, false) .. "Gift wrapping algorithm catastrophic meltdown, aborting!")
             --BetterLog(rgbaToHex(255, 165, 61, 255, false) .. "Please navigate to [your steam library directory]/forts/users/[your steam ID]/log.txt and DM the co ordinates to " .. rgbaToHex(56, 169, 255, 255, false) .. "@Gxaps#2375 " .. rgbaToHex(255, 165, 61, 255, false) .. "on Discord, or leave a comment on the workshop item")
             
-            
-            return points
+            return hull_points
         end
         loopCount = loopCount + 1
     until current_point == leftmost_index
