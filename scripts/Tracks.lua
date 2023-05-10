@@ -57,8 +57,7 @@ function FillTracks()
 end
 
 function PlaceSuspensionPosInTable(id)
-    if GetDeviceType(id) == WheelSaveName and IsDeviceFullyBuilt(id)
-    then
+    if DeviceExists(id) and GetDeviceType(id) == WheelSaveName and IsDeviceFullyBuilt(id) then
         --get the structure that the track set belongs to
         local structureId = GetDeviceStructureId(id)
         local actualPos = WheelPos[id]
