@@ -1,4 +1,6 @@
 .sfx/.cache/
 .sfx/.user/
 .sfx/Build/
-.sfx/Plugins
+.sfx/Plugins/
+.sfx/.unsaved/
+.vscode/settings.json
