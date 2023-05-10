@@ -10,8 +10,13 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
+--engine power
 local PROPULSION_FACTOR = 5000000
+--how much of an engine one wheel can recieve, wheels can only have up to half an engine worth of power
+local MAX_POWER_INPUT_RATIO = 0.5
+--velocity per engine, in grid units per sec
 local VEL_PER_ENGINE = 2000
+
 
 EngineSaveName = "engine_wep"
 
@@ -95,8 +100,9 @@ function LoopStructures()
             wheelCount = wheelCount + 1
         end
         local motorCount = Motors[structureKey] or 0
-        local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount
-        local maxSpeed = VEL_PER_ENGINE * motorCount / wheelCount
+        --max power input per wheels is 1 motor per 2 wheels
+        local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
+        local maxSpeed = (motorCount*VEL_PER_ENGINE)^0.975/wheelCount-(wheelCount*25)-10 
         local throttle = NormalizeThrottleVal(structureKey)
 
         ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle, maxSpeed)
