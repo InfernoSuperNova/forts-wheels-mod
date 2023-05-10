@@ -49,7 +49,7 @@ function EngineSoundUpdate()
                     SetAudioParameter(effect, "rpm", rpm)
                     needEngine = false
                 else
-                    SetAudioParameter(effect, "rpm", 0)
+                    SetAudioParameter(effect, "rpm", -100)
                 end
                 SetEffectPosition(effect, GetDevicePosition(tonumber(engine)))
             end
