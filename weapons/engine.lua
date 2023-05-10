@@ -23,7 +23,7 @@ DeviceSplashDamageMaxRadius = 50
 DeviceSplashDamageDelay = 0.2
 IgnitePlatformOnDestruct = true
 IncendiaryRadius = 100
-IncendiaryRadiusHeated = 120
+IncendiaryRadiusHeated = 1207
 StructureSplashDamage = 50
 StructureSplashDamageMaxRadius = 100
 
@@ -103,10 +103,13 @@ Root =
 {
 	Name = "engine",
 	Angle = 0,
-	Pivot = { 0, -1.1 },
+	Pivot = { 0, -0.55 },
 	PivotOffset = { 0, 0 },
 	Sprite = "engine-base",
-    Scale = 2,
+    Scale = 1,
     UserData = 0,
 
+	ChildrenInFront =
+	{
+	},
 }

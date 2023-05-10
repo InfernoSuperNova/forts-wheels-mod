@@ -33,7 +33,7 @@ Sprites =
 		Name = "engine-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/engine/engine.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/engine/engine2.png" }, mipmap = true, }, },
 		},
 	},
     
@@ -43,10 +43,10 @@ Root =
 {
 	Name = "engine",
 	Angle = 0,
-	Pivot = { 0, -1.1 },
+	Pivot = { 0, -0.55 },
 	PivotOffset = { 0, 0 },
 	Sprite = "engine-base",
-    Scale = 2,
+    Scale = 1,
     UserData = 0,
 
 	ChildrenInFront =
