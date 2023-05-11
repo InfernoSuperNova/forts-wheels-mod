@@ -51,7 +51,7 @@ function Load(GameStart)
 end
 
 function Update(frame)
-
+    LocalScreen = GetCamera()
     if frame == 125 then
         Notice(RGBAtoHex(82, 139, 255, 255, false) .. "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
         Notice(RGBAtoHex(82, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
