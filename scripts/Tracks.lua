@@ -106,7 +106,7 @@ function DrawTrackSprockets(base)
     for device, pos in pairs(Tracks[base]) do
         local angle = (TrackOffsets[base].x % TrackLinkDistance) % 360 - 180
         local vecAngle = AngleToVector(angle)
-        local effect = SpawnEffectEx(path .. "/effects/track_sprocket.lua", pos, vecAngle)
+        local effect = CreateEffectSprite(path .. "/effects/track_sprocket.lua", pos, vecAngle, device)
         table.insert(LocalEffects, effect)
     end
 end
@@ -123,12 +123,12 @@ function DrawTrackTreads(trackSet, base)
         local index = (wheel / 2 - 1) % #SortedTracks[base] + 1
         local center = SortedTracks[base][index]
         if #trackSet > 2 then
-            DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
+            DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base, wheel)
         end
     end
 end
 
-function DrawTrackTreadsRound(center, track1, track2, base)
+function DrawTrackTreadsRound(center, track1, track2, base, wheel)
 
 
     
@@ -142,11 +142,14 @@ function DrawTrackTreadsRound(center, track1, track2, base)
 
     
     for point = 1, #arc do
-
-        SpawnEffectEx(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
+        --uid = point id, center.x
+        --it doesn't matter what the uid is, the point is it just has to be unique and recreatable by that one device
+        local uid = point .. "_" .. wheel .. "_" .. base
+        CreateEffectSprite(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center), uid)
         if arc[point + 1] then
+            local uid = "1_" .. point .. "_" .. wheel .. "_" .. base
             local newPos = AverageCoordinates({arc[point], arc[point + 1]})
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center))
+            CreateEffectSprite(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center), uid)
         end
         
     end
@@ -160,11 +163,13 @@ function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
         -TrackOffsets[correspondingDevice].x % TrackLinkDistance)
     --loop through points on the track
     for point = 1, #points do
-        SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
+        local uid = point .. "_" .. correspondingDevice .. "_" .. wheel
+        CreateEffectSprite(path .. "/effects/track.lua", points[point], angle, uid)
 
         if points[point + 1] then
+            local uid = "1_" .. point .. "_" .. correspondingDevice .. "_" .. wheel
             local newPos = AverageCoordinates({points[point], points[point + 1]})
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, angle)
+            CreateEffectSprite(path .. "/effects/track_link.lua", newPos, angle, uid)
         end
         --SpawnCircle(point, 5, { r = 255, g = 255, b = 255, a = 255 }, 0.05)
     end

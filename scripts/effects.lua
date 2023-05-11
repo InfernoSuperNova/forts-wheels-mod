@@ -1,4 +1,7 @@
 VelocityToSpawnSmoke = 200
+function PreUpdateEffects()
+    StoreUnusedEffects()
+end
 function UpdateEffects(frame)
 
     WheelSmoke(frame)
@@ -85,4 +88,92 @@ function EngineSoundOnJoin()
             end
         end
     end
+end
+
+MasterEffects = {}
+
+--[[
+key is the effect ID
+EG:
+
+MasterEffects = {
+    501 = {
+        path = "data/mods/fortswheelmod/effects/track.lua"
+        assigned = true
+}
+
+
+}
+]]
+--perhaps better would be:
+
+--[[
+
+MasterEffects = {
+    data/mods/fortswheelmod/effects/track.lua = {
+        1 = {
+            uid = 55
+            effectId = 99
+
+        }
+    }
+}
+]]
+
+function StoreUnusedEffects()
+    for _, effectTypes in pairs(MasterEffects) do
+        for _, effect in pairs(effectTypes) do
+            if effect.assigned == true then
+                effect.assigned = false
+                continue
+            else
+                effect.uid = nil
+                SetEffectPosition(effect.effectId, {x = -36000, y = -1000})
+            end
+        end
+    end
+end
+--everything generates a UID
+--Everything loops through and updates the effect with that UID
+--a loop goes through and sets assigned to false, and if it remains false after the next loop, it's UID is removed which tells new effects that they can have it
+function CreateEffectSprite(effectPath, pos, angle, uid)
+    Effect = nil
+    AssignedEffect = false
+    if not MasterEffects[effectPath] then MasterEffects[effectPath] = {} end
+    for k, v in pairs(MasterEffects[effectPath]) do
+        if v.uid == uid then
+            AssignedEffect = true
+            Effect = v.effectId
+            v.assigned = true
+            break
+        end
+    end
+    if AssignedEffect == true then
+        SetEffectPosition(Effect, pos)
+        SetEffectDirection(Effect, angle)
+        return
+    end
+    --if no assigned effect found, find one that's unassigned
+    for k, v in pairs(MasterEffects[effectPath]) do
+        if v.uid == nil then
+            AssignedEffect = true
+            v.uid = uid
+            Effect = v.effectId
+            v.assigned = true
+        end
+    end
+    if AssignedEffect == true then
+        SetEffectPosition(Effect, pos)
+        SetEffectDirection(Effect, angle)
+        return
+    end
+    --if no unassigned effects could be found, then create a new one at the end of the list
+
+    local newEffect = {
+        uid = uid,
+        effectId = SpawnEffectEx(effectPath, pos, angle),
+        assigned = true,
+    }
+    table.insert(MasterEffects[effectPath], newEffect)
+
 end

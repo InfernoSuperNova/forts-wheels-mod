@@ -1,5 +1,5 @@
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 0.05
+LifeSpan = 999999
 
 Sprites =
 {
@@ -15,7 +15,7 @@ Sprites =
 					{ texture = path .. "/effects/media/sprocket2.png" },
 					
 
-					duration = 0.04,
+					duration = 999999,
 					blendColour = false,
 					blendCoordinates = false,
 				},
@@ -38,7 +38,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "track_sprocket",
 		Additive = false,
-		TimeToLive = 0.05,
+		TimeToLive = 999999,
 		Angle = 0,
 		InitialSize = 1.3,
 		ExpansionRate = 0,
