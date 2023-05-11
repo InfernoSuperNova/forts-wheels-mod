@@ -129,25 +129,20 @@ function DrawTrackTreads(trackSet, base)
 end
 
 function DrawTrackTreadsRound(center, track1, track2, base, wheel)
-
-
-    
+ 
     --HighlightPolygon({center, track1, track2})
     local offset = TrackOffsets[base].x % TrackLinkDistance
     local offset_length = offset / WheelRadius * 1.2
 
     local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
 
-
-
-    
     for point = 1, #arc do
         --uid = point id, center.x
         --it doesn't matter what the uid is, the point is it just has to be unique and recreatable by that one device
-        local uid = point .. "_" .. wheel .. "_" .. base
+        local uid = "round_" .. point .. "_" .. wheel .. "_" .. base
         CreateEffectSprite(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center), uid)
         if arc[point + 1] then
-            local uid = "1_" .. point .. "_" .. wheel .. "_" .. base
+            local uid = "1_round_" .. point .. "_" .. wheel .. "_" .. base
             local newPos = AverageCoordinates({arc[point], arc[point + 1]})
             CreateEffectSprite(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center), uid)
         end

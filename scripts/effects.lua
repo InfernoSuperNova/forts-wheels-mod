@@ -92,20 +92,6 @@ end
 
 MasterEffects = {}
 
---[[
-key is the effect ID
-EG:
-
-MasterEffects = {
-    501 = {
-        path = "data/mods/fortswheelmod/effects/track.lua"
-        assigned = true
-}
-
-
-}
-]]
---perhaps better would be:
 
 --[[
 
