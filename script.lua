@@ -33,7 +33,7 @@ JustJoined = true --to run something once upon joining through Update. (used for
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
-   
+   Notice("Feel free to join the official Wheel Mod discord! https://discord.gg/q676KyczFt")
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
     end
