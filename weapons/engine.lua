@@ -23,7 +23,7 @@ DeviceSplashDamageMaxRadius = 50
 DeviceSplashDamageDelay = 0.2
 IgnitePlatformOnDestruct = true
 IncendiaryRadius = 100
-IncendiaryRadiusHeated = 1207
+IncendiaryRadiusHeated = 120
 StructureSplashDamage = 50
 StructureSplashDamageMaxRadius = 100
 
