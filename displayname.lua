@@ -1,1 +1,1 @@
-DisplayName = L"Tracked Wheels Prototype"
+DisplayName = L"Tank Tracks"
