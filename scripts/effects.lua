@@ -20,7 +20,13 @@ function WheelSmoke(frame)
             local nodeB = GetDevicePlatformB(deviceId)
             local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
             local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), 75)
-            local finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
+            local finalOffset
+
+            if GetDeviceType(deviceId) == WheelSaveName[1] then
+                finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
+            else
+                finalOffset = {x = pos.x + -offset.x, y = pos.y + -offset.y}
+            end
             if wheelIsTouchingGround then
                 local velocityMag = VecMagnitude(velocity)
                 if velocityMag and velocityMag > VelocityToSpawnSmoke and frame % 5 == 0 then
