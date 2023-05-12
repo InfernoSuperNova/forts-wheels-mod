@@ -23,8 +23,7 @@ FinalAddedForces = {}
 WheelRadius = 75
 WheelSuspensionHeight = 150
 
-WheelSaveName = "suspension"
-
+WheelSaveName = {"suspension", "suspensionInverted"}
 ModDebug = false
 JustJoined = true --to run something once upon joining through Update. (used for effects)
 
@@ -79,6 +78,13 @@ function Update(frame)
     
 end
 
+
+function CheckSaveNameTable(input, table)
+    for k, v in pairs(table) do
+        if input == v then return true end
+    end
+    return false
+end
 function OnRestart()
     InitializePropulsion()
 end
