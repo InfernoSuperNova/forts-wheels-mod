@@ -23,8 +23,8 @@ NoReclaim = false
 TeamOwned = true
 BlockPenetration = true
 
---dofile("effects/device_smoke.lua")
---SmokeEmitter = StandardDeviceSmokeEmitter
+dofile("effects/device_smoke.lua")
+SmokeEmitter = StandardDeviceSmokeEmitter
 
 
 
