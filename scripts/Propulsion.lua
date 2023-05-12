@@ -102,7 +102,7 @@ function LoopStructures()
         local motorCount = Motors[structureKey] or 0
         --max power input per wheels is 1 motor per 2 wheels
         local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
-        local maxSpeed = (motorCount*VEL_PER_ENGINE)^0.975/wheelCount-(wheelCount*25)-10 
+        local maxSpeed = (motorCount*VEL_PER_ENGINE)^0.975/wheelCount/wheelCount^0.01
         local throttle = NormalizeThrottleVal(structureKey)
 
         ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle, maxSpeed)
