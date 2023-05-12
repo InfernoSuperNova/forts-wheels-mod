@@ -1,13 +1,13 @@
 -- fort wars device file
 
-ConstructEffect = nil
+ConstructEffect = "effects/device_construct.lua"
 CompleteEffect = "effects/device_complete.lua"
-DestroyEffect = ""
+DestroyEffect = "effects/device_explode.lua"
 Scale = 1
-SelectionWidth = 80
-SelectionHeight = 40
-SelectionOffset = { 0.0, -40.5 }
-Mass = 500.0
+SelectionWidth = 25
+SelectionHeight = 25
+SelectionOffset = { 0.0, 0.5 }
+Mass = 375.0
 HitPoints = 350.0
 DestroyProjectile = nil
 EnergyProductionRate = 0.0
@@ -22,34 +22,30 @@ DrawBehindTerrain = true
 NoReclaim = false
 TeamOwned = true
 BlockPenetration = true
-ClaimsStructure = true
 
 --dofile("effects/device_smoke.lua")
 --SmokeEmitter = StandardDeviceSmokeEmitter
 
-Sprites =
-{
-	{
-		Name = "engine-base",
-		States =
-		{
-			Normal = { Frames = { { texture = path .. "/devices/engine/engine2.png" }, mipmap = true, }, },
-		},
-	},
-    
-}
+
 
 Root =
 {
-	Name = "engine",
-	Angle = 0,
-	Pivot = { 0, -0.55 },
+	Name = "suspension",
+	Angle = 180,
+	Pivot = { 0, -0.4 },
 	PivotOffset = { 0, 0 },
-	Sprite = "engine-base",
-    Scale = 1,
+	Sprite = "suspension-base",
+    Scale = 1.3,
     UserData = 0,
 
 	ChildrenInFront =
 	{
+        -- {
+		-- 	Name = "Wheel",
+		-- 	Pivot = { 0.0, 0.5 },
+		-- 	Sprite = "wheel",
+		-- 	UserData = 100,
+		-- 	Visible = false,
+		-- },
 	},
 }
