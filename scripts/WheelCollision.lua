@@ -45,7 +45,7 @@ function GetDeviceStructureGroups()
 
         for index = 0, deviceCount do
             local device = GetDeviceIdSide(side, index)
-            if GetDeviceType(device) == WheelSaveName and IsDeviceFullyBuilt(device) then
+            if CheckSaveNameTable(GetDeviceType(device), WheelSaveName) and IsDeviceFullyBuilt(device) then
                 local structureId = GetDeviceStructureId(device)
                 if not structures[structureId] then structures[structureId] = {} end
                 table.insert(structures[structureId], device)
@@ -59,8 +59,14 @@ function CheckBoundingBoxCollisions(devices)
 
     local positions = {}
 
-    for k, v in pairs(devices) do
-        positions[k] = GetOffsetDevicePos(v, WheelSuspensionHeight)
+    for k, deviceKey in pairs(devices) do
+        if deviceKey == WheelSaveName[1] then
+            positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
+
+        else
+            positions[k] = GetOffsetDevicePos(deviceKey, -WheelSuspensionHeight)
+        end
+        
     end
 
     local collidingBlocks = {}
@@ -81,7 +87,13 @@ end
 function CheckAndCounteractCollisions(device, collidingBlocks)
     local returnVal = {x = 0, y = 0}
     local displacement
-    local pos = GetOffsetDevicePos(device, WheelSuspensionHeight)
+    local pos
+    if GetDeviceType(device) == WheelSaveName[1] then
+        pos = GetOffsetDevicePos(device, WheelSuspensionHeight)
+    else
+        pos = GetOffsetDevicePos(device, -WheelSuspensionHeight)
+    end
+    
     WheelPos[device] = pos
     --looping through blocks
     for blockIndex, Nodes in pairs(collidingBlocks) do

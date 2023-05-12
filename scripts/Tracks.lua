@@ -57,13 +57,12 @@ function FillTracks()
 end
 
 function PlaceSuspensionPosInTable(id)
-    if DeviceExists(id) and GetDeviceType(id) == WheelSaveName and IsDeviceFullyBuilt(id) then
+    if DeviceExists(id) and CheckSaveNameTable(GetDeviceType(id), WheelSaveName) and IsDeviceFullyBuilt(id) then
         --get the structure that the track set belongs to
         local structureId = GetDeviceStructureId(id)
         local actualPos = WheelPos[id]
         --put it into a table unique to that structure...
         if not Tracks[structureId] then Tracks[structureId] = {} end
-        
         local suspensionPos = {
             x = actualPos.x + Displacement[id].x,
             y = actualPos.y + Displacement[id].y,
