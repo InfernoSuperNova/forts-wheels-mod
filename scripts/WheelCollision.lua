@@ -20,8 +20,7 @@ function WheelCollisionHandler()
         local collidingBlocks = CheckBoundingBoxCollisions(devices)
 
         for deviceKey, device in pairs(devices) do
-
-             local displacement = CheckAndCounteractCollisions(device, collidingBlocks)
+            local displacement = CheckAndCounteractCollisions(device, collidingBlocks)
 
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
@@ -61,23 +60,25 @@ function CheckBoundingBoxCollisions(devices)
 
     for k, deviceKey in pairs(devices) do
         if deviceKey == WheelSaveName[1] then
-            positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
-
-        else
             positions[k] = GetOffsetDevicePos(deviceKey, -WheelSuspensionHeight)
+        else
+            positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
         end
-        
     end
-
+    HighlightCoords(positions)
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
+    SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
+        SpawnCircle(terrainCollider, terrainCollider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
 
             collidingBlocks[terrainId] = true
         end
     end
-    
+    if #collidingBlocks == 0 then
+        return {false}
+    end
     return collidingBlocks
     
 
@@ -114,7 +115,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
 
         SendDisplacementToTracks(displacement, device)
-        if displacement.y ~= 0 then
+        if displacement and displacement.y ~= 0 then
 
             
             ApplyFinalForce(device, velocity, displacement)
