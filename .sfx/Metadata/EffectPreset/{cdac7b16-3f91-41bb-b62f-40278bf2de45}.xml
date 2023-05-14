@@ -21,14 +21,8 @@
 		<property name="maximumDistance">
 			<value>10000</value>
 		</property>
-		<property name="overrideRange">
-			<value>true</value>
-		</property>
 		<property name="soundSize">
-			<value>8000</value>
-		</property>
-		<property name="minimumExtent">
-			<value>45</value>
+			<value>2000</value>
 		</property>
 	</object>
 </objects>
