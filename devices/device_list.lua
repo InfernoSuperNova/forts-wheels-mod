@@ -6,7 +6,7 @@ local suspension =
     FileName = path .. "/devices/suspension.lua",
     Icon = "hud-suspension-icon",
     Detail = "hud-detail-suspension",
-    BuildTimeComplete = 25,
+    BuildTimeComplete = 15,
     ScrapPeriod = 8,
     MetalCost = 150,
     EnergyCost = 1000,
@@ -50,10 +50,10 @@ local engine =
     FileName = path .. "/devices/engine.lua",
     Icon = "hud-engine-icon",
     Detail = "hud-detail-engine",
-    BuildTimeComplete = 25,
+    BuildTimeComplete = 15,
     ScrapPeriod = 8,
-    MetalCost = 200,
-    EnergyCost = 2000,
+    MetalCost = 500,
+    EnergyCost = 3000,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
     MetalReclaimMin = 0,
@@ -71,6 +71,32 @@ local engine =
 
 InsertDeviceBehind("sandbags", engine)
 
+local gearbox = 
+{
+    SaveName = "gearbox",
+    FileName = path .. "/devices/gearbox.lua",
+    Icon = "hud-engine-icon",
+    Detail = "hud-detail-engine",
+    BuildTimeComplete = 15,
+    ScrapPeriod = 8,
+    MetalCost = 150,
+    EnergyCost = 2000,
+    MetalRepairCost = 25,
+    EnergyRepairCost = 500,
+    MetalReclaimMin = 0,
+    MetalReclaimMax = 0,
+    EnergyReclaimMin = 0,
+    EnergyReclaimMax = 0,
+    MaxUpAngle = 45,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/devices/ui_devices",
+    HasDummy = false,
+    ClaimsStructure = true,
+}
+
+
+
+InsertDeviceBehind("engine", gearbox)
 
 
 
