@@ -83,6 +83,12 @@
 		<property name="voiceStealing">
 			<value>2</value>
 		</property>
+		<property name="minimumDistance">
+			<value>2000</value>
+		</property>
+		<property name="maximumDistance">
+			<value>10000</value>
+		</property>
 	</object>
 	<object class="MarkerTrack" id="{27d8bd06-b7b6-49f6-bb80-1b9bccae2d1e}" />
 	<object class="GroupTrack" id="{f89ce910-5506-4a52-bfb7-2741d7f4fb42}">

@@ -64,7 +64,7 @@ function PlaceSuspensionPosInTable(id)
         local structureId = GetDeviceStructureId(id)
         --local actualPos = WheelPos[id]
         --put it into a table unique to that structure...
-        BetterLog(Displacement)
+        DebugLog(Displacement)
         if not Tracks[structureId] then Tracks[structureId] = {} end
         local suspensionPos = {
             x = actualPos.x + Displacement[id].x,

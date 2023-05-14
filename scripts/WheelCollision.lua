@@ -68,9 +68,9 @@ function CheckBoundingBoxCollisions(devices)
     HighlightCoords(positions)
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
-    SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+    if ModDebug then SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04) end
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
-        SpawnCircle(terrainCollider, terrainCollider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        if ModDebug then SpawnCircle(terrainCollider, terrainCollider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04) end
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
 
             collidingBlocks[terrainId] = true
