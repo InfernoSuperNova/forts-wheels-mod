@@ -59,7 +59,7 @@ Root =
 {
 	Name = "suspension",
 	Angle = 0,
-	Pivot = { 0, 0.4 },
+	Pivot = { 0, 0.36 },
 	PivotOffset = { 0, 0 },
 	Sprite = "suspension-base",
     Scale = 1.3,
