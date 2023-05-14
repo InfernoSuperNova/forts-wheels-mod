@@ -21,7 +21,6 @@ function WheelCollisionHandler()
 
         for deviceKey, device in pairs(devices) do
             local displacement = CheckAndCounteractCollisions(device, collidingBlocks)
-
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
 
@@ -102,6 +101,9 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
         --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
         displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + TrackWidth)
+        if displacement == nil then --incase of degenerate blocks
+            displacement = Vec3(0,0)
+        end
         local nodeA = GetDevicePlatformA(device)
         local nodeB = GetDevicePlatformB(device)
         local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(GetDevicePlatformB(device))})
