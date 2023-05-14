@@ -32,7 +32,7 @@ Sprites =
 		Name = "suspension-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension2.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension.png" }, mipmap = true, }, },
 		},
 	},
     {
