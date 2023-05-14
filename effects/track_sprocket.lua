@@ -12,7 +12,7 @@ Sprites =
 			{
 				Frames =
 				{
-					{ texture = path .. "/effects/media/sprocket2.png" },
+					{ texture = path .. "/effects/media/sprocket.png" },
 					
 
 					duration = 0.04,
