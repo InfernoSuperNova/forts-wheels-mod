@@ -152,6 +152,33 @@ end
 function Dot(a, b)
     return a.x * b.x + a.y * b.y
 end
+
+function PointSideOfLine(point, lineStart, lineEnd)
+    local vec1 = {
+        x = lineEnd.x - lineStart.x,
+        y = lineEnd.y - lineStart.y
+    }
+    local vec2 = {
+        x = point.x - lineStart.x,
+        y = point.y - lineStart.y
+    }
+
+    return vec1.x * vec2.y - vec1.y * vec2.x
+end
+
+
+function VectorDirection(fromPos, toPos)
+    local vec = {
+        x = toPos.x - fromPos.x,
+        y = toPos.y - fromPos.y
+    }
+    local length = math.sqrt(vec.x^2 + vec.y^2)
+    if length > 0 then
+        vec.x = vec.x / length
+        vec.y = vec.y / length
+    end
+    return vec
+end
 function CrossProduct(v1, v2)
     return v1.x * v2.y - v2.x * v1.y
 end
@@ -261,38 +288,43 @@ function MinimumCircularBoundary(points)
     return {x = centerX, y = centerY, r = maxDistance}
   end
 
-  function CircleLineSegmentCollision(circleCenter, wheelRadius, segmentStart, segmentEnd)
-    -- Calculate the vector from the segment start to the circle center
-    local segmentVector = SubtractVectors(segmentEnd, segmentStart)
-    local circleVector = SubtractVectors(circleCenter, segmentStart)
+  function CircleLineIntersection(circleCenter, circleRadius, lineStart, lineEnd)
+    local intersectionPoints = {}
 
-    -- Calculate the projection of the circle center vector onto the segment vector
-    local segmentLength = VecMagnitude(segmentVector)
-    local projectionScalar = Dot(circleVector, segmentVector) / (segmentLength * segmentLength)
+    -- Calculate the direction vector of the line
+    local lineDirection = {x = lineEnd.x - lineStart.x, y = lineEnd.y - lineStart.y}
 
-    -- Calculate the closest point on the segment to the circle center
-    local closestPoint
-    if projectionScalar < 0 then
-        closestPoint = segmentStart
-    elseif projectionScalar > 1 then
-        closestPoint = segmentEnd
-    else
-        closestPoint = AddVectors(segmentStart, ScaleVector(segmentVector, projectionScalar))
+    -- Calculate the vector from the line start to the circle center
+    local toCircleVector = {x = circleCenter.x - lineStart.x, y = circleCenter.y - lineStart.y}
+
+    -- Calculate the length of the line
+    local lineLength = math.sqrt(lineDirection.x ^ 2 + lineDirection.y ^ 2)
+
+    -- Calculate the dot product of the line direction vector and the vector to the circle
+    local dotProduct = (toCircleVector.x * lineDirection.x + toCircleVector.y * lineDirection.y) / (lineLength * lineLength)
+
+    -- Calculate the closest point on the line to the circle
+    local closestPoint = {x = lineStart.x + dotProduct * lineDirection.x, y = lineStart.y + dotProduct * lineDirection.y}
+
+    -- Calculate the distance from the closest point to the circle center
+    local distanceToClosestPoint = math.sqrt((circleCenter.x - closestPoint.x) ^ 2 + (circleCenter.y - closestPoint.y) ^ 2)
+
+    -- If the distance to the closest point is less than the radius of the circle, there is an intersection
+    if distanceToClosestPoint <= circleRadius then
+        -- Calculate the distance from the closest point to the two intersection points
+        local d = math.sqrt(circleRadius ^ 2 - distanceToClosestPoint ^ 2)
+
+        -- Calculate the two intersection points
+        local intersectionPoint1 = {x = closestPoint.x - d * lineDirection.y / lineLength, y = closestPoint.y + d * lineDirection.x / lineLength}
+        local intersectionPoint2 = {x = closestPoint.x + d * lineDirection.y / lineLength, y = closestPoint.y - d * lineDirection.x / lineLength}
+
+        -- Add the intersection points to the table
+        table.insert(intersectionPoints, intersectionPoint1)
+        table.insert(intersectionPoints, intersectionPoint2)
     end
 
-    -- Calculate the distance between the closest point and the circle center
-    local distance = Distance(closestPoint, circleCenter)
-
-    -- Check if the distance is less than or equal to the circle radius
-    if distance <= wheelRadius then
-        -- Calculate the collision response vector
-        local collisionResponse = ScaleVector(NormalizeVector(SubtractVectors(circleCenter, closestPoint)), wheelRadius - distance)
-        return collisionResponse
-    else
-        return nil
-    end
+    return intersectionPoints
 end
-
 
 function MinBoundingCircle(points)
     local n = #points

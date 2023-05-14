@@ -65,27 +65,53 @@ function CheckBoundingBoxCollisions(devices)
             positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
         end
     end
-    HighlightCoords(positions)
+    
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
-    SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+    
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
-        SpawnCircle(terrainCollider, terrainCollider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        SpawnCircle(collider, collider.r + 50, {r = 255, g = 255, b = 255, a = 255}, 0.04)
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
-
-            collidingBlocks[terrainId] = true
+            local newCollider = {x = collider.x, y = collider.y, r = collider.r + 50}
+            collidingBlocks[terrainId] = CirclePolygonColliderCollision(newCollider, Terrain[terrainId])
         end
     end
-    if #collidingBlocks == 0 then
+
+    for k, v in pairs(collidingBlocks) do
+        --in list of blocks collided with?
+        for i, j in pairs(v) do
+            --in lst of co ords making up block colliding with?
+            HighlightPolygon({j[1], j[2]})
+        end
+        
+    end
+
+    if collidingBlocks == nil then
         return {false}
     end
+    
     return collidingBlocks
     
 
 end
 
 
+
 function CheckAndCounteractCollisions(device, collidingBlocks)
+
+    --so, we have our blocks defined as:
+    --[[
+
+
+    collidingBlocks = {
+        blockId = {
+            {
+                1 = {x, y}
+                2 = {x, y}
+            }
+        }
+    }
+    ]]
     local returnVal = {x = 0, y = 0}
     local displacement
     local pos
@@ -96,36 +122,31 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
     end
     
     WheelPos[device] = pos
-    --looping through blocks
-    for blockIndex, Nodes in pairs(collidingBlocks) do
-        --looping through nodes in block
-        -- for nodeIndex = 1, #Nodes do
-        --     local node1 = Terrain[blockIndex]
-        --     local node2 = Terrain[blockIndex % #Nodes + 1]
-        --     BetterLog(CircleLineSegmentCollision(pos, WheelRadius, node1, node2))
-        -- end
-
-        --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + 20)
-
-        local nodeA = GetDevicePlatformA(device)
-        local nodeB = GetDevicePlatformB(device)
-        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(GetDevicePlatformB(device))})
-
-
-
-        SendDisplacementToTracks(displacement, device)
-        if displacement and displacement.y ~= 0 then
-
-            
-            ApplyFinalForce(device, velocity, displacement)
-            
-            if math.abs(returnVal.y) < math.abs(displacement.y) then 
-
-                returnVal = {x = displacement.x, y = displacement.y} 
-            end
-
+    displacement = {x = 0, y = 0}
+    --looping through the block nodes that collision checks should be run with
+    for blockIndex, blockPairs in pairs(collidingBlocks) do
+        for _, segment in pairs(blockPairs) do
+            local localDisplacement = CheckCollisionsOnBlock(segment, pos, WheelRadius + 20)
+            if math.abs(VecMagnitude(localDisplacement)) > math.abs(VecMagnitude(displacement)) then displacement = localDisplacement end
         end
+
+    end
+        
+
+    local nodeA = GetDevicePlatformA(device)
+    local nodeB = GetDevicePlatformB(device)
+    local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(GetDevicePlatformB(device))})
+
+
+
+    SendDisplacementToTracks(displacement, device)
+    if displacement and displacement.y ~= 0 then
+
+        
+        ApplyFinalForce(device, velocity, displacement)
+        
+
+        returnVal = displacement
     end
     if returnVal.y ~= 0 then 
         return returnVal 
@@ -198,10 +219,11 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
     if #terrain < 2 then
         return nil
     end
-
     local newPos = pos
-    if PointInsidePolygon(pos, terrain) then
-        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
+    local cross = PointSideOfLine(pos, terrain[1], terrain[2])
+    BetterLog(cross)
+    if cross > 0 then
+        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain, cross)
         if perpendicularVector then
             newPos = {
                 x = pos.x + perpendicularVector.x * radius,
@@ -210,7 +232,7 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
         end
         return { x = pos.x - newPos.x, y = pos.y - newPos.y }
     else
-        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
+        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain, cross)
         if perpendicularVector then
             newPos = {
                 x = pos.x + perpendicularVector.x * -radius,
@@ -221,10 +243,48 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
     end
 end
 
+
+
+function CirclePolygonColliderCollision(circle, polygon)
+    local collidedEdges = {}
+    for i = 1, #polygon do
+        local j = (i % #polygon) + 1
+        local edge = {polygon[i], polygon[j]}
+        local edgeVector = {(edge[2].x - edge[1].x), (edge[2].y - edge[1].y)}
+
+        -- Check distance between circle center and each vertex of the edge
+        local dist1 = math.sqrt((edge[1].x - circle.x)^2 + (edge[1].y - circle.y)^2)
+        local dist2 = math.sqrt((edge[2].x - circle.x)^2 + (edge[2].y - circle.y)^2)
+
+        if dist1 <= circle.r or dist2 <= circle.r then
+            table.insert(collidedEdges, edge)
+        else
+            local projection = {(circle.x - edge[1].x), (circle.y - edge[1].y)}
+            local dotProduct = projection[1] * edgeVector[1] + projection[2] * edgeVector[2]
+            local edgeLengthSquared = edgeVector[1] * edgeVector[1] + edgeVector[2] * edgeVector[2]
+            local distanceSquared = projection[1] * projection[1] + projection[2] * projection[2]
+            local radiusSquared = circle.r * circle.r
+
+            if dotProduct >= 0 and dotProduct <= edgeLengthSquared then
+                local perpendicularVector = {
+                    -(edgeVector[2]),
+                    edgeVector[1]
+                }
+                local distanceToPerpendicularSquared = (projection[1] * perpendicularVector[1] + projection[2] * perpendicularVector[2]) ^ 2 / (edgeVector[1] ^ 2 + edgeVector[2] ^ 2)
+                if distanceToPerpendicularSquared <= radiusSquared then
+                    table.insert(collidedEdges, edge)
+                end
+            elseif distanceSquared <= radiusSquared then
+                table.insert(collidedEdges, edge)
+            end
+        end
+    end
+    return collidedEdges
+end
 -- Check if a circle is colliding with a polygon.
-function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
+function CirclePolygonCollision(circleCenter, wheelRadius, polygon, cross)
     --Centerpoint in polygon
-    if PointInsidePolygon(circleCenter, polygon) then
+    if cross > 0 then
         local obj = FindClosestEdge(circleCenter, polygon)
         local final = CalculateCollisionResponseVector(-obj.closestDistance, obj.closestEdge.edgeStart, obj.closestEdge.edgeEnd,
         wheelRadius)
