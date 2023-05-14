@@ -21,6 +21,7 @@ FinalSuspensionForces = {}
 FinalPropulsionForces = {}
 FinalAddedForces = {}
 WheelRadius = 75
+TrackWidth = 20
 WheelSuspensionHeight = 150
 
 WheelSaveName = {"suspension", "suspensionInverted"}
