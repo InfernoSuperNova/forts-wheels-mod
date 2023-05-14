@@ -4,7 +4,7 @@ ConstructEffect = nil
 CompleteEffect = "effects/device_complete.lua"
 DestroyEffect = ""
 Scale = 1
-SelectionWidth = 65
+SelectionWidth = 40
 SelectionHeight = 40
 SelectionOffset = { 0.0, -40.5 }
 Mass = 500.0
@@ -30,10 +30,10 @@ ClaimsStructure = true
 Sprites =
 {
 	{
-		Name = "engine-base",
+		Name = "gearbox-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/engine/engine2.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/gearbox/gearbox.png" }, mipmap = true, }, },
 		},
 	},
     
@@ -41,11 +41,11 @@ Sprites =
 
 Root =
 {
-	Name = "engine",
+	Name = "gearbox",
 	Angle = 0,
 	Pivot = { 0, -0.60 },
 	PivotOffset = { 0, 0 },
-	Sprite = "engine-base",
+	Sprite = "gearbox-base",
     Scale = 1,
     UserData = 0,
 

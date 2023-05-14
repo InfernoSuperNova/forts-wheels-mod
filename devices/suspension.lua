@@ -32,7 +32,7 @@ Sprites =
 		Name = "suspension-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension2.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension.png" }, mipmap = true, }, },
 		},
 	},
     {
@@ -59,7 +59,7 @@ Root =
 {
 	Name = "suspension",
 	Angle = 0,
-	Pivot = { 0, 0.4 },
+	Pivot = { 0, 0.36 },
 	PivotOffset = { 0, 0 },
 	Sprite = "suspension-base",
     Scale = 1.3,
