@@ -3,8 +3,8 @@ Merge(Device,
     suspension = L"Wheel Suspension",
     suspensionTip2 = L"Creates a wheel with a 75cm radius, 150cm below the platform.",
 
-    suspensionInverted = L"Wheel Suspension",
-    suspensionInvertedTip2 = L"Creates a wheel with a 75cm radius, 150cm below the platform.",
+    suspensionInverted = L"Wheel Suspension (inverted)",
+    suspensionInvertedTip2 = L"Creates a wheel with a 75cm radius, 150cm above the platform.",
 
     engine = L"Engine",
     engineTip2 = L"Powers the wheels. Can place multiple engines for more torque.",
