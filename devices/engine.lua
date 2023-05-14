@@ -4,7 +4,7 @@ ConstructEffect = nil
 CompleteEffect = "effects/device_complete.lua"
 DestroyEffect = ""
 Scale = 1
-SelectionWidth = 60
+SelectionWidth = 65
 SelectionHeight = 40
 SelectionOffset = { 0.0, -40.5 }
 Mass = 500.0
@@ -43,7 +43,7 @@ Root =
 {
 	Name = "engine",
 	Angle = 0,
-	Pivot = { 0, -0.55 },
+	Pivot = { 0, -0.60 },
 	PivotOffset = { 0, 0 },
 	Sprite = "engine-base",
     Scale = 1,
