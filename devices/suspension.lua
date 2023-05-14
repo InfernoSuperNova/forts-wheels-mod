@@ -35,7 +35,7 @@ Sprites =
 			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension.png" }, mipmap = true, }, },
 		},
 	},
-    {
+    --[[{
 		Name = "wheel",
 		States =
 		{
@@ -52,7 +52,7 @@ Sprites =
             },
             Idle = Normal,
 		},
-	},
+	},]]
 }
 
 Root =
