@@ -12,18 +12,19 @@
 
 --engine power
 local PROPULSION_FACTOR = 5000000
---how much of an engine one wheel can recieve, wheels can only have up to half an engine worth of power
-local MAX_POWER_INPUT_RATIO = 0.5
+--how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
+local MAX_POWER_INPUT_RATIO = 2
 --velocity per engine, in grid units per sec
-local VEL_PER_ENGINE = 2000
+local VEL_PER_GEARBOX = 4000
 
 
 EngineSaveName = "engine_wep"
 
 ControllerSaveName = "engine_wep"
 
-
+GearboxSaveName = "store"
 Motors = {}
+Gearboxes = {}
 
 function InitializePropulsion()
     data.throttles = {}
@@ -32,7 +33,9 @@ function InitializePropulsion()
 end
 function UpdatePropulsion()
     Motors = {}
+    Gearboxes ={}
     IndexMotors()
+    IndexGearboxes()
     LoopStructures()
     ThrottleControl()
     ClearOldStructures()
@@ -100,9 +103,15 @@ function LoopStructures()
             wheelCount = wheelCount + 1
         end
         local motorCount = Motors[structureKey] or 0
+        local gearboxCount = Gearboxes[structureKey] or 0
+        BetterLog(gearboxCount)
         --max power input per wheels is 1 motor per 2 wheels
         local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
-        local maxSpeed = (motorCount*VEL_PER_ENGINE)^0.975/wheelCount/wheelCount^0.01
+        if gearboxCount ~= 0 then
+            propulsionFactor = propulsionFactor / gearboxCount
+        end
+        
+        local maxSpeed = (gearboxCount*VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01
         local throttle = NormalizeThrottleVal(structureKey)
 
         ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle, maxSpeed)
@@ -143,6 +152,22 @@ function IndexMotors()
         end
     end
 end
+function IndexGearboxes()
+    for side = 1, 2 do
+        local count = GetDeviceCountSide(side)
+        for index = 0, count do
+            local id = GetDeviceIdSide(side, index)
+            local structureId = GetDeviceStructureId(id)
+            if  GetDeviceType(id) == GearboxSaveName and IsDeviceFullyBuilt(id) then
+                if not Gearboxes[structureId] then 
+                    Gearboxes[structureId] = 1 
+                else
+                    Gearboxes[structureId] = Gearboxes[structureId] + 1
+                end
+            end
+        end
+    end
+end
 
 
 
@@ -158,7 +183,7 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle, max
             local velocityMag = VecMagnitudeDir(velocity)
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
-            local desiredVel = maxSpeed * throttle
+            local desiredVel = maxSpeed * math.sign(throttle)
             enginePower = enginePower * math.abs(throttle)
 
             local deltaVel = desiredVel - velocityMag
