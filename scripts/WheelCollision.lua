@@ -65,18 +65,16 @@ function CheckBoundingBoxCollisions(devices)
             positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
         end
     end
-    HighlightCoords(positions)
+    
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
-    if ModDebug then SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04) end
+    
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
-        if ModDebug then SpawnCircle(terrainCollider, terrainCollider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04) end
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
-
             collidingBlocks[terrainId] = true
         end
     end
-    if #collidingBlocks == 0 then
+    if collidingBlocks == nil then
         return {false}
     end
     return collidingBlocks

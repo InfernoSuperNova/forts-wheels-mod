@@ -102,13 +102,13 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 	end
 end
 function OnDeviceCompleted(teamId, deviceId, saveName)
-    SoundAdd(saveName, deviceId)
+    EngineSoundAdd(saveName, deviceId)
 end
 function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
-    SoundRemove(saveName, deviceId)
+    EngineSoundRemove(saveName, deviceId)
 end
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
-    SoundRemove(saveName, deviceId)
+    EngineSoundRemove(saveName, deviceId)
 end
 
 function ApplyForces()
