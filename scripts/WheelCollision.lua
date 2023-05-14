@@ -65,7 +65,6 @@ function CheckBoundingBoxCollisions(devices)
             positions[k] = GetOffsetDevicePos(deviceKey, WheelSuspensionHeight)
         end
     end
-    HighlightCoords(positions)
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
     if ModDebug then SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04) end
@@ -76,7 +75,7 @@ function CheckBoundingBoxCollisions(devices)
             collidingBlocks[terrainId] = true
         end
     end
-    if #collidingBlocks == 0 then
+    if collidingBlocks == nil then
         return {false}
     end
     return collidingBlocks
@@ -106,8 +105,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
         -- end
 
         --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + 20)
-
+        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + TrackWidth)
         local nodeA = GetDevicePlatformA(device)
         local nodeB = GetDevicePlatformB(device)
         local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(GetDevicePlatformB(device))})
