@@ -63,7 +63,10 @@ function CheckBoundingBoxCollisions(devices)
     end
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
-
+    if ModDebug == true then
+        SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+    end
+   
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
             collidingBlocks[terrainId] = true
@@ -179,6 +182,10 @@ function IndexTerrainBlocks()
             Terrain[currentBlock + 1][currentVertex + 1] = GetBlockVertexPos(currentBlock, currentVertex)
         end
         data.terrainCollisionBoxes[currentBlock + 1] = MinimumCircularBoundary(Terrain[currentBlock + 1])
+        if ModDebug == true then
+            SpawnCircle(data.terrainCollisionBoxes[currentBlock + 1], data.terrainCollisionBoxes[currentBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        end
+        
     end
 end
 
