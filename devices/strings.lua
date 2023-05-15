@@ -11,6 +11,6 @@ Merge(Device,
     engineTip3 = L"Throttle can be adjusted when selected. Can be control grouped.",
 
     gearbox = L"Transmission",
-    gearboxTip2 = L"Gears for the wheels. Place more to increase speed at the cost of torque.",
-    gearboxTip3 = L"If you're struggling up hills, delete them.",
+    gearboxTip2 = L"Gears for wheels. Place more to add more gears (go faster).",
+    gearboxTip3 = L"Transmission is automatic.",
 })

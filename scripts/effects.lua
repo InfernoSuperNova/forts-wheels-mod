@@ -46,8 +46,10 @@ function SoundUpdate()
     end
     --BetterLog(EffectsList)
     --engines
-    for structureIndex, engine in pairs(data.throttles) do
-        local rpm = math.abs((engine.x - 274) * 19)
+    for structureIndex, engine in pairs(data.currentRevs) do
+        --pow engine 2 for better revs
+        local rpm = math.max(engine * 10000, 172)
+        local throttle = math.abs(NormalizeThrottleVal(structureIndex))
         local needEngine = true
         for engine, effect in pairs(EffectsList.engine) do
             --BetterLog(GetDeviceStructureId(tonumber(engine)))
@@ -55,6 +57,7 @@ function SoundUpdate()
             if GetDeviceStructureId(tonumber(engine)) == structureIndex then
                 if needEngine then
                     SetAudioParameter(effect, "rpm", rpm)
+                    SetAudioParameter(effect, "Throttle", throttle)
                     needEngine = false
                 else
                     SetAudioParameter(effect, "rpm", -100)
