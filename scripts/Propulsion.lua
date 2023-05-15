@@ -174,7 +174,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     --sets up applicable gears for the structure
     for gear = 1, gearCount do
         applicableGears[gear] = {
-            propulsionFactor = propulsionFactor / gear * gear,
+            propulsionFactor = propulsionFactor / (gear * gear),
             maxSpeed = (gear * gear * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
         }
     end
