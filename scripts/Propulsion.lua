@@ -17,7 +17,7 @@ local MAX_POWER_INPUT_RATIO = 1
 --velocity per engine, in grid units per sec
 local VEL_PER_GEARBOX = 2000
 
-
+local GEAR_CHANGE_RATIO = 0.9
 EngineSaveName = "engine_wep"
 
 ControllerSaveName = "engine_wep"
@@ -107,15 +107,13 @@ function LoopStructures()
         local gearboxCount = Gearboxes[structureKey] or 0
         gearboxCount = gearboxCount + 1
         --max power input per wheels is 1 motor per 2 wheels
-        local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelTouchingGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
-
-        propulsionFactor = propulsionFactor / gearboxCount
+        
 
         
-        local maxSpeed = (gearboxCount*VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01
+        
         local throttle = NormalizeThrottleVal(structureKey)
 
-        ApplyPropulsionForces(devices, structureKey, propulsionFactor, throttle, maxSpeed)
+        ApplyPropulsionForces(devices, structureKey, throttle, gearboxCount, wheelCount, wheelTouchingGroundCount, motorCount)
     end
 end
 
@@ -168,18 +166,55 @@ end
 
 
 
-function ApplyPropulsionForces(devices, structureKey, enginePower, throttle, maxSpeed)
+function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheelCount, wheelGroundCount, motorCount)
+    
+    
+    local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
+    local applicableGears = {}
+    --sets up applicable gears for the structure
+    for gear = 1, gearCount do
+        applicableGears[gear] = {
+            propulsionFactor = propulsionFactor / gear * gear,
+            maxSpeed = (gear * gear * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
+        }
+    end
+    
+    
+    --get average velocity of every wheel
+    local velocities = {}
     for deviceKey, device in pairs(devices) do
         if data.wheelsTouchingGround[structureKey][deviceKey] then
             local nodeA = GetDevicePlatformA(device)
             local nodeB = GetDevicePlatformB(device)
-            local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
-            local velocityMag = VecMagnitudeDir(velocity)
+            table.insert(velocities, NodeVelocity(nodeA))
+            table.insert(velocities, NodeVelocity(nodeB))
+        end
+    end
+    local velocity = AverageCoordinates(velocities)
+    local velocityMag = VecMagnitudeDir(velocity)
+    --now that we have the average velocity magnitude, we should select which gear should be used
+
+
+    local currentGear
+    for gear = 1, #applicableGears do
+        if math.abs(velocityMag) < applicableGears[gear].maxSpeed * GEAR_CHANGE_RATIO then
+            currentGear = applicableGears[gear]
+            BetterLog(gear)
+            break
+        end
+    end
+    if currentGear == nil then currentGear = applicableGears[#applicableGears] end
+
+    ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed, velocityMag)
+end
+
+function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocityMag)
+    for deviceKey, device in pairs(devices) do
+        if data.wheelsTouchingGround[structureKey][deviceKey] then
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
             local desiredVel = maxSpeed * math.sign(throttle)
-            enginePower = enginePower * math.abs(throttle)
-
+            local enginePower = propulsionFactor * math.abs(throttle)
             local deltaVel = desiredVel - velocityMag
             local mag = 1
             if desiredVel ~= 0 then
