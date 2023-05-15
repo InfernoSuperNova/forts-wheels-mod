@@ -11,11 +11,11 @@
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
 --engine power
-local PROPULSION_FACTOR = 6000000
+local PROPULSION_FACTOR = 4000000
 --how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
 local MAX_POWER_INPUT_RATIO = 1
 --velocity per engine, in grid units per sec
-local VEL_PER_GEARBOX = 1500
+local VEL_PER_GEARBOX = 2000
 
 
 EngineSaveName = "engine_wep"
@@ -28,6 +28,7 @@ Gearboxes = {}
 
 function InitializePropulsion()
     data.throttles = {}
+    data.currentRevs = {}
     data.previousThrottleMags = {}
     
 end
@@ -186,7 +187,10 @@ function ApplyPropulsionForces(devices, structureKey, enginePower, throttle, max
             else
                 mag = 0
             end 
-            mag = Clamp(mag, -1.1, 1.1)
+            data.currentRevs[structureKey] = math.abs(velocityMag / maxSpeed)
+            mag = Clamp(mag, -1.0, 1.0)
+            
+            
             --get average between new magnitude and previous one to reduce vibrations
             if data.previousThrottleMags[structureKey] and data.previousThrottleMags[structureKey][deviceKey] then
                 mag = (mag + data.previousThrottleMags[structureKey][deviceKey]) / 2
