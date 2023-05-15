@@ -15,7 +15,7 @@ local PROPULSION_FACTOR = 4000000
 --how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
 local MAX_POWER_INPUT_RATIO = 1
 --velocity per engine, in grid units per sec
-local VEL_PER_GEARBOX = 2000
+local VEL_PER_GEARBOX = 800
 
 local GEAR_CHANGE_RATIO = 0.9
 EngineSaveName = "engine_wep"
@@ -173,9 +173,11 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     local applicableGears = {}
     --sets up applicable gears for the structure
     for gear = 1, gearCount do
+        local gearFactor = 2 ^ (gear - 1)
         applicableGears[gear] = {
-            propulsionFactor = propulsionFactor / (gear * gear),
-            maxSpeed = (gear * gear * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
+            
+            propulsionFactor = propulsionFactor / gearFactor,
+            maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
         }
     end
     
