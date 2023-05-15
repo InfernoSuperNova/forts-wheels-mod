@@ -47,7 +47,7 @@ function SoundUpdate()
     --BetterLog(EffectsList)
     --engines
     for structureIndex, engine in pairs(data.currentRevs) do
-        local rpm = math.max(engine * 5000, 100)
+        local rpm = math.max(engine * 8000, 100)
         local needEngine = true
         for engine, effect in pairs(EffectsList.engine) do
             --BetterLog(GetDeviceStructureId(tonumber(engine)))
