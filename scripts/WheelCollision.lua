@@ -28,13 +28,11 @@ function WheelCollisionHandler()
             if displacement then
                 data.wheelsTouchingGround[structureKey][deviceKey] = displacement
             end
-
-             
         end
     end
     data.structures = structures
-
 end
+
 function GetDeviceStructureGroups()
     local structures = {}
     for side = 1, 2 do
@@ -54,7 +52,6 @@ function GetDeviceStructureGroups()
 end
 
 function CheckBoundingBoxCollisions(devices)
-
     local positions = {}
 
     for k, deviceKey in pairs(devices) do
@@ -66,21 +63,20 @@ function CheckBoundingBoxCollisions(devices)
     end
     local collidingBlocks = {}
     local collider = MinimumCircularBoundary(positions)
-    
+
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
         if Distance(collider, terrainCollider) < collider.r + terrainCollider.r + 50 then
             collidingBlocks[terrainId] = true
         end
     end
     if collidingBlocks == nil then
-        return {false}
+        return { false }
     end
     return collidingBlocks
 end
 
-
 function CheckAndCounteractCollisions(device, collidingBlocks)
-    local returnVal = {x = 0, y = 0}
+    local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
     if GetDeviceType(device) == WheelSaveName[1] then
@@ -88,7 +84,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
     else
         pos = GetOffsetDevicePos(device, -WheelSuspensionHeight)
     end
-    
+
     WheelPos[device] = pos
     --looping through blocks
     for blockIndex, Nodes in pairs(collidingBlocks) do
@@ -101,6 +97,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
         --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
         displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + TrackWidth)
+
         if displacement == nil then --incase of degenerate blocks
             displacement = Vec3(0,0)
         end
@@ -110,24 +107,19 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
 
 
+
         SendDisplacementToTracks(displacement, device)
         if displacement and displacement.y ~= 0 then
-
-            
             ApplyFinalForce(device, velocity, displacement)
-            
-            if math.abs(returnVal.y) < math.abs(displacement.y) then 
 
-                returnVal = {x = displacement.x, y = displacement.y} 
+            if math.abs(returnVal.y) < math.abs(displacement.y) then
+                returnVal = { x = displacement.x, y = displacement.y }
             end
-
         end
     end
-    if returnVal.y ~= 0 then 
-        return returnVal 
+    if returnVal.y ~= 0 then
+        return returnVal
     end
-
-    
 end
 
 function GetOffsetDevicePos(device, offset)
@@ -143,6 +135,7 @@ function GetOffsetDevicePos(device, offset)
     }
     return newPos
 end
+
 function SendDisplacementToTracks(displacement, device)
     if not Displacement[device] then
         Displacement[device] = displacement
@@ -222,22 +215,23 @@ function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
     --Centerpoint in polygon
     if PointInsidePolygon(circleCenter, polygon) then
         local obj = FindClosestEdge(circleCenter, polygon)
-        local final = CalculateCollisionResponseVector(-obj.closestDistance, obj.closestEdge.edgeStart, obj.closestEdge.edgeEnd,
-        wheelRadius)
+        local final = CalculateCollisionResponseVector(-obj.closestDistance, obj.closestEdge.edgeStart,
+            obj.closestEdge.edgeEnd,
+            wheelRadius)
         if final then return final end
         --Centerpoint out of polygon
     else
         -- Check if any of the polygon's edges intersect with the circle.
         local obj = FindClosestEdge(circleCenter, polygon)
-        local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart, obj.closestEdge.edgeEnd,
-        wheelRadius)
+        local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart,
+            obj.closestEdge.edgeEnd,
+            wheelRadius)
         if final then return final end
     end
 
     -- If there is no collision, return nil.
     return nil
 end
-
 
 function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius)
     if distance <= wheelRadius then

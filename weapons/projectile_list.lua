@@ -1,6 +1,7 @@
 EngineToDeviceDamage = function()
    for index, ProjectileTable in ipairs(Projectiles) do
       if ProjectileTable.WeaponDamageBonus then
+        local multiplier
          if ProjectileTable.DeviceDamageBonus then
             multiplier = 1 / ((ProjectileTable.WeaponDamageBonus + ProjectileTable.ProjectileDamage + ProjectileTable.DeviceDamageBonus) / ProjectileTable.ProjectileDamage + ProjectileTable.DeviceDamageBonus)
          else
