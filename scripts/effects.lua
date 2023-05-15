@@ -50,7 +50,6 @@ function SoundUpdate()
         --pow engine 2 for better revs
         local rpm = math.max(engine * 10000, 172)
         local throttle = math.abs(NormalizeThrottleVal(structureIndex))
-        BetterLog(throttle)
         local needEngine = true
         for engine, effect in pairs(EffectsList.engine) do
             --BetterLog(GetDeviceStructureId(tonumber(engine)))

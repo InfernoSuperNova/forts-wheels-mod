@@ -52,13 +52,14 @@ function ThrottleControl()
          -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
         deviceStructureId = NodeStructureId(GetDevicePlatformA(selectedDevice))
     end
+    local teamId = GetLocalTeamId()
         --If the controller device is selected
-        if GetDeviceType(selectedDevice) == ControllerSaveName and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId()) then
+        if GetDeviceType(selectedDevice) == ControllerSaveName and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == teamId) then
             --if it doesn't exist in it's current instance, create it
             if not ControlExists("root", "PropulsionSlider") then
                 SetControlFrame(0)
                 LoadControl(path .. "/ui/controls.lua", "root")
-                
+                AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
                 --initialize throttle
                 local pos = {x = 273.5, y = 15}
                 --if the structure doesn't already have a throttle, create it
@@ -83,6 +84,7 @@ function ThrottleControl()
             --once done with throttle widget, delete it
             if ControlExists("root", "PropulsionSlider") then
                 DeleteControl("root", "PropulsionSlider")
+                DeleteControl("root", tostring(teamId))
             end
         end
 end
@@ -112,7 +114,7 @@ function LoopStructures()
         
         
         local throttle = NormalizeThrottleVal(structureKey)
-
+        
         ApplyPropulsionForces(devices, structureKey, throttle, gearboxCount, wheelCount, wheelTouchingGroundCount, motorCount)
     end
 end
@@ -200,19 +202,12 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     --now that we have the average velocity magnitude, we should select which gear should be used
 
 
-    local currentGear
-    for gear = 1, #applicableGears do
-        if math.abs(velocityMag) < applicableGears[gear].maxSpeed * GEAR_CHANGE_RATIO then
-            currentGear = applicableGears[gear]
-            BetterLog("GEAR: " .. gear)
-            BetterLog("FORCE: " .. currentGear.propulsionFactor)
-            BetterLog("MAX SPEED:" .. currentGear.maxSpeed)
-            break
-        end
-    end
-    if currentGear == nil then currentGear = applicableGears[#applicableGears] end
+    local currentGear = GetCurrentGearFromVelocity(applicableGears, velocityMag)
 
-    ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed, velocityMag)
+    
+
+    ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
+    velocityMag)
 end
 
 function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocityMag)
@@ -262,3 +257,19 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
     end
 end
 
+function GetCurrentGearFromVelocity(applicableGears, velocityMag)
+
+    local currentGear
+    for gear = 1, #applicableGears do
+        if math.abs(velocityMag) < applicableGears[gear].maxSpeed * GEAR_CHANGE_RATIO then
+            currentGear = applicableGears[gear]
+            SetControlText("root", tostring(GetLocalTeamId()), "Gear: " .. gear)
+            break
+        end
+    end
+    if currentGear == nil then 
+        currentGear = applicableGears[#applicableGears] 
+        SetControlText("root", tostring(GetLocalTeamId()), "Gear: " .. #applicableGears)
+    end
+    return currentGear
+end
