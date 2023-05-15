@@ -22,10 +22,10 @@
 			<value>-100</value>
 		</property>
 		<property name="seekSpeed">
-			<value>2020</value>
+			<value>5000</value>
 		</property>
 		<property name="seekSpeedDescending">
-			<value>5050</value>
+			<value>18000</value>
 		</property>
 		<property name="seekSpeedAsymmetric">
 			<value>true</value>
