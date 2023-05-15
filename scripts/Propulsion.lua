@@ -18,6 +18,8 @@ local MAX_POWER_INPUT_RATIO = 1
 local VEL_PER_GEARBOX = 800
 
 local GEAR_CHANGE_RATIO = 0.95
+
+local THROTTLE_DEADZONE = 0.1
 EngineSaveName = "engine_wep"
 
 ControllerSaveName = "engine_wep"
@@ -114,7 +116,7 @@ function LoopStructures()
         
         
         local throttle = NormalizeThrottleVal(structureKey)
-        
+        if math.abs(throttle) < THROTTLE_DEADZONE then throttle = 0 end
         ApplyPropulsionForces(devices, structureKey, throttle, gearboxCount, wheelCount, wheelTouchingGroundCount, motorCount)
     end
 end
@@ -227,7 +229,6 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 mag = 0
             end 
             data.currentRevs[structureKey] = math.abs(velocityMag / maxSpeed)
-            BetterLog(mag)
             mag = Clamp(mag, -1.0, 1.0)
             
             
