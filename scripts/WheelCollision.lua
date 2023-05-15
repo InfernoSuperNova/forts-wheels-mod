@@ -106,7 +106,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
         end
         local nodeA = GetDevicePlatformA(device)
         local nodeB = GetDevicePlatformB(device)
-        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(GetDevicePlatformB(device))})
+        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
 
 
 
