@@ -11,13 +11,13 @@
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
 --engine power
-local PROPULSION_FACTOR = 2000000
+local PROPULSION_FACTOR = 3200000
 --how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
 local MAX_POWER_INPUT_RATIO = 1
 --velocity per engine, in grid units per sec
 local VEL_PER_GEARBOX = 800
 
-local GEAR_CHANGE_RATIO = 0.9
+local GEAR_CHANGE_RATIO = 0.95
 EngineSaveName = "engine_wep"
 
 ControllerSaveName = "engine_wep"
@@ -178,7 +178,10 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
             
             propulsionFactor = propulsionFactor / gearFactor,
             maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
+
+            
         }
+
     end
     
     
@@ -201,7 +204,9 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     for gear = 1, #applicableGears do
         if math.abs(velocityMag) < applicableGears[gear].maxSpeed * GEAR_CHANGE_RATIO then
             currentGear = applicableGears[gear]
-            BetterLog(gear)
+            BetterLog("GEAR: " .. gear)
+            BetterLog("FORCE: " .. currentGear.propulsionFactor)
+            BetterLog("MAX SPEED:" .. currentGear.maxSpeed)
             break
         end
     end
@@ -218,19 +223,22 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             local desiredVel = maxSpeed * math.sign(throttle)
             local enginePower = propulsionFactor * math.abs(throttle)
             local deltaVel = desiredVel - velocityMag
+            --somewhere here, plug in a cutoff so that it only starts falling off after 0.95
             local mag = 1
             if desiredVel ~= 0 then
-                mag = deltaVel / desiredVel
+                --*20 effectively eliminates falloff until it reaches 0.95
+                mag = deltaVel * 20 / desiredVel
             else
                 mag = 0
             end 
             data.currentRevs[structureKey] = math.abs(velocityMag / maxSpeed)
+            BetterLog(mag)
             mag = Clamp(mag, -1.0, 1.0)
             
             
             --get average between new magnitude and previous one to reduce vibrations
             if data.previousThrottleMags[structureKey] and data.previousThrottleMags[structureKey][deviceKey] then
-                mag = (mag + data.previousThrottleMags[structureKey][deviceKey]) / 2
+                mag = (mag + data.previousThrottleMags[structureKey][deviceKey] * 4) / 5
             elseif not data.previousThrottleMags[structureKey] then data.previousThrottleMags[structureKey] = {} end
                 
             
