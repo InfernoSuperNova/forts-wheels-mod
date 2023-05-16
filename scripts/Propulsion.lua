@@ -30,6 +30,7 @@ Gearboxes = {}
 
 function InitializePropulsion()
     data.throttles = {}
+    data.brakes = {}
     data.currentRevs = {}
     data.previousThrottleMags = {}
     
@@ -39,7 +40,6 @@ function UpdatePropulsion()
     Gearboxes ={}
     IndexDevices()
     LoopStructures()
-    ThrottleControl()
     ClearOldStructures()
 
 
@@ -47,53 +47,19 @@ end
 
 
 
-function ThrottleControl()
-    local selectedDevice = GetLocalSelectedDeviceId()
-    local deviceStructureId = -1
-    if selectedDevice ~= -1 then
-         -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
-        deviceStructureId = NodeStructureId(GetDevicePlatformA(selectedDevice))
-    end
-    local teamId = GetLocalTeamId()
-        --If the controller device is selected
-        if GetDeviceType(selectedDevice) == ControllerSaveName and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == teamId) then
-            --if it doesn't exist in it's current instance, create it
-            if not ControlExists("root", "PropulsionSlider") then
-                SetControlFrame(0)
-                LoadControl(path .. "/ui/controls.lua", "root")
-                AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
-                --initialize throttle
-                local pos = {x = 273.5, y = 15}
-                --if the structure doesn't already have a throttle, create it
-                if not data.throttles[deviceStructureId] then
-                    if ControlExists("root", "PropulsionSlider") then
-                        SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-                    end
-                    SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
-                end
-                --set the device slider to whatever the throttle is in the structure throttles table
-                if data.throttles[deviceStructureId] then
-                    SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
-                end
-            end
-            --Get the pos from the slider
-            local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
-            --send the pos to the throttles table
-            if ControlExists("root", "PropulsionSlider") then
-                SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-            end
-        else
-            --once done with throttle widget, delete it
-            if ControlExists("root", "PropulsionSlider") then
-                DeleteControl("root", "PropulsionSlider")
-                DeleteControl("root", tostring(teamId))
-            end
-        end
-end
+
 
 function UpdateThrottles(inx, iny, deviceStructureId)
     local pos = {x = inx, y = iny}
     data.throttles[deviceStructureId] = pos
+end
+function UpdateBrakes(state, structure)
+    if state == 1 then
+        data.brakes[structure] = true
+    else
+        data.brakes[structure] = false
+    end
+    
 end
 function LoopStructures()
     
@@ -209,10 +175,29 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     
 
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
-    velocityMag)
+    velocity, velocityMag, propulsionFactor * 0.2)
 end
 
-function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocityMag)
+function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag, brakeFactor)
+    
+    if data.brakes[structureKey] == true then 
+        for deviceKey, device in pairs(devices) do
+            if data.wheelsTouchingGround[structureKey][deviceKey] then
+                local normalizedVelocity = NormalizeVector(velocity)
+
+                local signX = math.sign(normalizedVelocity.x)
+                local signY = math.sign(normalizedVelocity.y)
+                local normalizedVelocity = 
+                {
+                    x = normalizedVelocity.x * normalizedVelocity.x * signX, 
+                }
+                BetterLog(normalizedVelocity)
+                FinalPropulsionForces[device] = {x = -normalizedVelocity.x * brakeFactor, y = 0}
+            end
+        end
+        return
+    end
+    
     for deviceKey, device in pairs(devices) do
         if data.wheelsTouchingGround[structureKey][deviceKey] then
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
@@ -220,6 +205,9 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             local desiredVel = maxSpeed * math.sign(throttle)
             local enginePower = propulsionFactor * math.abs(throttle)
             local deltaVel = desiredVel - velocityMag
+
+
+            
             --somewhere here, plug in a cutoff so that it only starts falling off after 0.95
             local mag = 1
             if desiredVel ~= 0 then
