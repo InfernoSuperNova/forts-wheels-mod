@@ -175,10 +175,29 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     
 
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
-    velocityMag)
+    velocity, velocityMag, propulsionFactor * 0.2)
 end
 
-function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocityMag)
+function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag, brakeFactor)
+    
+    if data.brakes[structureKey] == true then 
+        for deviceKey, device in pairs(devices) do
+            if data.wheelsTouchingGround[structureKey][deviceKey] then
+                local normalizedVelocity = NormalizeVector(velocity)
+
+                local signX = math.sign(normalizedVelocity.x)
+                local signY = math.sign(normalizedVelocity.y)
+                local normalizedVelocity = 
+                {
+                    x = normalizedVelocity.x * normalizedVelocity.x * signX, 
+                }
+                BetterLog(normalizedVelocity)
+                FinalPropulsionForces[device] = {x = -normalizedVelocity.x * brakeFactor, y = 0}
+            end
+        end
+        return
+    end
+    
     for deviceKey, device in pairs(devices) do
         if data.wheelsTouchingGround[structureKey][deviceKey] then
             local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
@@ -186,6 +205,9 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             local desiredVel = maxSpeed * math.sign(throttle)
             local enginePower = propulsionFactor * math.abs(throttle)
             local deltaVel = desiredVel - velocityMag
+
+
+            
             --somewhere here, plug in a cutoff so that it only starts falling off after 0.95
             local mag = 1
             if desiredVel ~= 0 then
