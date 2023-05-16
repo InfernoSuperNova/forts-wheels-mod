@@ -126,7 +126,7 @@ if drill then
     --drill upgrades to new device when it is able to drill
     local drill2 = DeepCopy(drill)
     drill2.SaveName = "drill2"
-    drill2.Enabled = false
+    --drill2.Enabled = false
     drill2.FileName = path .. "/devices/drill2.lua"
     drill2.Upgrades =
     {
