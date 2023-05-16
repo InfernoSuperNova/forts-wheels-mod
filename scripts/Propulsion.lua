@@ -30,6 +30,7 @@ Gearboxes = {}
 
 function InitializePropulsion()
     data.throttles = {}
+    data.brakes = {}
     data.currentRevs = {}
     data.previousThrottleMags = {}
     
@@ -39,7 +40,6 @@ function UpdatePropulsion()
     Gearboxes ={}
     IndexDevices()
     LoopStructures()
-    ThrottleControl()
     ClearOldStructures()
 
 
@@ -47,53 +47,19 @@ end
 
 
 
-function ThrottleControl()
-    local selectedDevice = GetLocalSelectedDeviceId()
-    local deviceStructureId = -1
-    if selectedDevice ~= -1 then
-         -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
-        deviceStructureId = NodeStructureId(GetDevicePlatformA(selectedDevice))
-    end
-    local teamId = GetLocalTeamId()
-        --If the controller device is selected
-        if GetDeviceType(selectedDevice) == ControllerSaveName and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == teamId) then
-            --if it doesn't exist in it's current instance, create it
-            if not ControlExists("root", "PropulsionSlider") then
-                SetControlFrame(0)
-                LoadControl(path .. "/ui/controls.lua", "root")
-                AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
-                --initialize throttle
-                local pos = {x = 273.5, y = 15}
-                --if the structure doesn't already have a throttle, create it
-                if not data.throttles[deviceStructureId] then
-                    if ControlExists("root", "PropulsionSlider") then
-                        SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-                    end
-                    SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
-                end
-                --set the device slider to whatever the throttle is in the structure throttles table
-                if data.throttles[deviceStructureId] then
-                    SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
-                end
-            end
-            --Get the pos from the slider
-            local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
-            --send the pos to the throttles table
-            if ControlExists("root", "PropulsionSlider") then
-                SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-            end
-        else
-            --once done with throttle widget, delete it
-            if ControlExists("root", "PropulsionSlider") then
-                DeleteControl("root", "PropulsionSlider")
-                DeleteControl("root", tostring(teamId))
-            end
-        end
-end
+
 
 function UpdateThrottles(inx, iny, deviceStructureId)
     local pos = {x = inx, y = iny}
     data.throttles[deviceStructureId] = pos
+end
+function UpdateBrakes(state, structure)
+    if state == 1 then
+        data.brakes[structure] = true
+    else
+        data.brakes[structure] = false
+    end
+    
 end
 function LoopStructures()
     
