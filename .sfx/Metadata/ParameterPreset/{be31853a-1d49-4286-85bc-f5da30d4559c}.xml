@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="ParameterPreset" id="{9b20654a-5bda-4ab6-abc5-dfc83773cb88}">
+	<object class="ParameterPreset" id="{be31853a-1d49-4286-85bc-f5da30d4559c}">
 		<property name="name">
-			<value>Throttle</value>
+			<value>load</value>
 		</property>
 		<relationship name="folder">
 			<destination>{e17bc097-402e-48cf-9781-870d0d3b3a7a}</destination>
 		</relationship>
 		<relationship name="parameter">
-			<destination>{4c165152-7c77-43a5-b967-1955eda301b4}</destination>
+			<destination>{c2ae8423-c24b-477e-8a05-dd67efd4495e}</destination>
 		</relationship>
 	</object>
-	<object class="GameParameter" id="{4c165152-7c77-43a5-b967-1955eda301b4}">
+	<object class="GameParameter" id="{c2ae8423-c24b-477e-8a05-dd67efd4495e}">
 		<property name="initialValue">
 			<value>0</value>
 		</property>
 		<property name="seekSpeed">
-			<value>3.2000000476837158</value>
+			<value>2.2000000476837158</value>
 		</property>
 	</object>
 </objects>

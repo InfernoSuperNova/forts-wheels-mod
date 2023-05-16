@@ -19,16 +19,13 @@
 			<value>10000</value>
 		</property>
 		<property name="initialValue">
-			<value>-100</value>
+			<value>500</value>
 		</property>
 		<property name="seekSpeed">
-			<value>5000</value>
+			<value>9000</value>
 		</property>
 		<property name="seekSpeedDescending">
-			<value>18000</value>
-		</property>
-		<property name="seekSpeedAsymmetric">
-			<value>true</value>
+			<value>9000</value>
 		</property>
 	</object>
 </objects>
