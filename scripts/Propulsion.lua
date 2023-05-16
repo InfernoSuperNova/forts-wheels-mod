@@ -228,7 +228,7 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             else
                 mag = 0
             end 
-            data.currentRevs[structureKey] = math.abs(velocityMag / maxSpeed)
+            data.currentRevs[structureKey] = (math.abs(velocityMag / maxSpeed) - 0.45) * 2
             mag = Clamp(mag, -1.0, 1.0)
             
             

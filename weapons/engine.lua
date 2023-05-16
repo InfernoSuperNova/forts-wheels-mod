@@ -30,7 +30,7 @@ StructureSplashDamageMaxRadius = 100
 FireEffect = path .. "/effects/fire_20mmcannon.lua"
 
 ConstructEffect = "effects/device_construct.lua"
-CompleteEffect = "effects/device_complete.lua"
+CompleteEffect = path .. "/effects/engine_complete.lua"
 DestroyEffect = "effects/device_explode.lua"
 DestroyUnderwaterEffect = "mods/dlc2/effects/device_explode_submerged_large.lua"
 ShellEffect = path .. "/effects/shell_eject_20mmcannon.lua"
