@@ -186,7 +186,6 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 local normalizedVelocity = NormalizeVector(velocity)
 
                 local signX = math.sign(normalizedVelocity.x)
-                local signY = math.sign(normalizedVelocity.y)
                 local normalizedVelocity = 
                 {
                     x = normalizedVelocity.x * normalizedVelocity.x * signX, 
