@@ -14,6 +14,7 @@ dofile(path .. "/scripts/PID.lua")
 dofile(path .. "/scripts/helperDebug.lua")
 dofile(path .. "/scripts/Propulsion.lua")
 dofile(path .. "/scripts/effects.lua")
+dofile(path .. "/scripts/drillScript.lua")
 
 Displacement = {}
 WheelPos = {}
@@ -40,6 +41,7 @@ function Load(GameStart)
     end
     InitializeTracks()
     InitializePropulsion()
+    InitializeDrill()
     InitializeEffects()
     GraphingStart()
     data.terrainCollisionBoxes = {}
@@ -72,14 +74,12 @@ function Update(frame)
     DebugLog("Update tracks good")
     UpdateGraphs()
     DebugLog("Update graphs good")
+    UpdateDrill(frame)
+    DebugLog("Update drill good")
     UpdateEffects(frame)
     DebugLog("Update effects good")
     ApplyForces()
     JustJoined = false
-
-
-    
-    
 end
 
 
@@ -107,12 +107,15 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 end
 function OnDeviceCompleted(teamId, deviceId, saveName)
     SoundAdd(saveName, deviceId)
+    DrillAdd(saveName, deviceId)
 end
 function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
+    DrillRemove(saveName, deviceId)
 end
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
+    DrillRemove(saveName, deviceId)
 end
 
 function ApplyForces()

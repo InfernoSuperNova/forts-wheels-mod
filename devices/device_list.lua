@@ -104,3 +104,41 @@ local barrel = FindDevice("barrel")
 if barrel then
     barrel.Enabled = true
 end
+
+
+local drill = DeepCopy(FindDevice("battery"))
+if drill then
+    --base drill device
+    drill.SaveName = "drill"
+    drill.FileName = path .. "/devices/drill.lua"
+    drill.MaxUpAngle = 45
+    drill.Upgrades =
+    {
+        {
+            Enabled = false,
+            SaveName = "drill2",
+            MetalCost = 0,
+            EnergyCost = 0,
+            BuildDuration = 0,
+        },
+    }
+
+    --drill upgrades to new device when it is able to drill
+    local drill2 = DeepCopy(drill)
+    drill2.SaveName = "drill2"
+    drill2.Enabled = false
+    drill2.FileName = path .. "/devices/drill2.lua"
+    drill2.Upgrades =
+    {
+        {
+            Enabled = false,
+            SaveName = "drill",
+            MetalCost = 0,
+            EnergyCost = 0,
+            BuildDuration = 0,
+        },
+    }
+
+    table.insert(Devices, 1, drill2)
+    table.insert(Devices, 1, drill)
+end
