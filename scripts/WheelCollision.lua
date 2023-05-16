@@ -1,7 +1,7 @@
 --WheelCollision.lua
 --- forts script API ---
 local springConst = 30000
-local dampening = 1500
+local dampening = 3000
 
 Terrain = {}
 
@@ -20,7 +20,7 @@ function WheelCollisionHandler()
         local collidingBlocks = CheckBoundingBoxCollisions(devices)
 
         for deviceKey, device in pairs(devices) do
-            local displacement = CheckAndCounteractCollisions(device, collidingBlocks)
+            local displacement = CheckAndCounteractCollisions(device, collidingBlocks, structureKey)
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
 
@@ -78,7 +78,7 @@ function CheckBoundingBoxCollisions(devices)
     return collidingBlocks
 end
 
-function CheckAndCounteractCollisions(device, collidingBlocks)
+function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
@@ -113,7 +113,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
 
         SendDisplacementToTracks(displacement, device)
         if displacement and displacement.y ~= 0 then
-            ApplyFinalForce(device, velocity, displacement)
+            ApplyFinalForce(device, velocity, displacement, structureId)
 
             if math.abs(returnVal.y) < math.abs(displacement.y) then
                 returnVal = { x = displacement.x, y = displacement.y }
@@ -150,21 +150,16 @@ function SendDisplacementToTracks(displacement, device)
     end
 end
 
-function ApplyFinalForce(device, velocity, displacement)
+function ApplyFinalForce(device, velocity, displacement, structureId)
+
+    if data.brakes[structureId] == true then displacement.x = 0 end
+    local surfaceNormal = NormalizeVector(displacement)
     local DampenedForce = {
         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(springConst, displacement.x, 0, velocity.x),
-        y = SpringDampenedForce(springConst, displacement.y, dampening, velocity.y)
+        x = SpringDampenedForce(springConst, displacement.x, dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
+        y = SpringDampenedForce(springConst, displacement.y, dampening * math.abs(surfaceNormal.y), velocity.y)
     }
-
-    --apply the PID force
-    -- local DampenedForce = {
-    --     x = data.previousVals[device].output.x,
-    --     y = data.previousVals[device].output.y
-    -- }
     FinalSuspensionForces[device] = DampenedForce
-    --dlc2_ApplyForce(GetDevicePlatformA(device), DampenedForce)
-    --dlc2_ApplyForce(GetDevicePlatformB(device), DampenedForce)
 end
 
 function IndexTerrainBlocks()
