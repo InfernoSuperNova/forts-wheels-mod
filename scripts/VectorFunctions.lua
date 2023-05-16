@@ -356,8 +356,20 @@ end
         table.insert(intersectionPoints, intersectionPoint1)
         table.insert(intersectionPoints, intersectionPoint2)
     end
-
+end
       
+
+function FindClosestNumber(number1, number2, target)
+    local difference1 = math.abs(number1 - target)
+    local difference2 = math.abs(number2 - target)
+    
+    if difference1 < difference2 then
+        return number1
+    else
+        return number2
+    end
+end
+
 function Circumcircle(a, b, c)
     local A = b.x - a.x
     local B = b.y - a.y

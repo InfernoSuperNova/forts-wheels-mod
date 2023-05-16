@@ -105,6 +105,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
         }
     }
     ]]
+    local structureId = GetDeviceStructureId(device)
     local returnVal = {x = 0, y = 0}
     local displacement
     local pos
@@ -121,7 +122,15 @@ function CheckAndCounteractCollisions(device, collidingBlocks)
     for blockIndex, blockPairs in pairs(collidingBlocks) do
         for _, segment in pairs(blockPairs) do
             local localDisplacement = CheckCollisionsOnBlock(segment, pos, WheelRadius + 20)
-            if math.abs(VecMagnitude(localDisplacement)) > math.abs(VecMagnitude(displacement)) then displacement = localDisplacement end
+            --
+            
+            if Displacement[device] then
+                displacement = FindClosestNumber(VecMagnitude(localDisplacement), VecMagnitude(displacement), VecMagnitude(Displacement[device]))
+            elseif math.abs(VecMagnitude(localDisplacement)) > math.abs(VecMagnitude(displacement)) then 
+                displacement = localDisplacement 
+            end
+
+            
         end
 
     end
