@@ -191,7 +191,6 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 {
                     x = normalizedVelocity.x * normalizedVelocity.x * signX, 
                 }
-                BetterLog(normalizedVelocity)
                 FinalPropulsionForces[device] = {x = -normalizedVelocity.x * brakeFactor, y = 0}
             end
         end
