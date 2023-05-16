@@ -7,6 +7,7 @@ Tracks = {}
 SortedTracks = {}
 PushedTracks = {}
 LocalEffects = {}
+TrackGroups = {}
 function InitializeTracks()
 
 end
@@ -58,55 +59,68 @@ end
 
 function PlaceSuspensionPosInTable(id)
     if DeviceExists(id) and CheckSaveNameTable(GetDeviceType(id), WheelSaveName) and IsDeviceFullyBuilt(id) then
-      local actualPos = WheelPos[id]
-      if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
-        --get the structure that the track set belongs to
-        local structureId = GetDeviceStructureId(id)
-        --local actualPos = WheelPos[id]
-        --put it into a table unique to that structure...
-        DebugLog(Displacement)
-        if not Tracks[structureId] then Tracks[structureId] = {} end
-        local suspensionPos = {
-            x = actualPos.x + Displacement[id].x,
-            y = actualPos.y + Displacement[id].y,
-        }
-        --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
-        if not TracksId[structureId] then TracksId[structureId] = {} end
-        TracksId[structureId][id] = suspensionPos
-        table.insert(Tracks[structureId], suspensionPos)
-      end
-   end
+        if not TrackGroups[id] then TrackGroups[id] = 1 end
+        local trackGroup = TrackGroups[id]
+        local actualPos = WheelPos[id]
+        if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
+            --get the structure that the track set belongs to
+            local structureId = GetDeviceStructureId(id)
+            --local actualPos = WheelPos[id]
+            --put it into a table unique to that structure...
+            DebugLog(Displacement)
+            if not Tracks[structureId] then Tracks[structureId] = {} end
+            if not Tracks[structureId][trackGroup] then Tracks[structureId][trackGroup] = {} end
+            local suspensionPos = {
+                x = actualPos.x + Displacement[id].x,
+                y = actualPos.y + Displacement[id].y,
+            }
+            --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
+            if not TracksId[structureId] then TracksId[structureId] = {} end
+            TracksId[structureId][id] = suspensionPos
+
+            table.insert(Tracks[structureId][trackGroup], suspensionPos)
+        end
+    end
 end
 
 function SortTracks()
-    for k, trackSet in pairs(Tracks) do
-        SortedTracks[k] = JarvisWrapping(trackSet)
-        DebugLog("Jarvis wrapping good")
-        PushedTracks[k] = PushOutTracks(SortedTracks[k], WheelRadius)
-        DebugLog("Track pushing good")
+    for structure, trackSets in pairs(Tracks) do
+        for key, trackSet in pairs(trackSets) do
+            if not SortedTracks[structure] then SortedTracks[structure] = {} end
+            SortedTracks[structure][key] = JarvisWrapping(trackSet)
+            DebugLog("Jarvis wrapping good")
+            if not PushedTracks[structure] then PushedTracks[structure] = {} end
+            PushedTracks[structure][key] = PushOutTracks(SortedTracks[structure][key], WheelRadius)
+            DebugLog("Track pushing good")
+        end
+        
     end
 
 end
 
 function GetTrackSetPositions()
     TrackOffsets = {}
-    for k, trackSet in pairs(Tracks) do
-        local pos = AverageCoordinates(trackSet)
-        TrackOffsets[k] = pos
+    for k, trackSets in pairs(Tracks) do
+        for _, trackSet in pairs(trackSets) do
+            local pos = AverageCoordinates(trackSet)
+            TrackOffsets[k] = pos
+        end
+        
     end
 end
 
 function DrawTracks()
     --loop through list of track sets
-    for base, trackSet in pairs(PushedTracks) do
-
-        DrawTrackTreads(trackSet, base)
-        DrawTrackSprockets(base)
+    for base, trackSets in pairs(PushedTracks) do
+        for trackGroup, trackSet in pairs(trackSets) do
+            DrawTrackTreads(trackSet, base, trackGroup)
+            DrawTrackSprockets(base, trackGroup)
+        end
     end
 end
 
-function DrawTrackSprockets(base)
-    for device, pos in pairs(Tracks[base]) do
+function DrawTrackSprockets(base, trackGroup)
+    for device, pos in pairs(Tracks[base][trackGroup]) do
         local angle = (TrackOffsets[base].x % TrackLinkDistance) % 360 - 180
         local vecAngle = AngleToVector(angle)
         local effect = SpawnEffectEx(path .. "/effects/track_sprocket.lua", pos, vecAngle)
@@ -114,7 +128,7 @@ function DrawTrackSprockets(base)
     end
 end
 
-function DrawTrackTreads(trackSet, base)
+function DrawTrackTreads(trackSet, base, trackGroup)
     --loop through segments of the tracks
     for wheel = 1, #trackSet, 2 do
         --Only if there's more than 2 points (1 wheel) in set
@@ -123,8 +137,8 @@ function DrawTrackTreads(trackSet, base)
         end
     end
     for wheel = 2, #trackSet, 2 do
-        local index = (wheel / 2 - 1) % #SortedTracks[base] + 1
-        local center = SortedTracks[base][index]
+        local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
+        local center = SortedTracks[base][trackGroup][index]
         if #trackSet > 2 then
             DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
         end
@@ -268,3 +282,23 @@ function PushOutTracks(polygon, distance)
     return newPolygon
 end
 
+
+--TRACK GROUPING
+
+function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
+    if CheckSaveNameTable(saveName, WheelSaveName) then
+        for i = 1,10 do
+            AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)
+        end
+        
+    end
+end
+
+function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
+    for i = 1, 10 do
+        
+        if name == "Set suspension to track group " .. i then
+            TrackGroups[deviceId] = i
+        end
+    end
+end
