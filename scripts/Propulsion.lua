@@ -10,23 +10,7 @@
 
 -- Horizontal force applied to each wheel should be base force * engine count / wheel count
 
---engine power
-local PROPULSION_FACTOR = 2500000
---how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
-local MAX_POWER_INPUT_RATIO = 1
---velocity per engine, in grid units per sec
-local VEL_PER_GEARBOX = 800
 
-local GEAR_CHANGE_RATIO = 0.95
-
-local THROTTLE_DEADZONE = 0.1
-EngineSaveName = "engine_wep"
-
-ControllerSaveName = "engine_wep"
-
-GearboxSaveName = "gearbox"
-Motors = {}
-Gearboxes = {}
 
 function InitializePropulsion()
     data.throttles = {}

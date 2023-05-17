@@ -1,9 +1,6 @@
 --WheelCollision.lua
 --- forts script API ---
-local springConst = 30000
-local dampening = 3000
 
-Terrain = {}
 
 
 
@@ -156,8 +153,8 @@ function ApplyFinalForce(device, velocity, displacement, structureId)
     local surfaceNormal = NormalizeVector(displacement)
     local DampenedForce = {
         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(springConst, displacement.x, dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
-        y = SpringDampenedForce(springConst, displacement.y, dampening * math.abs(surfaceNormal.y), velocity.y)
+        x = SpringDampenedForce(SpringConst, displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
+        y = SpringDampenedForce(SpringConst, displacement.y, Dampening * math.abs(surfaceNormal.y), velocity.y)
     }
     FinalSuspensionForces[device] = DampenedForce
 end
