@@ -225,11 +225,6 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 
             
             data.previousThrottleMags[structureKey][deviceKey] = mag
-            --if our velocity is 50, and our desired is -500
-            --delta is -550
-            --this produces a magnitude of 1.1
-            --if our velocity is 0, and our desired is -500
-            --delta is -550
             local force
             --right
             if desiredVel > 0 then
