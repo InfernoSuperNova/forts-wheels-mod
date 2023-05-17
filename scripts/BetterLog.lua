@@ -9,33 +9,34 @@
 --Table : table to log
 --IndentLevel : indentation level of the table content (ex : 1 if it's the first time the function is called)
 
-function LogTables(Table,IndentLevel)
+function LogTables(Table, IndentLevel)
     if Table == nil then
         Log("nil")
     else
         IndentLevel = IndentLevel or 1
         local indent = string.rep("    ", IndentLevel)
         local indentinf = string.rep("    ", IndentLevel-1)
-        local metatable = getmetatable(Table) --metatables are a lua feature to modify how table behave (mainly operators). Vec3 has one allowing you to use + and * on them like a mathematical vector
-        if metatable and metatable.__tostring then --if the table has a built in print method, use it
+        local metatable = getmetatable(Table)
+        if metatable and metatable.__tostring then
             Log(indent .. tostring(Table) .. ",")
-        else --default print method, same as their format in forts' code
+        else
             Log(indentinf .. "{")
-            for k,v in pairs(Table) do
+            for k, v in pairs(Table) do
                 if type(k) == "number" then
                     if type(v) == "table" then
-                        LogTables(v,IndentLevel+1)
+                        Log(indent .. "[" .. tostring(k) .. "] = ")
+                        LogTables(v, IndentLevel + 1)
                     elseif type(v) == "function" then
                         LogFunction(v)
                     elseif type(v) == "string" then
-                        Log(indent .. '"' .. v .. '",')
+                        Log(indent .. "[" .. tostring(k) .. '] = "' .. v .. '",')
                     else
-                        Log(indent .. tostring(v) .. ",")
+                        Log(indent .. "[" .. tostring(k) .. "] = " .. tostring(v) .. ",")
                     end
                 else
                     if type(v) == "table" then
                         Log(indent .. tostring(k) .. " = ")
-                        LogTables(v,IndentLevel+1)
+                        LogTables(v, IndentLevel + 1)
                     elseif type(v) == "function" then
                         LogFunction(v)
                     elseif type(v) == "string" then
