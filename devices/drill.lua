@@ -24,7 +24,7 @@ Sprites =
                     { texture = path .. "/devices/drill/drill_retract5.png" },
                     { texture = path .. "/devices/drill/drill_retract6.png" },
                     { texture = path .. "/devices/drill/drill_retract7.png", duration = 999999 },
-                    duration = 0.08,
+                    duration = 0.04,
                     blendColour = false,
                     blendCoordinates = false,
                     mipmap = true,

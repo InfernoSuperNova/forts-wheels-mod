@@ -105,7 +105,7 @@ if barrel then
     barrel.Enabled = true
 end
 
-
+--add drills
 local drill = DeepCopy(FindDevice("battery"))
 if drill then
     --base drill device
@@ -121,12 +121,20 @@ if drill then
             EnergyCost = 0,
             BuildDuration = 0,
         },
+        {
+            Enabled = true,
+            SaveName = "drill3",
+            Prerequisite = "upgrade",
+            MetalCost = 100,
+            EnergyCost = 2000,
+            BuildDuration = 20,
+        },
     }
 
     --drill upgrades to new device when it is able to drill
     local drill2 = DeepCopy(drill)
     drill2.SaveName = "drill2"
-    --drill2.Enabled = false
+    drill2.Enabled = false
     drill2.FileName = path .. "/devices/drill2.lua"
     drill2.Upgrades =
     {
@@ -137,8 +145,48 @@ if drill then
             EnergyCost = 0,
             BuildDuration = 0,
         },
+        {
+            Enabled = true,
+            SaveName = "drill3",
+            Prerequisite = "upgrade",
+            MetalCost = 100,
+            EnergyCost = 2000,
+            BuildDuration = 20,
+        },
     }
 
+    --upgrade for drill that does more metal
+    local drill3 = DeepCopy(drill)
+    drill3.SaveName = "drill3"
+    drill3.Enabled = false
+    drill3.FileName = path .. "/devices/drill3.lua"
+    drill3.Upgrades =
+    {
+        {
+            Enabled = false,
+            SaveName = "drill4",
+            MetalCost = 0,
+            EnergyCost = 0,
+            BuildDuration = 0,
+        },
+    }
+    --upgrade to the upgradable drill that drills.
+    local drill4 = DeepCopy(drill3)
+    drill4.SaveName = "drill4"
+    drill4.FileName = path .. "/devices/drill4.lua"
+    drill4.Upgrades =
+    {
+        {
+            Enabled = false,
+            SaveName = "drill3",
+            MetalCost = 0,
+            EnergyCost = 0,
+            BuildDuration = 0,
+        },
+    }
+    --insert to table
+    table.insert(Devices, 1, drill4)
+    table.insert(Devices, 1, drill3)
     table.insert(Devices, 1, drill2)
     table.insert(Devices, 1, drill)
 end
