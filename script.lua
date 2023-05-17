@@ -4,6 +4,7 @@ dofile(path .. "/debugMagic.lua")
 
 dofile("scripts/forts.lua")
 
+dofile(path .."/config/config.lua")
 dofile(path .. "/scripts/BetterLog.lua")
 dofile(path .. "/scripts/controls.lua")
 dofile(path .. "/scripts/VectorFunctions.lua")
@@ -15,18 +16,7 @@ dofile(path .. "/scripts/helperDebug.lua")
 dofile(path .. "/scripts/Propulsion.lua")
 dofile(path .. "/scripts/effects.lua")
 
-Displacement = {}
-WheelPos = {}
-TracksId = {}
-FinalSuspensionForces = {}
-FinalPropulsionForces = {}
-FinalAddedForces = {}
-WheelRadius = 75
-TrackWidth = 20
-WheelSuspensionHeight = 150
 
-WheelSaveName = {"suspension", "suspensionInverted"}
-ModDebug = false
 JustJoined = true --to run something once upon joining through Update. (used for effects)
 
 
