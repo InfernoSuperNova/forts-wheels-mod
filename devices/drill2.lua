@@ -57,6 +57,14 @@ for i = 0, 30 do
     table.insert(Sprites[2].States.Normal.Frames, { texture = path .. "/devices/drill/drill_bit0.png" })
     table.insert(Sprites[2].States.Normal.Frames, { texture = path .. "/devices/drill/drill_bit1.png" })
 end
+
+NodeEffects =
+{
+	{
+		NodeName = "Bit",
+		EffectPath = path .. "/effects/idle_drill.lua",
+	},
+}
 Root.ChildrenBehind =
 {
     {

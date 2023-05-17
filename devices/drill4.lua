@@ -2,6 +2,13 @@ dofile(path .. "/devices/drill3.lua")
 Sprites = {}
 MetalProductionRate = 5
 EnergyProductionRate = -10
+NodeEffects =
+{
+	{
+		NodeName = "Bit",
+		EffectPath = path .. "/effects/idle_drill.lua",
+	},
+}
 Root =
 {
     Name = "Drill",
@@ -43,7 +50,7 @@ Root =
             ChildrenInFront =
             {
                 {
-                    Name = "Bit",
+                    Name = "Bit2",
                     Angle = 0,
                     Pivot = { 0, 0.43 },
                     PivotOffset = { 0, 0.0 },
