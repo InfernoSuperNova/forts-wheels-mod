@@ -1,13 +1,4 @@
 --Tracks.lua
---- forts script API ---
-TrackOffsets = {}
-SpecialFrame = 1
-TrackLinkDistance = 40
-Tracks = {}
-SortedTracks = {}
-PushedTracks = {}
-LocalEffects = {}
-TrackGroups = {}
 function InitializeTracks()
     data.trackGroups = {}
 end
@@ -31,6 +22,10 @@ end
 
 --clears any wheel sprites on the screen
 function ClearEffects()
+    for k, v in pairs(data.trackGroups) do
+        if not DeviceExists(k) then k = nil end
+    end
+    
     -- for k, effect in pairs(LocalEffects) do
     --     CancelEffect(effect)
     -- end
@@ -85,12 +80,12 @@ end
 
 function SortTracks()
     for structure, trackSets in pairs(Tracks) do
-        for key, trackSet in pairs(trackSets) do
+        for trackGroup, trackSet in pairs(trackSets) do
             if not SortedTracks[structure] then SortedTracks[structure] = {} end
-            SortedTracks[structure][key] = JarvisWrapping(trackSet)
+            SortedTracks[structure][trackGroup] = JarvisWrapping(trackSet)
             DebugLog("Jarvis wrapping good")
             if not PushedTracks[structure] then PushedTracks[structure] = {} end
-            PushedTracks[structure][key] = PushOutTracks(SortedTracks[structure][key], WheelRadius)
+            PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WheelRadius)
             DebugLog("Track pushing good")
         end
         
@@ -120,15 +115,29 @@ function DrawTracks()
 end
 
 function DrawTrackSprockets(base, trackGroup)
+    local effectPath
+    local angle
+    --trackgroup of 11 represents wheel
+    if trackGroup == 11 then
+        angle = (TrackOffsets[base].x / WheelRadius) * (WheelRadius - TrackWidth)
+        
+        effectPath = path .. "/effects/wheel.lua"
+    else
+        angle = TrackOffsets[base].x
+        effectPath = path .. "/effects/track_sprocket.lua"
+    end
+
     for device, pos in pairs(Tracks[base][trackGroup]) do
-        local angle = (TrackOffsets[base].x % TrackLinkDistance) % 360 - 180
+        
         local vecAngle = AngleToVector(angle)
-        local effect = SpawnEffectEx(path .. "/effects/track_sprocket.lua", pos, vecAngle)
+        local effect = SpawnEffectEx(effectPath, pos, vecAngle)
         table.insert(LocalEffects, effect)
     end
 end
 
 function DrawTrackTreads(trackSet, base, trackGroup)
+    --exclude wheels
+    if trackGroup == 11 then return end
     --loop through segments of the tracks
     for wheel = 1, #trackSet, 2 do
         --Only if there's more than 2 points (1 wheel) in set
@@ -228,23 +237,21 @@ function JarvisWrapping(points)
     repeat
         table.insert(hull_points, points[current_point])
         local next_point = 1
+        local farthest_point = next_point
         for i = 1, #points do
-            if i ~= current_point then
+            if i ~= current_point and i ~= next_point then
                 local cross_product = (points[i].x - points[current_point].x) *
                     (points[next_point].y - points[current_point].y) -
                     (points[i].y - points[current_point].y) * (points[next_point].x - points[current_point].x)
-                if next_point == current_point or cross_product < 0 then
+                if next_point == current_point or cross_product < 0 or (cross_product == 0 and Distance(points[i], points[current_point]) > Distance(points[farthest_point], points[current_point])) then
                     next_point = i
+                    farthest_point = i
                 end
             end
         end
         current_point = next_point
+        --Prevents an infinite loop if it were to happen (input length ^ 2 + 1 is max complexity)
         if loopCount == math.pow(#points, 2) + 1 then 
-            --LogToFile("Input co ordinates: ")
-            --LogCoordsToFile(points)
-            --BetterLog("Error: " .. rgbaToHex(255, 255, 255, 255, false) .. "Gift wrapping algorithm catastrophic meltdown, aborting!")
-            --BetterLog(rgbaToHex(255, 165, 61, 255, false) .. "Please navigate to [your steam library directory]/forts/users/[your steam ID]/log.txt and DM the co ordinates to " .. rgbaToHex(56, 169, 255, 255, false) .. "@Gxaps#2375 " .. rgbaToHex(255, 165, 61, 255, false) .. "on Discord, or leave a comment on the workshop item")
-            
             return hull_points
         end
         loopCount = loopCount + 1
@@ -287,10 +294,10 @@ end
 
 function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
     if CheckSaveNameTable(saveName, WheelSaveName) then
+        AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
         for i = 1,10 do
             AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)
         end
-        
     end
 end
 
@@ -300,6 +307,9 @@ function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
         if name == "Set suspension to track group " .. i then
             SendScriptEvent("UpdateTrackGroups", deviceId .. "," .. i, "", false)
         end
+    end
+    if name == "Set suspension to wheel" then
+        SendScriptEvent("UpdateTrackGroups", deviceId .. ",11", "", false)
     end
 end
 
