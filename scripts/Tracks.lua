@@ -9,7 +9,7 @@ PushedTracks = {}
 LocalEffects = {}
 TrackGroups = {}
 function InitializeTracks()
-
+    data.trackGroups = {}
 end
 
 function UpdateTracks()
@@ -59,8 +59,8 @@ end
 
 function PlaceSuspensionPosInTable(id)
     if DeviceExists(id) and CheckSaveNameTable(GetDeviceType(id), WheelSaveName) and IsDeviceFullyBuilt(id) then
-        if not TrackGroups[id] then TrackGroups[id] = 1 end
-        local trackGroup = TrackGroups[id]
+        if not data.trackGroups[id] then data.trackGroups[id] = 1 end
+        local trackGroup = data.trackGroups[id]
         local actualPos = WheelPos[id]
         if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
             --get the structure that the track set belongs to
@@ -298,7 +298,11 @@ function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
     for i = 1, 10 do
         
         if name == "Set suspension to track group " .. i then
-            TrackGroups[deviceId] = i
+            SendScriptEvent("UpdateTrackGroups", deviceId .. "," .. i, "", false)
         end
     end
+end
+
+function UpdateTrackGroups(deviceId, group)
+    data.trackGroups[deviceId] = group
 end
