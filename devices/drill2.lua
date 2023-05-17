@@ -21,8 +21,29 @@ Sprites =
                     { texture = path .. "/devices/drill/drill_retract2.png" },
                     { texture = path .. "/devices/drill/drill_retract1.png" },
                     { texture = path .. "/devices/drill/drill_retract0.png" },
-                    { texture = path .. "/devices/drill/drill_retract0.png", duration = 100},
-                    duration = 0.08,
+                    { texture = path .. "/devices/drill/drill_retract0.png", duration = 999999},
+                    duration = 0.04,
+                    blendColour = false,
+                    blendCoordinates = false,
+                    mipmap = true,
+                },
+                NextState = "Normal",
+            },
+        },
+    },
+    {
+        Name = "drill_bit",
+
+        States =
+        {
+            Normal =
+            {
+                Frames =
+                {
+                    { texture = path .. "/devices/drill/blank.png", duration = 0.28},
+                    { texture = path .. "/devices/drill/drill_bit0.png" },
+                    { texture = path .. "/devices/drill/drill_bit1.png" },
+                    duration = 0.04,
                     blendColour = false,
                     blendCoordinates = false,
                     mipmap = true,
@@ -32,6 +53,10 @@ Sprites =
         },
     },
 }
+for i = 0, 30 do
+    table.insert(Sprites[2].States.Normal.Frames, { texture = path .. "/devices/drill/drill_bit0.png" })
+    table.insert(Sprites[2].States.Normal.Frames, { texture = path .. "/devices/drill/drill_bit1.png" })
+end
 Root.ChildrenBehind =
 {
     {
@@ -42,5 +67,16 @@ Root.ChildrenBehind =
         Scale = 1.2,
         Sprite = "drill_extend",
         UserData = 100,
+        ChildrenInFront =
+        {
+            {
+                Name = "Bit",
+                Angle = 0,
+                Pivot = { 0, 0.43 },
+                PivotOffset = { 0, 0.0 },
+                Sprite = "drill_bit",
+                UserData = 100,
+            },
+        }
     },
 }

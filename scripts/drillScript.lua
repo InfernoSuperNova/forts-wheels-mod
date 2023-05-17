@@ -34,14 +34,26 @@ function UpdateDrill(frame)
             --test conditions
             if GetDeviceType(id) == savename_drill2 then
                 --if drilling conditions are not ideal, retract drills.
-                if speed > 100 or terraincast ~= RAY_HIT_TERRAIN then
+                if speed > 75 or terraincast ~= RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill)
+                    table.remove(data.drills, i)
+                end
+                --upgraded version
+            elseif GetDeviceType(id) == savename_drill4 then
+                if speed > 75 or terraincast ~= RAY_HIT_TERRAIN then
+                    UpgradeDevice(id, savename_drill3)
                     table.remove(data.drills, i)
                 end
             elseif GetDeviceType(id) == savename_drill then
                 --if drilling conditions are ideal, start drilling.
-                if speed < 100 and terraincast == RAY_HIT_TERRAIN then
+                if speed < 75 and terraincast == RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill2)
+                    table.remove(data.drills, i)
+                end
+                --upgraded version
+            elseif GetDeviceType(id) == savename_drill3 then
+                if speed < 75 and terraincast == RAY_HIT_TERRAIN then
+                    UpgradeDevice(id, savename_drill4)
                     table.remove(data.drills, i)
                 end
             end
@@ -57,7 +69,7 @@ function GetDrills()
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             --engine
-            if GetDeviceType(id) == savename_drill or GetDeviceType(id) == savename_drill2 then
+            if GetDeviceType(id) == savename_drill or GetDeviceType(id) == savename_drill2 or GetDeviceType(id) == savename_drill3 or GetDeviceType(id) == savename_drill4 then
                 table.insert(data.drills, id)
             end
         end
@@ -65,13 +77,13 @@ function GetDrills()
 end
 function DrillAdd(saveName, deviceId)
     --adds a new drill device to the tracking table
-    if saveName == savename_drill or saveName == savename_drill2 or saveName == "cannon" or saveName == "battery" then
+    if saveName == savename_drill or saveName == savename_drill2 or saveName == savename_drill3 or saveName == savename_drill4 then
         table.insert(data.drills, deviceId)
     end
 end
 function DrillRemove(saveName, deviceId)
     --removes a drill device from the tracking table
-    if saveName == savename_drill or saveName == savename_drill2 then
+    if saveName == savename_drill or saveName == savename_drill2 or saveName == savename_drill3 or saveName == savename_drill4 then
         for i, id in ipairs(data.drills) do
             if id == deviceId then
                 table.remove(data.drills, i)
