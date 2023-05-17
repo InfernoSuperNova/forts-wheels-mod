@@ -32,7 +32,7 @@ Effects =
 	{
 		Type = "sprite",
 		TimeToTrigger = 0,
-		LocalPosition = { x = 0, y = 0, z = 0 },
+		LocalPosition = { x = 0, y = 0, z = -0.3 },
 		LocalVelocity = { x = 0, y = 0, z = 0 },
 		Acceleration = { x = 0, y = 0, z = 0 },
 		Drag = 0.0,
