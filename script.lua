@@ -104,6 +104,7 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
 		ApplyDamageToDevice(deviceId, 1000000)
 	end
+    DrillPlaceEffect(saveName, deviceId)
 end
 function OnDeviceCompleted(teamId, deviceId, saveName)
     SoundAdd(saveName, deviceId)
