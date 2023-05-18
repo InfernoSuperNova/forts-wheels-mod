@@ -56,9 +56,7 @@ function SoundUpdate()
             --BetterLog(structureIndex)
             if GetDeviceStructureId(tonumber(engine)) == structureIndex then
                 if needEngine then
-                    if throttle < 0.1 then rpm = 500 end
-                    SetAudioParameter(effect, "rpm", rpm)
-                    SetAudioParameter(effect, "load", throttle)
+                    if throttle < 0.1 or data.brakes[structureIndex] then rpm = 500 end
                     SetAudioParameter(effect, "rpm", rpm)
                     SetAudioParameter(effect, "load", throttle)
                     needEngine = false
