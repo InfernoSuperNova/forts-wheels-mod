@@ -22,3 +22,10 @@ table.insert(Weapons, 1,
     Enabled = false
 })
 
+
+table.insert(Weapons, InheritType(Weapons[1], nil,{
+    FileName = path .. "/weapons/observer_dummy.lua",
+    SaveName = "observer_dummy",
+    BuildTimeComplete = 0,
+    Upgrades = {},
+    Enabled = false}))

@@ -80,11 +80,12 @@ end
 
 function SortTracks()
     for structure, trackSets in pairs(Tracks) do
+        local team = GetStructureTeam(structure)
         if not PushedTracks[structure] then PushedTracks[structure] = {} end
         for trackGroup, trackSet in pairs(trackSets) do
             if not SortedTracks[structure] then SortedTracks[structure] = {} end
             --Don't do unnecessary track calculations if the wheel is a wheel
-            if trackGroup ~= 11 then
+            if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team) then
                 SortedTracks[structure][trackGroup] = JarvisWrapping(trackSet)
                 DebugLog("Jarvis wrapping good")
                 
@@ -108,11 +109,17 @@ function GetTrackSetPositions()
 end
 
 function DrawTracks()
+
+
     --loop through list of track sets
     for base, trackSets in pairs(PushedTracks) do
-        for trackGroup, trackSet in pairs(trackSets) do
-            DrawTrackTreads(trackSet, base, trackGroup)
-            DrawTrackSprockets(base, trackGroup)
+        local team = GetStructureTeam(base)
+            --hide tracks on phantom
+        if not IsCommanderAndEnemyActive("phantom", team) then
+            for trackGroup, trackSet in pairs(trackSets) do
+                DrawTrackTreads(trackSet, base, trackGroup)
+                DrawTrackSprockets(base, trackGroup)
+            end
         end
     end
 end
