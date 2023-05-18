@@ -8,14 +8,13 @@ function InitializeDrill()
     data.drills = {}
     GetDrills()
     --if the map already starts with drills, then enable the device, otherwise disable it.
-    --[[
     if #data.drills > 0 then
         EnableDevice(savename_drill, true, 1)
         EnableDevice(savename_drill, true, 2)
     else
         EnableDevice(savename_drill, false, 1)
         EnableDevice(savename_drill, false, 2)
-    end]]
+    end
 end
 
 function UpdateDrill(frame)
@@ -29,30 +28,36 @@ function UpdateDrill(frame)
             local radians = GetDeviceAngle(id) - 1.570796 --angle of device in radians (needs to be rotated 90 degrees towards ground)
             local position = GetDevicePosition(id)
             local source = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 61)) --source position to cast from. (device position plus angular vector multiplied by device radius)
-            local target = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 250)) --target position to cast ray to. (device position plus angular vector multiplied by wheel height)
-            local terraincast = CastRay(source, target, RAY_INCLUDE_DISABLED, FIELD_DISRUPT_BUILDING) --test if device is near ground
             --test conditions
             if GetDeviceType(id) == savename_drill2 then
                 --if drilling conditions are not ideal, retract drills.
-                if speed > 75 or terraincast ~= RAY_HIT_TERRAIN then
+                local target = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 250)) --target position to cast to.
+                local terraincast = CastRay(source, target, RAY_INCLUDE_DISABLED, FIELD_DISRUPT_BUILDING) --make cast
+                if speed > 100 or terraincast ~= RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill)
                     table.remove(data.drills, i)
                 end
                 --upgraded version
             elseif GetDeviceType(id) == savename_drill4 then
-                if speed > 75 or terraincast ~= RAY_HIT_TERRAIN then
+                local target = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 250))
+                local terraincast = CastRay(source, target, RAY_INCLUDE_DISABLED, FIELD_DISRUPT_BUILDING)
+                if speed > 100 or terraincast ~= RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill3)
                     table.remove(data.drills, i)
                 end
             elseif GetDeviceType(id) == savename_drill then
                 --if drilling conditions are ideal, start drilling.
-                if speed < 75 and terraincast == RAY_HIT_TERRAIN then
+                local target = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 240))
+                local terraincast = CastRay(source, target, RAY_INCLUDE_DISABLED, FIELD_DISRUPT_BUILDING)
+                if speed < 50 and terraincast == RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill2)
                     table.remove(data.drills, i)
                 end
                 --upgraded version
             elseif GetDeviceType(id) == savename_drill3 then
-                if speed < 75 and terraincast == RAY_HIT_TERRAIN then
+                local target = AddVectors(position, ScaleVector(Vec3(math.sin(radians), math.cos(radians)), 240))
+                local terraincast = CastRay(source, target, RAY_INCLUDE_DISABLED, FIELD_DISRUPT_BUILDING)
+                if speed < 50 and terraincast == RAY_HIT_TERRAIN then
                     UpgradeDevice(id, savename_drill4)
                     table.remove(data.drills, i)
                 end
@@ -89,5 +94,23 @@ function DrillRemove(saveName, deviceId)
                 table.remove(data.drills, i)
             end
         end
+    end
+end
+
+--spawn the device place effect if the building isnt instant (placed by player)
+function DrillPlaceEffect2(id, type)
+    if IsDeviceFullyBuilt(id) == false then
+        if type == 1 then
+            SpawnEffect("effects/device_construct.lua", GetDevicePosition(id))
+        elseif type == 2 then
+            SpawnEffect("effects/device_upgrade.lua", GetDevicePosition(id))
+        end
+    end
+end
+function DrillPlaceEffect(saveName, id)
+    if saveName == savename_drill then
+        ScheduleCall(0.04,  DrillPlaceEffect2, id, 1)
+    elseif saveName == savename_drill3 then
+        ScheduleCall(0.04,  DrillPlaceEffect2, id, 2)
     end
 end

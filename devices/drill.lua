@@ -3,8 +3,10 @@ Sprites = {}
 SelectionHeight = 50.0
 SelectionOffset = {0, 10}
 EnergyStorageCapacity = 0
-ConstructEffect = nil
-CompleteEffect = nil
+DeviceSplashDamage = 100
+DeviceSplashDamageMaxRadius = 300
+ConstructEffect = ""
+CompleteEffect = path .. "/effects/drill_extend.lua"
 Sprites =
 {
     {

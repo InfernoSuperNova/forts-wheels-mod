@@ -106,10 +106,17 @@ if barrel then
 end
 
 --add drills
+table.insert(Sprites, ButtonSprite("hud-drills-icon", "HUD/HUD-drill", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-drills", "drill", path))
 local drill = DeepCopy(FindDevice("battery"))
 if drill then
     --base drill device
     drill.SaveName = "drill"
+    drill.BuildTimeComplete = 30.0
+    drill.MetalCost = 200
+    drill.EnergyCost = 2000
+    drill.Icon = "hud-drills-icon"
+    drill.Detail = "hud-detail-drills"
     drill.FileName = path .. "/devices/drill.lua"
     drill.MaxUpAngle = 45
     drill.Upgrades =
@@ -126,7 +133,7 @@ if drill then
             SaveName = "drill3",
             Prerequisite = "upgrade",
             MetalCost = 100,
-            EnergyCost = 2000,
+            EnergyCost = 2500,
             BuildDuration = 20,
         },
     }
@@ -150,7 +157,7 @@ if drill then
             SaveName = "drill3",
             Prerequisite = "upgrade",
             MetalCost = 100,
-            EnergyCost = 2000,
+            EnergyCost = 2500,
             BuildDuration = 20,
         },
     }
@@ -158,6 +165,8 @@ if drill then
     --upgrade for drill that does more metal
     local drill3 = DeepCopy(drill)
     drill3.SaveName = "drill3"
+    drill3.MetalCost = 300
+    drill3.EnergyCost = 4500
     drill3.Enabled = false
     drill3.FileName = path .. "/devices/drill3.lua"
     drill3.Upgrades =
