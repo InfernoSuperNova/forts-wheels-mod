@@ -4,7 +4,10 @@ dofile(path .. "/debugMagic.lua")
 
 dofile("scripts/forts.lua")
 
-dofile(path .."/config/config.lua")
+dofile(path .. "/config/config.lua")
+dofile(path .. "/config/commanders.lua")
+
+dofile(path .. "/scripts/CommanderDetection.lua")
 dofile(path .. "/scripts/BetterLog.lua")
 dofile(path .. "/scripts/controls.lua")
 dofile(path .. "/scripts/VectorFunctions.lua")
@@ -25,7 +28,7 @@ JustJoined = true --to run something once upon joining through Update. (used for
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
-   
+   InitializeCommanders()
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
     end
