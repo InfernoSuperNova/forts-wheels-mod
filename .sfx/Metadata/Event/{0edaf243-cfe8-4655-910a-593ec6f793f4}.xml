@@ -182,7 +182,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{e8221f3b-e052-4e95-9649-053edb6be896}">
 		<property name="volume">
-			<value>-12</value>
+			<value>-14.5</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{6f0be545-c079-46b5-bff6-2581eaadc25d}</destination>
@@ -500,7 +500,7 @@
 			<destination>{644a22a3-1d83-4a36-ac53-f4a65d9d9ddb}</destination>
 			<destination>{97a6efa1-b157-4e33-84d4-b9d97867da60}</destination>
 			<destination>{a8110b84-fdc2-453e-88e4-50ec05f63ea3}</destination>
-			<destination>{d7d03058-caf9-467f-97b6-834cabaf6688}</destination>
+			<destination>{bd993196-e049-45b5-bd49-8e5765f9de52}</destination>
 			<destination>{c042cff3-6e44-4b92-bfd7-e90a76951166}</destination>
 			<destination>{c43fdb34-6f30-4cb3-8ced-2b6202b6b1b4}</destination>
 			<destination>{efd11855-997a-495b-a638-20c1b7bf75f6}</destination>
@@ -733,13 +733,16 @@
 			<destination>{9b30ac4e-b224-45bd-a225-342de917042c}</destination>
 		</relationship>
 	</object>
-	<object class="ProxyEffect" id="{d7d03058-caf9-467f-97b6-834cabaf6688}">
-		<property name="inputFormat">
-			<value>0</value>
+	<object class="SpatialiserEffect" id="{bd993196-e049-45b5-bd49-8e5765f9de52}">
+		<property name="distanceRolloffType">
+			<value>1</value>
 		</property>
-		<relationship name="preset">
-			<destination>{cdac7b16-3f91-41bb-b62f-40278bf2de45}</destination>
-		</relationship>
+		<property name="minimumDistance">
+			<value>2000</value>
+		</property>
+		<property name="maximumDistance">
+			<value>10000</value>
+		</property>
 	</object>
 	<object class="ProxyEffect" id="{c042cff3-6e44-4b92-bfd7-e90a76951166}">
 		<property name="inputFormat">
