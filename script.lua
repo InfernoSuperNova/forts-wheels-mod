@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/resources.lua")
 dofile(path .. "/scripts/CommanderDetection.lua")
 dofile(path .. "/scripts/BetterLog.lua")
 dofile(path .. "/scripts/controls.lua")
@@ -72,6 +73,9 @@ function Update(frame)
     UpdateEffects(frame)
     DebugLog("Update effects good")
     ApplyForces()
+    DebugLog("apply forces good")
+    UpdateResources()
+    DebugLog("Update resources good")
     JustJoined = false
 end
 
