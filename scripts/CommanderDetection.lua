@@ -8,7 +8,6 @@ function InitializeCommanders()
     for side = 1, 2 do 
         data.Commanders[side] = GetWeaponReloadPeriod(side, "observer_dummy")
     end
-    BetterLog(data.Commanders)
 end
 
 

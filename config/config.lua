@@ -50,3 +50,7 @@ SpringConst = 30000
 Dampening = 3000
 
 Terrain = {}
+
+
+--resources.lua
+MetalCostPerSecMaxThrottle = 5
