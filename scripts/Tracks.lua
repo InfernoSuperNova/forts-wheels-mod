@@ -58,6 +58,7 @@ function PlaceSuspensionPosInTable(id)
         local trackGroup = data.trackGroups[id]
         local actualPos = WheelPos[id]
         if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
+
             --get the structure that the track set belongs to
             local structureId = GetDeviceStructureId(id)
             --local actualPos = WheelPos[id]
@@ -74,6 +75,7 @@ function PlaceSuspensionPosInTable(id)
             TracksId[structureId][id] = suspensionPos
 
             table.insert(Tracks[structureId][trackGroup], suspensionPos)
+
         end
     end
 end
