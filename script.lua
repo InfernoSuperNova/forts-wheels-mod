@@ -29,7 +29,13 @@ JustJoined = true --to run something once upon joining through Update. (used for
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
-   InitializeCommanders()
+    InitializeScript()
+   
+end
+
+
+function InitializeScript()
+    InitializeCommanders()
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
     end
@@ -46,7 +52,6 @@ function Load(GameStart)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
 end
-
 function Update(frame)
     LocalScreen = GetCamera()
     if frame == 125 then
@@ -87,10 +92,10 @@ function CheckSaveNameTable(input, table)
     return false
 end
 function OnRestart()
-    InitializePropulsion()
+    InitializeScript()
 end
-function OnSeek()
-    InitializePropulsion()
+function OnSeekStart()
+    InitializeScript()
 end
 function OnDraw()
 
