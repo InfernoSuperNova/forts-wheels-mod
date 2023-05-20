@@ -208,3 +208,11 @@ function GetDeviceIdFromKey(structure, key)
     return data.structures[structure][key]
 end
 dofile(path .. "/debugMagic.lua")
+
+function TimeCode(fn, arg0, arg1, arg2, arg3)
+    --logs how long it takes to run a function
+    local t1 = GetRealTime()
+    fn(arg0,arg1,arg2,arg3)
+    local t2 = GetRealTime()
+    Log(tostring((t2-t1)*1000) .. " ms")
+end
