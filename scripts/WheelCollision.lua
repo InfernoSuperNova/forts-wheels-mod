@@ -156,7 +156,15 @@ function ApplyFinalForce(device, velocity, displacement, structureId)
         x = SpringDampenedForce(SpringConst, displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
         y = SpringDampenedForce(SpringConst, displacement.y, Dampening * math.abs(surfaceNormal.y), velocity.y)
     }
-    FinalSuspensionForces[device] = DampenedForce
+    if FinalSuspensionForces[device] and DampenedForce.x then
+        FinalSuspensionForces[device] = {
+            x = FinalSuspensionForces[device].x + DampenedForce.x,
+            y = FinalSuspensionForces[device].y + DampenedForce.y
+        }
+    else
+        FinalSuspensionForces[device] = DampenedForce
+    end
+    
 end
 
 function IndexTerrainBlocks()
