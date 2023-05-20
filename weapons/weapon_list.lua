@@ -1,4 +1,5 @@
 
+dofile(path .. "/scripts/BetterLog.lua")
 table.insert(Sprites, ButtonSprite("hud-group-throttle", "groups/Group-throttle", GroupButtonSpriteBottom, GroupButtonSpriteBottom, nil, nil, path))
 table.insert(Weapons, 1,
 {
@@ -23,9 +24,20 @@ table.insert(Weapons, 1,
 })
 
 
-table.insert(Weapons, InheritType(Weapons[1], nil,{
+table.insert(Weapons, InheritType(Weapons[1], nil, {
     FileName = path .. "/weapons/observer_dummy.lua",
     SaveName = "observer_dummy",
     BuildTimeComplete = 0,
     Upgrades = {},
-    Enabled = false}))
+    Enabled = false
+}))
+
+--     local silo = DeepCopy(FindWeapon("missile"))
+--     if silo then
+--         silo.SaveName = silo.SaveName .. "Structure"
+--         silo.BuildOnGroundOnly = false
+--     end
+
+-- InsertWeaponBehind("missile", silo)
+
+

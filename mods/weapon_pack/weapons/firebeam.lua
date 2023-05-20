@@ -1,0 +1,2 @@
+BeamPenetrationRotationThreshold = nil
+BeamPenetrationDistanceThreshold = nil
