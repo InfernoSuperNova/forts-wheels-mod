@@ -88,8 +88,9 @@ function SortTracks()
             if not SortedTracks[structure] then SortedTracks[structure] = {} end
             --Don't do unnecessary track calculations if the wheel is a wheel
             if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team) then
-                SortedTracks[structure][trackGroup] = JarvisWrapping(trackSet)
-                DebugLog("Jarvis wrapping good")
+                --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
+                SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
+                DebugLog("gift wrapping good")
                 
                 PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WheelRadius)
                 DebugLog("Track pushing good")
@@ -201,69 +202,75 @@ function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
     end
 end
 
-function JarvisWrapping(points)
-    -- Check if all points have the same Y level
-    local same_y_level = true
-    local y_level = points[1].y
-    for i = 2, #points do
-        if points[i].y ~= y_level then
-            same_y_level = false
-            break
-        end
-    end
 
-    -- If all points have the same Y level, sort by X value to find leftmost point
-    if same_y_level then
-        table.sort(points, function(a, b) return a.x < b.x end)
-        return points
+-- Helper function to check if three points are clockwise, counterclockwise, or collinear
+function Orientation(p, q, r)
+    local val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
+    if val == 0 then
+        return 0 -- Collinear
+    elseif val > 0 then
+        return 1 -- Clockwise
+    else
+        return 2 -- Counterclockwise
     end
-
-    -- Otherwise, find the leftmost point as before
-    local leftmost_index = 1
-    local leftest_value = points[1].x or 0
-    for point = 2, #points do
-        if points[point] and points[point].x and points[point].x > leftest_value then
-            leftest_value = points[point].x
-            leftmost_index = point
-        end
-    end
-    for i = 2, #points do
-        if points[i].x < points[leftmost_index].x then
-            leftmost_index = i
-        end
-    end
-
-    -- Find the hull points as before
-    local hull_points = {}
-    local current_point = leftmost_index
-    local loopCount = 1
-    repeat
-        table.insert(hull_points, points[current_point])
-        local next_point = 1
-        local farthest_point = next_point
-        for i = 1, #points do
-            if i ~= current_point and i ~= next_point then
-                local cross_product = (points[i].x - points[current_point].x) *
-                    (points[next_point].y - points[current_point].y) -
-                    (points[i].y - points[current_point].y) * (points[next_point].x - points[current_point].x)
-                if next_point == current_point or cross_product < 0 or (cross_product == 0 and Distance(points[i], points[current_point]) > Distance(points[farthest_point], points[current_point])) then
-                    next_point = i
-                    farthest_point = i
-                end
-            end
-        end
-        current_point = next_point
-        --Prevents an infinite loop if it were to happen (input length ^ 2 + 1 is max complexity)
-        if loopCount == math.pow(#points, 2) + 1 then
-            return hull_points
-        end
-        loopCount = loopCount + 1
-    until current_point == leftmost_index
-    return hull_points
 end
 
+-- Gift wrapping function using Chan's algorithm
+function GiftWrapping(points)
+    local n = #points
+    if n < 3 then
+        return {} -- Invalid input, need at least 3 points
+    end
 
+    -- Find the leftmost point
+    local leftmost = 1
+    for i = 2, n do
+        if points[i].x < points[leftmost].x then
+            leftmost = i
+        elseif points[i].x == points[leftmost].x and points[i].y < points[leftmost].y then
+            leftmost = i
+        end
+    end
 
+    -- Initialize the result list and current point
+    local hull = {}
+    local p = leftmost
+    local q
+    local counter = 0
+    local maxIterations = n*n
+    repeat
+        -- Add the current point to the hull
+        table.insert(hull, points[p])
+
+        -- Find the next point on the hull
+        q = (p % n) + 1
+        for i = 1, n do
+            -- Check if points[i] is more counterclockwise than the current q
+            if Orientation(points[p], points[i], points[q]) == 2 then
+                q = i
+            end
+        end
+        
+        p = q
+        counter = counter + 1
+    if counter >= maxIterations then
+        break -- Break out of the loop
+    end
+    until p == leftmost
+
+    return hull
+end
+
+function ReverseTable(tbl)
+    local reversed = {}
+    local n = #tbl
+
+    for i = n, 1, -1 do
+        table.insert(reversed, tbl[i])
+    end
+
+    return reversed
+end
 
 
 function LogCoordsToFile(points)
