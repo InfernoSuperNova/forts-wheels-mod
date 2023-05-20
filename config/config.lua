@@ -1,3 +1,27 @@
+ModDebug = false
+
+
+--config values
+
+--wheels
+WheelRadius = 75                                    --radius of the wheels
+TrackWidth = 20                                     --width of the tracks
+WheelSuspensionHeight = 150                         --height from the origin of the suspension to the wheel itself
+SpringConst = 30000                                 --spring constant, the force that wheels will push off with. Higher spring value will necessitate a higher dampening value
+Dampening = 3000                                    --spring dampening for wheel collisions (higher is less bouncy, lower is less stable)
+--propulsion
+PROPULSION_FACTOR = 2500000                         --engine power
+MAX_POWER_INPUT_RATIO = 2                           --how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
+VEL_PER_GEARBOX = 800                               --velocity per engine, in grid units per sec
+GEAR_CHANGE_RATIO = 0.95                            --upper threshold of current gear range to switch to the next one
+THROTTLE_DEADZONE = 0.02                            --portion of the throttle to ingore
+--devices
+WheelSaveName = {"suspension", "suspensionInverted"}--savenames of the wheel devices
+EngineSaveName = "engine_wep"                       --savename of engine device
+ControllerSaveName = "engine_wep"                   --savename of the controller
+GearboxSaveName = "gearbox"                         --savename of the transmission
+MetalCostPerSecMaxThrottle = 5                      --upper limit to the metal per second consumption of engines
+TrackLinkDistance = 40                              --distance between track links (visual)
 --script.lua
 
 
@@ -7,50 +31,22 @@ TracksId = {}
 FinalSuspensionForces = {}
 FinalPropulsionForces = {}
 FinalAddedForces = {}
-WheelRadius = 75
-TrackWidth = 20
-WheelSuspensionHeight = 150
-
-WheelSaveName = {"suspension", "suspensionInverted"}
-ModDebug = false
-
-
---propulsion.lua
-
---engine power
-PROPULSION_FACTOR = 2500000
---how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
-MAX_POWER_INPUT_RATIO = 2
---velocity per engine, in grid units per sec
-VEL_PER_GEARBOX = 800
-GEAR_CHANGE_RATIO = 0.95
-THROTTLE_DEADZONE = 0.02
-EngineSaveName = "engine_wep"
-
-ControllerSaveName = "engine_wep"
-
-GearboxSaveName = "gearbox"
 Motors = {}
 Gearboxes = {}
-
---tracks.lua
-
---- forts script API ---
 TrackOffsets = {}
-SpecialFrame = 1
-TrackLinkDistance = 40
 Tracks = {}
 SortedTracks = {}
 PushedTracks = {}
 LocalEffects = {}
 TrackGroups = {}
-
---wheelCollision.lua
-SpringConst = 30000
-Dampening = 3000
-
 Terrain = {}
 
 
---resources.lua
-MetalCostPerSecMaxThrottle = 5
+
+--- forts script API ---
+
+SpecialFrame = 1
+
+
+
+
