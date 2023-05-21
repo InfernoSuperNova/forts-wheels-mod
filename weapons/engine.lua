@@ -88,7 +88,7 @@ DrawBehindTerrain = true
 NoReclaim = false
 TeamOwned = true
 BlockPenetration = true
-ClaimsStructure = true
+ClaimsStructures = true
 
 dofile("effects/device_smoke.lua")
 SmokeEmitter = StandardDeviceSmokeEmitter
