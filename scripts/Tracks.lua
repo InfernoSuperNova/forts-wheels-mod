@@ -219,7 +219,7 @@ end
 function GiftWrapping(points)
     local n = #points
     if n < 3 then
-        return {} -- Invalid input, need at least 3 points
+        return points -- Invalid input, need at least 3 points
     end
 
     -- Find the leftmost point
