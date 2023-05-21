@@ -167,14 +167,12 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
     if data.brakes[structureKey] == true then 
         for deviceKey, device in pairs(devices) do
             if data.wheelsTouchingGround[structureKey][deviceKey] then
-                local normalizedVelocity = NormalizeVector(velocity)
 
-                local signX = math.sign(normalizedVelocity.x)
-                local normalizedVelocity = 
-                {
-                    x = normalizedVelocity.x * normalizedVelocity.x * signX, 
-                }
-                FinalPropulsionForces[device] = {x = -normalizedVelocity.x * brakeFactor, y = 0}
+                local signX = math.sign(velocity.x)
+                local brakeVelocity = velocity.x * 0.01
+                brakeVelocity = Clamp(brakeVelocity, -1, 1)
+                BetterLog(brakeVelocity)
+                FinalPropulsionForces[device] = {x = -brakeVelocity * brakeFactor, y = 0}
             end
         end
         return
