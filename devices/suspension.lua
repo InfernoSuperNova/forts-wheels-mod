@@ -1,5 +1,4 @@
 -- fort wars device file
-
 ConstructEffect = "effects/device_construct.lua"
 CompleteEffect = "effects/device_complete.lua"
 DestroyEffect = "effects/device_explode.lua"

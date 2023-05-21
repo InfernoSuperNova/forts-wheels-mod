@@ -100,10 +100,10 @@ InsertDeviceBehind("suspension", suspension2)
 
 
 
-local barrel = FindDevice("barrel")
-if barrel then
-    barrel.Enabled = true
-end
+-- local barrel = FindDevice("barrel")
+-- if barrel then
+--     barrel.Enabled = true
+-- end
 
 --add drills
 table.insert(Sprites, ButtonSprite("hud-drills-icon", "HUD/HUD-drill", nil, ButtonSpriteBottom, nil, nil, path))
