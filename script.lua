@@ -51,13 +51,16 @@ function InitializeScript()
     -- local circle = MinimumBoundingCircle(terrain)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
+    ScheduleCall(5, AlertJoinDiscord, "")
+end
+
+function AlertJoinDiscord()
+    Log(RGBAtoHex(82, 139, 255, 255, false) .. "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
+    Log(RGBAtoHex(82, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
+
 end
 function Update(frame)
     LocalScreen = GetCamera()
-    if frame == 125 then
-        Notice(RGBAtoHex(82, 139, 255, 255, false) .. "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
-        Notice(RGBAtoHex(82, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
-    end
     DebugLog("---------Start of update---------")
     IndexTerrainBlocks()
     DebugLog("Index terrain blocks good")
