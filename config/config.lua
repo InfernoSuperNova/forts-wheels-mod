@@ -17,11 +17,13 @@ GEAR_CHANGE_RATIO = 0.95                            --upper threshold of current
 THROTTLE_DEADZONE = 0.02                            --portion of the throttle to ingore
 --devices
 WheelSaveName = {"suspension", "suspensionInverted"}--savenames of the wheel devices
-EngineSaveName = "engine_wep"                       --savename of engine device
-ControllerSaveName = "engine_wep"                   --savename of the controller
+EngineSaveName = "engine"                           --savename of engine device
+ControllerSaveName = {"vehicleControllerStructure", "vehicleControllerNoStructure"}                           
+                                                    --savename of the controller
 GearboxSaveName = "gearbox"                         --savename of the transmission
 MetalCostPerSecMaxThrottle = 5                      --upper limit to the metal per second consumption of engines
 TrackLinkDistance = 40                              --distance between track links (visual)
+DrillsEnabled = false                               --whether to enable drills or not
 --script.lua
 
 
