@@ -1,10 +1,10 @@
 -- fort wars device file
 
-ConstructEffect = "effects/device_construct.lua"
-CompleteEffect = "effects/device_complete.lua"
-DestroyEffect = "effects/device_explode.lua"
+ConstructEffect = ""
+CompleteEffect = ""
+DestroyEffect = ""
 Scale = 1
-SelectionWidth = 40
+SelectionWidth = 65
 SelectionHeight = 40
 SelectionOffset = { 0.0, -40.5 }
 Mass = 100.0
@@ -22,6 +22,7 @@ DrawBehindTerrain = true
 NoReclaim = false
 TeamOwned = true
 BlockPenetration = false
+ClaimsStructures = true
 
 --dofile("effects/device_smoke.lua")
 --SmokeEmitter = StandardDeviceSmokeEmitter
@@ -29,10 +30,10 @@ BlockPenetration = false
 Sprites =
 {
 	{
-		Name = "gearbox-base",
+		Name = "vehicleController-base",
 		States =
 		{
-			Normal = { Frames = { { texture = path .. "/devices/gearbox/gearbox.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/devices/controller/controller.png" }, mipmap = true, }, },
 		},
 	},
     
@@ -40,11 +41,11 @@ Sprites =
 
 Root =
 {
-	Name = "gearbox",
+	Name = "controller",
 	Angle = 0,
 	Pivot = { 0, -0.60 },
 	PivotOffset = { 0, 0 },
-	Sprite = "gearbox-base",
+	Sprite = "vehicleController-base",
     Scale = 1,
     UserData = 0,
 

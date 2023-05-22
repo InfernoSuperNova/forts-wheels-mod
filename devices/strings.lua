@@ -14,6 +14,10 @@ Merge(Device,
     gearboxTip2 = L"Gears for wheels. Place more to add more gears (go faster).",
     gearboxTip3 = L"Transmission is automatic.",
 
+    vehicleController = L"Vehicle controller",
+    vehicleControllerTip2 = L"Required to control your wheels and control the structure.",
+    vehicleControllerTip3 = L"Cannot control structure if drills are enabled.",
+
     drill = L"Driller",
     drillTip2 = L"When drilling, produces 3 metal per second and consumes 6 energy per second.",
     drillTip3 = L"Needs: exposure to terrain under the device and must be stationary to begin drilling.",

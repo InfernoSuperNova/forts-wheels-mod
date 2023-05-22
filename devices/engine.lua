@@ -1,8 +1,8 @@
 -- fort wars device file
 
-ConstructEffect = nil
+ConstructEffect = "effects/device_construct.lua"
 CompleteEffect = "effects/device_complete.lua"
-DestroyEffect = ""
+DestroyEffect = "effects/device_explode.lua"
 Scale = 1
 SelectionWidth = 65
 SelectionHeight = 40
@@ -21,8 +21,7 @@ DrawBracket = false
 DrawBehindTerrain = true
 NoReclaim = false
 TeamOwned = true
-BlockPenetration = true
-ClaimsStructure = true
+BlockPenetration = false
 
 --dofile("effects/device_smoke.lua")
 --SmokeEmitter = StandardDeviceSmokeEmitter

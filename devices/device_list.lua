@@ -38,13 +38,13 @@ local gearbox =
     BuildTimeComplete = 15,
     ScrapPeriod = 8,
     MetalCost = 150,
-    EnergyCost = 2000,
+    EnergyCost = 1500,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
-    MetalReclaimMin = 0,
-    MetalReclaimMax = 0,
+    MetalReclaimMin = 25,
+    MetalReclaimMax = 75,
     EnergyReclaimMin = 0,
-    EnergyReclaimMax = 0,
+    EnergyReclaimMax = 750,
     MaxUpAngle = 45,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
@@ -54,8 +54,30 @@ local gearbox =
 
 InsertDeviceBehind("engine", gearbox)
 
+local controller = 
+{
+    SaveName = "vehicleController",
+    FileName = path .. "/devices/controller.lua",
+    Icon = "hud-gearbox-icon",
+    Detail = "hud-detail-gearbox",
+    BuildTimeComplete = 15,
+    ScrapPeriod = 8,
+    MetalCost = 300,
+    EnergyCost = 2000,
+    MetalRepairCost = 25,
+    EnergyRepairCost = 500,
+    MetalReclaimMin = 50,
+    MetalReclaimMax = 150,
+    EnergyReclaimMin = 0,
+    EnergyReclaimMax = 1000,
+    MaxUpAngle = 45,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/devices/ui_devices",
+    HasDummy = false,
+    ClaimsStructure = true,
+}
 
-
+InsertDeviceBehind("sandbags", controller)
 
 table.insert(Sprites, ButtonSprite("hud-suspension-icon", "HUD/HUD-suspension", nil, ButtonSpriteBottom, nil, nil, path))
 table.insert(Sprites, DetailSprite("hud-detail-suspension", "suspension", path))
@@ -71,10 +93,10 @@ local suspension =
     EnergyCost = 1000,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
-    MetalReclaimMin = 0,
-    MetalReclaimMax = 0,
+    MetalReclaimMin = 25,
+    MetalReclaimMax = 50,
     EnergyReclaimMin = 0,
-    EnergyReclaimMax = 0,
+    EnergyReclaimMax = 500,
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",

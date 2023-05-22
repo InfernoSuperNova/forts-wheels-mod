@@ -105,7 +105,7 @@ function OnDraw()
 end
 
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
-	if (saveName == "engine") then
+	if (saveName == "vehicleController") then
 		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
 		ApplyDamageToDevice(deviceId, 1000000)
 	end
@@ -152,9 +152,19 @@ end
 
 --I stole this from fortships >:)
 function CreateControllerWeapon(teamId, deviceId, saveName, nodeA, nodeB, t, side)
-	EnableWeapon("engine_wep", true, side)
-	CreateDevice(teamId, "engine_wep", nodeA, nodeB, t)
-	EnableWeapon("engine_wep", false, side)
+
+    if DrillsEnabled then
+        EnableWeapon("vehicleControllerNoStructure", true, side)
+	    CreateDevice(teamId, "vehicleControllerNoStructure", nodeA, nodeB, t)
+	    EnableWeapon("vehicleControllerNoStructure", false, side)
+
+    else
+        EnableWeapon("vehicleControllerStructure", true, side)
+	    CreateDevice(teamId, "vehicleControllerStructure", nodeA, nodeB, t)
+	    EnableWeapon("vehicleControllerStructure", false, side)
+    end
+
+	
 end
 
 
