@@ -11,9 +11,11 @@ function InitializeDrill()
     if #data.drills > 0 then
         EnableDevice(savename_drill, true, 1)
         EnableDevice(savename_drill, true, 2)
+        DrillsEnabled = true
     else
         EnableDevice(savename_drill, false, 1)
         EnableDevice(savename_drill, false, 2)
+        DrillsEnabled = false
     end
 end
 

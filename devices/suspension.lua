@@ -20,7 +20,7 @@ DrawBracket = false
 DrawBehindTerrain = true
 NoReclaim = false
 TeamOwned = true
-BlockPenetration = true
+BlockPenetration = false
 
 dofile("effects/device_smoke.lua")
 SmokeEmitter = StandardDeviceSmokeEmitter
