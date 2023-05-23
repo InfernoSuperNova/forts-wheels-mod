@@ -20,7 +20,6 @@ local engine =
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
     HasDummy = false,
-    ClaimsStructure = true,
 }
 
 InsertDeviceBehind("sandbags", engine)
@@ -41,15 +40,14 @@ local gearbox =
     EnergyCost = 1500,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
-    MetalReclaimMin = 25,
-    MetalReclaimMax = 75,
+    MetalReclaimMin = 0.16,
+    MetalReclaimMax = 0.5,
     EnergyReclaimMin = 0,
-    EnergyReclaimMax = 750,
+    EnergyReclaimMax = 0.5,
     MaxUpAngle = 45,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
     HasDummy = false,
-    ClaimsStructure = true,
 }
 
 InsertDeviceBehind("engine", gearbox)
@@ -68,15 +66,14 @@ local controller =
     EnergyCost = 2000,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
-    MetalReclaimMin = 50,
-    MetalReclaimMax = 150,
+    MetalReclaimMin = 0.16,
+    MetalReclaimMax = 0.5,
     EnergyReclaimMin = 0,
-    EnergyReclaimMax = 1000,
+    EnergyReclaimMax = 0.5,
     MaxUpAngle = 45,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
     HasDummy = false,
-    ClaimsStructure = true,
 }
 
 InsertDeviceBehind("sandbags", controller)
@@ -95,10 +92,10 @@ local suspension =
     EnergyCost = 1000,
     MetalRepairCost = 25,
     EnergyRepairCost = 500,
-    MetalReclaimMin = 25,
-    MetalReclaimMax = 50,
+    MetalReclaimMin = 0.25,
+    MetalReclaimMax = 0.5,
     EnergyReclaimMin = 0,
-    EnergyReclaimMax = 500,
+    EnergyReclaimMax = 0.5,
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/devices/ui_devices",
