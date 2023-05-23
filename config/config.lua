@@ -1,5 +1,5 @@
 ModDebug = false
-
+DebugText = ""
 
 --config values
 
@@ -24,9 +24,21 @@ GearboxSaveName = "gearbox"                         --savename of the transmissi
 MetalCostPerSecMaxThrottle = 5                      --upper limit to the metal per second consumption of engines
 TrackLinkDistance = 40                              --distance between track links (visual)
 DrillsEnabled = false                               --whether to enable drills or not
+--Core shields
+ShieldRadius = 1800                                 --radius of the base protecting shield
+ShieldDamage = 2                                    --damage of the core shield at center (* 25 per sec)
+ShieldForce = 2500000                               --pushback force of the shield at center
+
+
+--binds
+Keybinds = {
+    ToggleDebug = {"left control", "left alt", "d"}
+}
+PressedKeyBinds = {}
+HeldKeys = {}
+
+
 --script.lua
-
-
 Displacement = {}
 WheelPos = {}
 TracksId = {}
@@ -42,6 +54,8 @@ PushedTracks = {}
 LocalEffects = {}
 TrackGroups = {}
 Terrain = {}
+
+
 
 
 
