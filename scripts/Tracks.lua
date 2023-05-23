@@ -4,16 +4,28 @@ function InitializeTracks()
 end
 
 function UpdateTracks()
+    DebugLog("---------Start of UpdateTracks---------")
+    local prevTime = GetRealTime()
     ClearEffects()
-    DebugLog("Clear effects good")
+    local delta = GetRealTime() - prevTime
+    DebugLog("  Clear effects took " .. delta .. "s")
+    prevTime = GetRealTime()
     FillTracks()
-    DebugLog("Fill tracks good")
+    delta = GetRealTime() - prevTime
+    DebugLog("  Fill tracks took " .. delta .. "s")
+    prevTime = GetRealTime()
     SortTracks()
-    DebugLog("Sort tracks good")
+    delta = GetRealTime() - prevTime
+    DebugLog("  Sort tracks took " .. delta .. "s")
+    prevTime = GetRealTime()
     GetTrackSetPositions()
-    DebugLog("GetTrackSetPositions good")
+    delta = GetRealTime() - prevTime
+    DebugLog("  GetTrackSetPositions took " .. delta .. "s")
+    prevTime = GetRealTime()
     DrawTracks()
-    DebugLog("Draw tracks good")
+    delta = GetRealTime() - prevTime
+    DebugLog("  Draw tracks took " .. delta .. "s")
+    DebugLog("---------End of UpdateTracks---------\n")
 end
 
 function TrueUpdateTracks()
@@ -63,13 +75,16 @@ function PlaceSuspensionPosInTable(id)
             local structureId = GetDeviceStructureId(id)
             --local actualPos = WheelPos[id]
             --put it into a table unique to that structure...
-            DebugLog(Displacement)
             if not Tracks[structureId] then Tracks[structureId] = {} end
             if not Tracks[structureId][trackGroup] then Tracks[structureId][trackGroup] = {} end
-            local suspensionPos = {
-                x = actualPos.x + Displacement[id].x,
-                y = actualPos.y + Displacement[id].y,
-            }
+            local suspensionPos = actualPos
+            if Displacement[id] then
+                suspensionPos = {
+                    x = actualPos.x + Displacement[id].x,
+                    y = actualPos.y + Displacement[id].y,
+                }
+            end
+            
             --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][id] = suspensionPos
@@ -89,11 +104,18 @@ function SortTracks()
             --Don't do unnecessary track calculations if the wheel is a wheel
             if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team) then
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
-                SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
-                DebugLog("gift wrapping good")
+
+
                 
+                local prevTime = GetRealTime()
+                SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
+                local delta = GetRealTime() - prevTime
+                DebugLog("gift wrapping took " .. delta .. "s")
+                
+                prevTime = GetRealTime()
                 PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WheelRadius)
-                DebugLog("Track pushing good")
+                delta = GetRealTime() - prevTime
+                DebugLog("Track pushing took " .. delta .. "s")
             else
                 PushedTracks[structure][trackGroup] = trackSet
             end
@@ -160,9 +182,13 @@ function DrawTrackTreads(trackSet, base, trackGroup)
     for wheel = 2, #trackSet, 2 do
         local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
         local center = SortedTracks[base][trackGroup][index]
-        if #trackSet > 2 then
-            DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
-        end
+        
+        DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
+
+            
+
+        
+
     end
 end
 
