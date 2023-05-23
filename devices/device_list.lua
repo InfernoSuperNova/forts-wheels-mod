@@ -54,12 +54,14 @@ local gearbox =
 
 InsertDeviceBehind("engine", gearbox)
 
+table.insert(Sprites, ButtonSprite("hud-controller-icon", "HUD/HUD-controller", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-controller", "controller", path))
 local controller = 
 {
     SaveName = "vehicleController",
     FileName = path .. "/devices/controller.lua",
-    Icon = "hud-gearbox-icon",
-    Detail = "hud-detail-gearbox",
+    Icon = "hud-controller-icon",
+    Detail = "hud-detail-controller",
     BuildTimeComplete = 15,
     ScrapPeriod = 8,
     MetalCost = 300,
