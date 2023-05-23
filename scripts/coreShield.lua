@@ -1,18 +1,19 @@
 function InitializeCoreShield()
     data.coreShields = {}
 end
-function FillCoreShield()
-    for side = 1, 2 do
-        if not data.coreShields[side] then data.coreShields[side] = {} end
-        local deviceCount = GetDeviceCountSide(side)
-        for device = 0, deviceCount do
 
-            local id = GetDeviceIdSide(side, device)
-            if GetDeviceType(id) == "reactor" then
-                data.coreShields[side][id] = GetDevicePosition(id)
+function FillCoreShield()
+    if not DrillsEnabled then
+        for side = 1, 2 do
+            if not data.coreShields[side] then data.coreShields[side] = {} end
+            local deviceCount = GetDeviceCountSide(side)
+            for device = 0, deviceCount do
+                local id = GetDeviceIdSide(side, device)
+                if GetDeviceType(id) == "reactor" then
+                    data.coreShields[side][id] = GetDevicePosition(id)
+                end
             end
         end
-        
     end
 end
 
@@ -20,8 +21,6 @@ function RemoveCoreShield(id)
     for side = 1, 2 do
         if data.coreShields[side][id] then data.coreShields[side][id] = nil end
     end
-
-
 end
 
 function UpdateCoreShields()
@@ -30,7 +29,7 @@ function UpdateCoreShields()
             local otherSide = 3 - side
             EnumerateDevicesInShieldRadius(coords, otherSide, side)
         end
-    end 
+    end
 end
 
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
@@ -40,8 +39,8 @@ function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
 
         local pos = GetDevicePosition(id)
         if Distance(shieldCoords, pos) < ShieldRadius then
-            local color = {r = 255, g = 94, b = 94, a= 255}
-            if shieldSide == 1 then color = {r = 77, g = 166, b = 255, a = 255} end
+            local color = { r = 255, g = 94, b = 94, a = 255 }
+            if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
             SpawnCircle(shieldCoords, ShieldRadius, color, 0.04)
             EvaluatePositionInShield(id, shieldCoords, pos)
         end
@@ -49,16 +48,13 @@ function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
 end
 
 function EvaluatePositionInShield(deviceId, shieldPos, devicePos)
-
     local distance = Distance(shieldPos, devicePos)
     local direction = GetAngleVector(shieldPos, devicePos)
-    
+
     local insideShieldFactor = (1 - distance / ShieldRadius) ^ 0.5
     DamageDevicesInShield(insideShieldFactor, deviceId)
     PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, deviceId)
-    
 end
-
 
 function DamageDevicesInShield(insideShieldFactor, deviceId)
     ApplyDamageToDevice(deviceId, insideShieldFactor * ShieldDamage)
@@ -67,15 +63,12 @@ end
 function PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, deviceId)
     local nodeA = GetDevicePlatformA(deviceId)
     local nodeB = GetDevicePlatformB(deviceId)
-    local force = {x = direction.x * insideShieldFactor * ShieldForce, y = direction.y * insideShieldFactor * ShieldForce}
+    local force = { x = direction.x * insideShieldFactor * ShieldForce,
+        y = direction.y * insideShieldFactor * ShieldForce }
     --HighlightDirectionalVector(devicePos, direction)
     dlc2_ApplyForce(nodeA, force)
     dlc2_ApplyForce(nodeB, force)
 end
-
-
-
-
 
 --in limbo until beeman fixes GetStructurePos
 
