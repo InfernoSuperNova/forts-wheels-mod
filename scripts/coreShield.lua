@@ -19,16 +19,20 @@ end
 
 function RemoveCoreShield(id)
     for side = 1, 2 do
+        if #data.coreShields == 0 then return end
         if data.coreShields[side][id] then data.coreShields[side][id] = nil end
     end
 end
 
 function UpdateCoreShields()
     for side = 1, 2 do
-        for _, coords in pairs(data.coreShields[side]) do
-            local otherSide = 3 - side
-            EnumerateDevicesInShieldRadius(coords, otherSide, side)
+        if #data.coreShields > 0 then
+            for _, coords in pairs(data.coreShields[side]) do
+                local otherSide = 3 - side
+                EnumerateDevicesInShieldRadius(coords, otherSide, side)
+            end
         end
+        
     end
 end
 
