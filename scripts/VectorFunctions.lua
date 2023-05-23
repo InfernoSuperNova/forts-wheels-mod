@@ -165,7 +165,7 @@ end
 function GetAngleVector(point1, point2)
     local dx = point2.x - point1.x
     local dy = point2.y - point1.y
-    local len = math.sqrt(dx * dx + dy * dy)
+    local len = Distance(point1, point2)
     if len == 0 then
         return { x = 0, y = 0 }
     else
