@@ -7,6 +7,8 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/input.lua")
+dofile(path .. "/scripts/coreShield.lua")
 dofile(path .. "/scripts/resources.lua")
 dofile(path .. "/scripts/CommanderDetection.lua")
 dofile(path .. "/scripts/BetterLog.lua")
@@ -30,9 +32,8 @@ JustJoined = true --to run something once upon joining through Update. (used for
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
     InitializeScript()
-   
+    FillCoreShield()
 end
-
 
 function InitializeScript()
     InitializeCommanders()
@@ -42,8 +43,8 @@ function InitializeScript()
     InitializeTracks()
     InitializePropulsion()
     InitializeDrill()
+    InitializeCoreShield()
     InitializeEffects()
-    GraphingStart()
     data.terrainCollisionBoxes = {}
     data.previousVals = {}
     data.wheelsTouchingGround = {}
@@ -55,38 +56,74 @@ function InitializeScript()
 end
 
 function AlertJoinDiscord()
-    Log(RGBAtoHex(82, 139, 255, 255, false) .. "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
+    Log(RGBAtoHex(82, 139, 255, 255, false) ..
+    "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
     Log(RGBAtoHex(82, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
-
 end
+
 function Update(frame)
+    if not ModDebug then
+        ClearDebugControls()
+    end
     LocalScreen = GetCamera()
+    local startUpdateTime = GetRealTime()
+    local prevTime
+    local delta
     DebugLog("---------Start of update---------")
+    prevTime = GetRealTime()
     IndexTerrainBlocks()
-    DebugLog("Index terrain blocks good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Index terrain blocks took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     WheelCollisionHandler()
-    DebugLog("Wheel collision handler good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Wheel collision handler took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdateControls()
-    DebugLog("Update controls good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update controls took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdatePropulsion()
-    DebugLog("Propulsion good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Propulsion took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdateTracks()
-    DebugLog("Clear tracks good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update tracks took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     TrueUpdateTracks()
-    DebugLog("Update tracks good")
-    UpdateGraphs()
-    DebugLog("Update graphs good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("True Update tracks took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdateDrill(frame)
-    DebugLog("Update drill good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update drill took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdateEffects(frame)
-    DebugLog("Update effects good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update effects took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     ApplyForces()
-    DebugLog("apply forces good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("apply forces took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
     UpdateResources()
-    DebugLog("Update resources good")
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update resources took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
+    UpdateCoreShields()
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Update core shields took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
+    CheckHeldKeys()
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Check held keys took " .. string.format("%.2f", delta) .. "ms")
     JustJoined = false
+    DebugLog("---------End of update---------")
+    delta = (GetRealTime() - startUpdateTime) * 1000
+    DebugLog("Update took " .. string.format("%.2f", delta) .. "ms")
+    DebugUpdate()
 end
-
 
 function CheckSaveNameTable(input, table)
     for k, v in pairs(table) do
@@ -94,31 +131,38 @@ function CheckSaveNameTable(input, table)
     end
     return false
 end
+
 function OnRestart()
     InitializeScript()
 end
+
 function OnSeekStart()
     InitializeScript()
 end
+
 function OnDraw()
 
 end
 
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
-	if (saveName == "vehicleController") then
-		ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
-		ApplyDamageToDevice(deviceId, 1000000)
-	end
+    if (saveName == "vehicleController") then
+        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+        ApplyDamageToDevice(deviceId, 1000000)
+    end
     DrillPlaceEffect(saveName, deviceId)
 end
+
 function OnDeviceCompleted(teamId, deviceId, saveName)
     SoundAdd(saveName, deviceId)
     DrillAdd(saveName, deviceId)
 end
+
 function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
+    RemoveCoreShield(deviceId)
 end
+
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
@@ -127,18 +171,16 @@ end
 function ApplyForces()
     for device, force in pairs(FinalSuspensionForces) do
         if FinalPropulsionForces[device] then
-
             --Don't ask me why I have to do it like this, just trust that I do have to
             local newForceX = force.x + FinalPropulsionForces[device].x
             local newForceY = force.y + FinalPropulsionForces[device].y
-            
-            FinalAddedForces[device] = {x = newForceX, y = newForceY}
+
+            FinalAddedForces[device] = { x = newForceX, y = newForceY }
         else
             FinalAddedForces[device] = force
         end
-        
     end
-    
+
     for device, force in pairs(FinalAddedForces) do
         local nodeA = GetDevicePlatformA(device)
         local nodeB = GetDevicePlatformB(device)
@@ -152,22 +194,16 @@ end
 
 --I stole this from fortships >:)
 function CreateControllerWeapon(teamId, deviceId, saveName, nodeA, nodeB, t, side)
-
     if DrillsEnabled then
         EnableWeapon("vehicleControllerNoStructure", true, side)
-	    CreateDevice(teamId, "vehicleControllerNoStructure", nodeA, nodeB, t)
-	    EnableWeapon("vehicleControllerNoStructure", false, side)
-
+        CreateDevice(teamId, "vehicleControllerNoStructure", nodeA, nodeB, t)
+        EnableWeapon("vehicleControllerNoStructure", false, side)
     else
         EnableWeapon("vehicleControllerStructure", true, side)
-	    CreateDevice(teamId, "vehicleControllerStructure", nodeA, nodeB, t)
-	    EnableWeapon("vehicleControllerStructure", false, side)
+        CreateDevice(teamId, "vehicleControllerStructure", nodeA, nodeB, t)
+        EnableWeapon("vehicleControllerStructure", false, side)
     end
-
-	
 end
-
-
 
 function ReinsertKeys(t)
     local newTable = {}
@@ -179,8 +215,7 @@ end
 
 function math.sign(x)
     return x > 0 and 1 or x < 0 and -1 or 0
-  end
-  
+end
 
 --RGBAtoHex, courtesy of Harder_天使的花园
 function RGBAtoHex(r, g, b, a, UTF16)
@@ -192,9 +227,14 @@ function RGBAtoHex(r, g, b, a, UTF16)
     end
 end
 
-
-function DebugLog(string)
-    if ModDebug == true then BetterLog(string) end
+function SplitLines(str)
+    local lines = {} -- Table to store the lines
+    local index = 1  -- Index to track the current line
+    for line in str:gmatch("[^\r\n]+") do
+        lines[index] = line
+        index = index + 1
+    end
+    return lines
 end
 
 function ControlExists(parent, control)
@@ -211,7 +251,6 @@ function Clamp(val, min, max)
 end
 
 function GetDeviceKeyFromId(structure, Id)
-
     for key, value in pairs(data.structures[structure]) do
         if value == Id then return key end
     end
@@ -220,12 +259,13 @@ end
 function GetDeviceIdFromKey(structure, key)
     return data.structures[structure][key]
 end
+
 dofile(path .. "/debugMagic.lua")
 
 function TimeCode(fn, arg0, arg1, arg2, arg3)
     --logs how long it takes to run a function
     local t1 = GetRealTime()
-    fn(arg0,arg1,arg2,arg3)
+    fn(arg0, arg1, arg2, arg3)
     local t2 = GetRealTime()
-    Log(tostring((t2-t1)*1000) .. " ms")
+    Log(tostring((t2 - t1) * 1000) .. " ms")
 end
