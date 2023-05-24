@@ -87,6 +87,27 @@ function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
 
     WheelPos[device] = pos
     --looping through blocks
+    for _, link in pairs(RoadLinks) do
+        local newLink = {NodePosition(link.nodeA), NodePosition(link.nodeB)}
+        displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
+        
+        ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
+        if displacement == nil then --incase of degenerate blocks
+            displacement = Vec3(0,0)
+        end
+        local nodeA = GetDevicePlatformA(device)
+        local nodeB = GetDevicePlatformB(device)
+        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
+
+        SendDisplacementToTracks(displacement, device)
+        if displacement and displacement.y ~= 0 then
+            ApplyFinalForce(device, velocity, displacement, structureId)
+
+            if math.abs(returnVal.y) < math.abs(displacement.y) then
+                returnVal = { x = displacement.x, y = displacement.y }
+            end
+        end
+    end
     for blockIndex, Nodes in pairs(collidingBlocks) do
         --looping through nodes in block
         -- for nodeIndex = 1, #Nodes do
@@ -194,18 +215,7 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
     if #terrain < 2 then
         return nil
     end
-
     local newPos = pos
-    if PointInsidePolygon(pos, terrain) then
-        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
-        if perpendicularVector then
-            newPos = {
-                x = pos.x + perpendicularVector.x * radius,
-                y = pos.y + perpendicularVector.y * radius
-            }
-        end
-        return { x = pos.x - newPos.x, y = pos.y - newPos.y }
-    else
         local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
         if perpendicularVector then
             newPos = {
@@ -214,9 +224,7 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
             }
         end
         return { x = newPos.x - pos.x, y = newPos.y - pos.y }
-    end
 end
-
 -- Check if a circle is colliding with a polygon.
 function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
     --Centerpoint in polygon
@@ -239,6 +247,47 @@ function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
     -- If there is no collision, return nil.
     return nil
 end
+
+
+function CheckCollisionsOnBrace(terrain, pos, radius)
+    --Fix for single node blocks
+    if #terrain < 2 then
+        return nil
+    end
+    local newPos = pos
+        local perpendicularVector = CircleBraceCollision(pos, radius, terrain)
+        if perpendicularVector then
+            newPos = {
+                x = pos.x + perpendicularVector.x * -radius,
+                y = pos.y + perpendicularVector.y * -radius
+            }
+        end
+    return { x = newPos.x - pos.x, y = newPos.y - pos.y }
+end
+-- Check if a circle is colliding with a polygon.
+function CircleBraceCollision(circleCenter, wheelRadius, polygon)
+    --Centerpoint in polygon
+   
+        -- Check if any of the polygon's edges intersect with the circle.
+        local obj = FindClosestEdge(circleCenter, polygon)
+
+        local edgeStart = obj.closestEdge.edgeStart
+        local edgeEnd = obj.closestEdge.edgeEnd
+        if edgeEnd.x < edgeStart.x then
+            local temp = DeepCopy(edgeStart)
+            edgeStart = DeepCopy(edgeEnd)
+            edgeEnd = temp
+        end
+        local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart,
+            obj.closestEdge.edgeEnd,
+            wheelRadius)
+        if final then return final end
+
+    -- If there is no collision, return nil.
+    return nil
+end
+
+
 
 function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius)
     if distance <= wheelRadius then
