@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/RoadLinks.lua")
 dofile(path .. "/scripts/input.lua")
 dofile(path .. "/scripts/coreShield.lua")
 dofile(path .. "/scripts/resources.lua")
@@ -74,6 +75,10 @@ function Update(frame)
     IndexTerrainBlocks()
     delta = (GetRealTime() - prevTime) * 1000
     DebugLog("Index terrain blocks took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
+    IndexRoadLinks()
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Index road links took " .. string.format("%.2f", delta) .. "ms")
     prevTime = GetRealTime()
     WheelCollisionHandler()
     delta = (GetRealTime() - prevTime) * 1000
