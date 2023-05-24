@@ -14,10 +14,10 @@ function WheelCollisionHandler()
 
 
     for structureKey, devices in pairs(structures) do
-        local collidingBlocks = CheckBoundingBoxCollisions(devices)
+        local collisions = CheckBoundingBoxCollisions(devices)
 
         for deviceKey, device in pairs(devices) do
-            local displacement = CheckAndCounteractCollisions(device, collidingBlocks, structureKey)
+            local displacement = CheckAndCounteractCollisions(device, collisions.blocks, collisions.structures, structureKey)
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
 
@@ -59,9 +59,10 @@ function CheckBoundingBoxCollisions(devices)
         end
     end
     local collidingBlocks = {}
+    local collidingStructures = {}
     local collider = MinimumCircularBoundary(positions)
     if ModDebug == true then
-        SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        SpawnCircle(collider, collider.r, {r = 100, g = 255, b = 100, a = 255}, 0.04)
     end
    
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
@@ -69,13 +70,19 @@ function CheckBoundingBoxCollisions(devices)
             collidingBlocks[terrainId] = true
         end
     end
-    if collidingBlocks == nil then
-        return { false }
+    for structureId, structure in pairs(RoadStructureBoundaries) do
+        if Distance(collider, structure) < collider.r + structure.r + 50 then
+            collidingStructures[structureId] = true
+            BetterLog("e")
+        end
     end
-    return collidingBlocks
+    if collidingBlocks == nil then
+        collidingBlocks = false
+    end
+    return {blocks = collidingBlocks, structures = collidingStructures}
 end
 
-function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
+function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructures, structureId)
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
@@ -87,27 +94,32 @@ function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
 
     WheelPos[device] = pos
     --looping through blocks
-    for _, link in pairs(RoadLinks) do
-        local newLink = {NodePosition(link.nodeA), NodePosition(link.nodeB)}
-        displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
-        
-        ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
-        if displacement == nil then --incase of degenerate blocks
-            displacement = Vec3(0,0)
-        end
-        local nodeA = GetDevicePlatformA(device)
-        local nodeB = GetDevicePlatformB(device)
-        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
 
-        SendDisplacementToTracks(displacement, device)
-        if displacement and displacement.y ~= 0 then
-            ApplyFinalForce(device, velocity, displacement, structureId)
-
-            if math.abs(returnVal.y) < math.abs(displacement.y) then
-                returnVal = { x = displacement.x, y = displacement.y }
+    for structure, _ in pairs(collidingStructures) do
+        local links = RoadLinks[structure]
+        for _, link in pairs(RoadLinks) do
+            local newLink = {NodePosition(link.nodeA), NodePosition(link.nodeB)}
+            displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
+            
+            ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
+            if displacement == nil then --incase of degenerate blocks
+                displacement = Vec3(0,0)
+            end
+            local nodeA = GetDevicePlatformA(device)
+            local nodeB = GetDevicePlatformB(device)
+            local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
+    
+            SendDisplacementToTracks(displacement, device)
+            if displacement and displacement.y ~= 0 then
+                ApplyFinalForce(device, velocity, displacement, structureId)
+    
+                if math.abs(returnVal.y) < math.abs(displacement.y) then
+                    returnVal = { x = displacement.x, y = displacement.y }
+                end
             end
         end
     end
+    
     for blockIndex, Nodes in pairs(collidingBlocks) do
         --looping through nodes in block
         -- for nodeIndex = 1, #Nodes do
@@ -278,8 +290,8 @@ function CircleBraceCollision(circleCenter, wheelRadius, polygon)
             edgeStart = DeepCopy(edgeEnd)
             edgeEnd = temp
         end
-        local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart,
-            obj.closestEdge.edgeEnd,
+        local final = CalculateCollisionResponseVector(obj.closestDistance, edgeStart,
+            edgeEnd,
             wheelRadius)
         if final then return final end
 
