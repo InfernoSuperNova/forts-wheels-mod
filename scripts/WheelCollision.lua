@@ -73,7 +73,6 @@ function CheckBoundingBoxCollisions(devices)
     for structureId, structure in pairs(RoadStructureBoundaries) do
         if Distance(collider, structure) < collider.r + structure.r + 50 then
             collidingStructures[structureId] = true
-            BetterLog("e")
         end
     end
     if collidingBlocks == nil then
@@ -96,9 +95,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     --looping through blocks
 
     for structure, _ in pairs(collidingStructures) do
-        local links = RoadLinks[structure]
-        for _, link in pairs(RoadLinks) do
-            local newLink = {NodePosition(link.nodeA), NodePosition(link.nodeB)}
+        local links = RoadStructures[structure]
+        for index, link in pairs(links) do
+            local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
+            
             displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
@@ -274,22 +274,26 @@ function CheckCollisionsOnBrace(terrain, pos, radius)
                 y = pos.y + perpendicularVector.y * -radius
             }
         end
-    return { x = newPos.x - pos.x, y = newPos.y - pos.y }
+        if newPos.x then
+            return { x = newPos.x - pos.x, y = newPos.y - pos.y }
+        else
+            return {x = 0, y = 0}
+        end
+    
 end
 -- Check if a circle is colliding with a polygon.
 function CircleBraceCollision(circleCenter, wheelRadius, polygon)
     --Centerpoint in polygon
-   
+        
         -- Check if any of the polygon's edges intersect with the circle.
-        local obj = FindClosestEdge(circleCenter, polygon)
-
-        local edgeStart = obj.closestEdge.edgeStart
-        local edgeEnd = obj.closestEdge.edgeEnd
+        local edgeStart = polygon[1]
+        local edgeEnd = polygon[2]
         if edgeEnd.x < edgeStart.x then
             local temp = DeepCopy(edgeStart)
             edgeStart = DeepCopy(edgeEnd)
             edgeEnd = temp
         end
+        local obj = FindClosestEdge(circleCenter, polygon)
         local final = CalculateCollisionResponseVector(obj.closestDistance, edgeStart,
             edgeEnd,
             wheelRadius)
