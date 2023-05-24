@@ -1,12 +1,9 @@
 RoadLinks = {}
 function IndexRoadLinks()
     RoadLinks = {}
-    EnumerateStructureLinks(1, -1, "PlaceRoadLinksInTable", false)
-    --BetterLog(RoadLinks)
-    for k, link in pairs(RoadLinks) do
-        local posA = NodePosition(link["nodeA"])
-        local posB = NodePosition(link["nodeB"])
-    end
+    EnumerateStructureLinks(0, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(1, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(2, -1, "PlaceRoadLinksInTable", true)
 end
 
 function PlaceRoadLinksInTable(nodeA, nodeB, linkPos, saveName, deviceId)
