@@ -33,22 +33,16 @@ function IndexRoadLinks(frame)
     RoadCoords = {}
     RoadStructureBoundaries = {}
     EnumerateStructureLinks(0, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(1, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(2, -1, "PlaceRoadLinksInTable", false)
-
-    -- for i = 1, 2 do
-    --     for team, _ in pairs(data.teams[i]) do
-    --         EnumerateStructureLinks(team, -1, "PlaceRoadLinksInTable", false)
-    --     end
-    -- end
-    EnumerateStructureLinks(101, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(201, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(301, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(401, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(102, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(202, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(302, -1, "PlaceRoadLinksInTable", false)
-    EnumerateStructureLinks(402, -1, "PlaceRoadLinksInTable", false)
+    EnumerateStructureLinks(1, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(2, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(101, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(201, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(301, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(401, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(102, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(202, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(302, -1, "PlaceRoadLinksInTable", true)
+    EnumerateStructureLinks(402, -1, "PlaceRoadLinksInTable", true)
     IndexRoadStructures(frame)
 end
 
