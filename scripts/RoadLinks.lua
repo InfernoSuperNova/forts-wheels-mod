@@ -80,9 +80,15 @@ end
 
 function ApplyForceToRoadLinks(nodeA, nodeB, displacement)
     if displacement then
-        local newDisplacement = {x = -displacement.x * SpringConst, y = -displacement.y * SpringConst}
-        dlc2_ApplyForce(nodeA, newDisplacement)
-        dlc2_ApplyForce(nodeB, newDisplacement)
+        local velocityA = NodeVelocity(nodeA)
+        local velocityB = NodeVelocity(nodeB)
+        local avgVelocity = AverageCoordinates({velocityA, velocityB})
+        if math.abs(displacement.y) > 0 then
+            local force = {x = (-displacement.x + -avgVelocity.x * 0.05) * SpringConst, y = (-displacement.y + -avgVelocity.y * 0.05) * SpringConst}
+            dlc2_ApplyForce(nodeA, force)
+            dlc2_ApplyForce(nodeB, force)
+        end
+        
     end
     
 
