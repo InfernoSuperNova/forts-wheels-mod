@@ -55,6 +55,9 @@ function ThrottleControl()
             if ControlExists("root", "PropulsionSlider") then
                 SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
             end
+            if ControlExists("root", "brake") then
+                UpdateBrakeButton(deviceStructureId)
+            end
         else
             --once done with throttle widget, delete it
             if ControlExists("root", "PropulsionSlider") then
@@ -81,4 +84,8 @@ function CreateBrakeButton(deviceStructureId)
         end
     end
 
+end
+
+function UpdateBrakeButton(deviceStructureId)
+    SetButtonCallback("root", "brake", deviceStructureId)
 end
