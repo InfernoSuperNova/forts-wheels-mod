@@ -32,7 +32,7 @@ function ThrottleControl()
             if not ControlExists("root", "PropulsionSlider") then
                 SetControlFrame(0)
                 LoadControl(path .. "/ui/controls.lua", "root")
-                AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
+                --AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
                 CreateBrakeButton(deviceStructureId)
                 --initialize throttle
                 local pos = {x = 273.5, y = 15}
@@ -66,7 +66,7 @@ function ThrottleControl()
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 650, y = 460}, false, "normal")
+    AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
