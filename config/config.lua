@@ -57,7 +57,20 @@ LocalEffects = {}
 TrackGroups = {}
 Terrain = {}
 DeviceCounts = {}
+---Devices table
+--[[
+{
+    [1] = {
+        nodeA:number
+        nodeB:number
+        team:number
+        id:number
+        saveName:number
+        pos{x:number, y:number}
 
+    }
+}]]
+Devices = {}
 
 
 
