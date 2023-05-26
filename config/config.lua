@@ -1,4 +1,7 @@
-ModDebug = false
+ModDebug = {
+    collision = false,
+    update = false,
+}
 DebugText = ""
 
 --config values
@@ -33,13 +36,20 @@ RoadSaveName = "RoadLink"                           --SaveName for the road mate
 
 --binds
 Keybinds = {
-    ToggleDebug = {"left control", "left alt", "d"}
+    ToggleUpdateDebug = {"left control", "left alt", "t"},
+    ToggleCollisionDebug = {"left control", "left alt", "d"},
+    
 }
 PressedKeyBinds = {}
 HeldKeys = {}
 
 
 --script.lua
+BlockStatistics = {
+    largestBlock = 0,
+    totalNodes = 0,
+    totalBlocks = 0,
+} --stats for collision debug overlay
 JustJoined = true --to run something once upon joining through Update. (used for effects)
 Displacement = {}
 WheelPos = {}
