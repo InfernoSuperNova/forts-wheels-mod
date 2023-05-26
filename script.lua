@@ -24,7 +24,6 @@ dofile(path .. "/scripts/effects.lua")
 dofile(path .. "/scripts/drillScript.lua")
 
 
-JustJoined = true --to run something once upon joining through Update. (used for effects)
 
 
 --for every wheel, calculate the distance between it and every terrain block median center

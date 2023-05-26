@@ -39,6 +39,7 @@ HeldKeys = {}
 
 
 --script.lua
+JustJoined = true --to run something once upon joining through Update. (used for effects)
 Displacement = {}
 WheelPos = {}
 TracksId = {}
