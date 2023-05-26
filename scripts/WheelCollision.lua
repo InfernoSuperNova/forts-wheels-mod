@@ -55,7 +55,7 @@ function CheckBoundingBoxCollisions(devices)
     local collidingBlocks = {}
     local collidingStructures = {}
     local collider = MinimumCircularBoundary(positions)
-    if ModDebug == true then
+    if ModDebug.collision == true then
         SpawnCircle(collider, collider.r, {r = 100, g = 255, b = 100, a = 255}, 0.04)
     end
    
