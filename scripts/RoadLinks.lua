@@ -88,7 +88,7 @@ function ApplyForceToRoadLinks(nodeA, nodeB, displacement)
             local DampenedForce = {
                 --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
                 x = SpringDampenedForce(SpringConst, -displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, avgVelocity.x),
-                y = SpringDampenedForce(SpringConst, -displacement.y, Dampening * math.abs(surfaceNormal.y), avgVelocity.y)
+                y = SpringDampenedForce(SpringConst, -displacement.y, Dampening * math.abs(surfaceNormal.y) * 0.2, avgVelocity.y)
             }
             dlc2_ApplyForce(nodeA, DampenedForce)
             dlc2_ApplyForce(nodeB, DampenedForce)
