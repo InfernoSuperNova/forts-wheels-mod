@@ -76,20 +76,23 @@ function FindDeviceInMasterIndex(id)
     end
 
 end
-function IndexLinks(frame)
-    
-    RoadLinks = {}
-    
-    if frame % 25 == 0 then
-        RoadStructures = {}
-    end
-    RoadCoords = {}
-    RoadStructureBoundaries = {}
+function IndexLinks()
     EnumerateStructureLinks(0, -1, "DetermineLinks", true)
     for side, teams in pairs(data.teams) do
         for index, team in pairs(teams) do
             EnumerateStructureLinks(team, -1, "DetermineLinks", false)
         end
+    end
+    
+
+end
+function UpdateLinks(frame)
+    
+    RoadCoords = {}
+    
+    if frame % 25 == 0 then
+        RoadStructures = {}
+        CheckOldRoadLinks()
     end
     IndexRoadStructures(frame)
 end
@@ -97,7 +100,7 @@ end
 function DetermineLinks(nodeA, nodeB, linkPos, saveName, deviceId)
     --BetterLog(saveName)
     if saveName == RoadSaveName then 
-        table.insert(RoadLinks, {nodeA = nodeA, nodeB = nodeB})
+        table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
     end
     return true
 end
@@ -107,21 +110,35 @@ end
 function IndexTerrainBlocks()
     data.terrainCollisionBoxes = {}
     local terrainBlockCount = GetBlockCount()
-
+    BlockStatistics.totalBlocks = terrainBlockCount
     --loop through all terrain blocks
     for currentBlock = 0, terrainBlockCount - 1 do
         --create new array for that block
         Terrain[currentBlock + 1] = {}
         local vertexCount = GetBlockVertexCount(currentBlock)
+        BlockStatistics.totalNodes = BlockStatistics.totalNodes + vertexCount
+        if BlockStatistics.largestBlock < vertexCount then BlockStatistics.largestBlock = vertexCount end
         --loop through all vertexes in that block
         for currentVertex = 0, vertexCount - 1 do
             --adds to table for maths
             Terrain[currentBlock + 1][currentVertex + 1] = GetBlockVertexPos(currentBlock, currentVertex)
         end
         data.terrainCollisionBoxes[currentBlock + 1] = MinimumCircularBoundary(Terrain[currentBlock + 1])
-        if ModDebug == true then
+        if ModDebug.collision == true then
             SpawnCircle(data.terrainCollisionBoxes[currentBlock + 1], data.terrainCollisionBoxes[currentBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
         end
         
     end
+end
+
+
+function DebugHighlightTerrain(frame)
+    if frame % 25 == 1 then
+        for _, boundary in pairs(data.terrainCollisionBoxes) do
+            if ModDebug.collision == true then
+                SpawnCircle(boundary, boundary.r, {r = 255, g = 255, b = 255, a = 255}, 1)
+            end
+        end
+    end
+    
 end
