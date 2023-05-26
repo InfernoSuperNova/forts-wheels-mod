@@ -24,10 +24,17 @@ function HighlightDirectionalVector(pos, direction)
 end
 
 
-function ToggleDebug()
-    ModDebug = not ModDebug
+function ToggleCollisionDebug()
+    ModDebug.collision = not ModDebug.collision
+    if ModDebug.collision then
+        EnableTerrainDebug()
+    else
+        DisableTerrainDebug()
+    end
 end
-
+function ToggleUpdateDebug()
+    ModDebug.update = not ModDebug.update
+end
 function ClearDebugControls()
     for i = 1, 100 do
         DeleteControl("", "debugLine" .. i)
@@ -36,7 +43,7 @@ function ClearDebugControls()
 end
 
 function DebugLog(string)
-    if ModDebug == true then 
+    if ModDebug.update then 
         DebugText = DebugText .. string .. "\n"
     end 
 end
@@ -51,4 +58,21 @@ function DebugUpdate()
         
     end
     DebugText = ""
+end
+
+function InitializeTerrainBlockSats()
+    AddTextControl("", "terrainStat1", "", ANCHOR_TOP_LEFT, {x = 550, y = 15}, false, "")
+    AddTextControl("", "terrainStat2", "", ANCHOR_TOP_LEFT, {x = 550, y = 30}, false, "")
+    AddTextControl("", "terrainStat3", "", ANCHOR_TOP_LEFT, {x = 550, y = 45}, false, "")
+end
+
+function EnableTerrainDebug()
+    SetControlText("", "terrainStat1", "Largest block: " .. BlockStatistics.largestBlock)
+    SetControlText("", "terrainStat2", "Total vertex count: " .. BlockStatistics.totalNodes)
+    SetControlText("", "terrainStat3", "Total block count: " .. BlockStatistics.totalBlocks)
+end
+function DisableTerrainDebug()
+    SetControlText("", "terrainStat1", "")
+    SetControlText("", "terrainStat2", "")
+    SetControlText("", "terrainStat3", "")
 end
