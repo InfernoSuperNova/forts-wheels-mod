@@ -27,22 +27,16 @@ function WheelCollisionHandler()
             end
         end
     end
-    data.structures = structures
+    Structures = structures
 end
 
 function GetDeviceStructureGroups()
     local structures = {}
-    for side = 1, 2 do
-        local deviceCount = DeviceCounts[side]
-
-
-        for index = 0, deviceCount do
-            local device = GetDeviceIdSide(side, index)
-            if CheckSaveNameTable(GetDeviceType(device), WheelSaveName) and IsDeviceFullyBuilt(device) then
-                local structureId = GetDeviceStructureId(device)
-                if not structures[structureId] then structures[structureId] = {} end
-                table.insert(structures[structureId], device)
-            end
+    for _, device in pairs(Devices) do
+        if CheckSaveNameTable(device.saveName, WheelSaveName) and IsDeviceFullyBuilt(device.id) then
+            local structureId = device.strucId
+            if not structures[structureId] then structures[structureId] = {} end
+            table.insert(structures[structureId], device)
         end
     end
     return structures
@@ -85,13 +79,12 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
-    if GetDeviceType(device) == WheelSaveName[1] then
+    if device.saveName == WheelSaveName[1] then
         pos = GetOffsetDevicePos(device, WheelSuspensionHeight)
     else
         pos = GetOffsetDevicePos(device, -WheelSuspensionHeight)
     end
-
-    WheelPos[device] = pos
+    WheelPos[device.id] = pos
     --looping through blocks
 
     for structure, _ in pairs(collidingStructures) do
@@ -105,9 +98,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             if displacement == nil then --incase of degenerate blocks
                 displacement = Vec3(0,0)
             end
-            local nodeA = GetDevicePlatformA(device)
-            local nodeB = GetDevicePlatformB(device)
-            local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
+            local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
     
             SendDisplacementToTracks(displacement, device)
             if displacement and displacement.y ~= 0 then
@@ -134,9 +125,8 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         if displacement == nil then --incase of degenerate blocks
             displacement = Vec3(0,0)
         end
-        local nodeA = GetDevicePlatformA(device)
-        local nodeB = GetDevicePlatformB(device)
-        local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
+
+        local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
 
 
 
@@ -156,26 +146,27 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
 end
 
 function GetOffsetDevicePos(device, offset)
-    local NodeAPos = NodePosition(GetDevicePlatformA(device))
-    local NodeBPos = NodePosition(GetDevicePlatformB(device))
-    local devicePos = GetDevicePosition(device)
+
+    local NodeAPos = NodePosition(device.nodeA)
+    local NodeBPos = NodePosition(device.nodeB)
 
 
     local offsetPos = OffsetPerpendicular(NodeAPos, NodeBPos, offset)
     local newPos = {
-        x = offsetPos.x + devicePos.x,
-        y = offsetPos.y + devicePos.y
+        x = offsetPos.x + device.pos.x,
+        y = offsetPos.y + device.pos.y
     }
     return newPos
 end
 
+
 function SendDisplacementToTracks(displacement, device)
-    if not Displacement[device] then
-        Displacement[device] = displacement
+    if not Displacement[device.id] then
+        Displacement[device.id] = displacement
     else
         --set displacement to largest among all blocks
-        if math.abs(Displacement[device].y) < math.abs(displacement.y) then
-            Displacement[device] = displacement
+        if math.abs(Displacement[device.id].y) < math.abs(displacement.y) then
+            Displacement[device.id] = displacement
         end
     end
 end
@@ -200,27 +191,7 @@ function ApplyFinalForce(device, velocity, displacement, structureId)
     
 end
 
-function IndexTerrainBlocks()
-    data.terrainCollisionBoxes = {}
-    local terrainBlockCount = GetBlockCount()
 
-    --loop through all terrain blocks
-    for currentBlock = 0, terrainBlockCount - 1 do
-        --create new array for that block
-        Terrain[currentBlock + 1] = {}
-        local vertexCount = GetBlockVertexCount(currentBlock)
-        --loop through all vertexes in that block
-        for currentVertex = 0, vertexCount - 1 do
-            --adds to table for maths
-            Terrain[currentBlock + 1][currentVertex + 1] = GetBlockVertexPos(currentBlock, currentVertex)
-        end
-        data.terrainCollisionBoxes[currentBlock + 1] = MinimumCircularBoundary(Terrain[currentBlock + 1])
-        if ModDebug == true then
-            SpawnCircle(data.terrainCollisionBoxes[currentBlock + 1], data.terrainCollisionBoxes[currentBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
-        end
-        
-    end
-end
 
 function CheckCollisionsOnBlock(terrain, pos, radius)
     --Fix for single node blocks

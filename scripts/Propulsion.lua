@@ -42,7 +42,7 @@ function UpdateBrakes(state, structure)
     
 end
 function LoopStructures()
-    for structureKey, devices in pairs(data.structures) do
+    for structureKey, devices in pairs(Structures) do
         local wheelCount = 0
         local wheelTouchingGroundCount = 0
         for deviceKey, device in pairs(devices) do
@@ -114,10 +114,8 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     local velocities = {}
     for deviceKey, device in pairs(devices) do
         if data.wheelsTouchingGround[structureKey][deviceKey] then
-            local nodeA = GetDevicePlatformA(device)
-            local nodeB = GetDevicePlatformB(device)
-            table.insert(velocities, NodeVelocity(nodeA))
-            table.insert(velocities, NodeVelocity(nodeB))
+            table.insert(velocities, NodeVelocity(device.nodeA))
+            table.insert(velocities, NodeVelocity(device.nodeB))
         end
     end
     local velocity = AverageCoordinates(velocities)

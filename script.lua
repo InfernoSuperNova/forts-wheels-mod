@@ -53,7 +53,6 @@ function InitializeScript()
     data.terrainCollisionBoxes = {}
     data.previousVals = {}
     data.wheelsTouchingGround = {}
-    data.structures = {}
     -- local circle = MinimumBoundingCircle(terrain)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
@@ -165,10 +164,8 @@ function ApplyForces()
     end
 
     for device, force in pairs(FinalAddedForces) do
-        local nodeA = GetDevicePlatformA(device)
-        local nodeB = GetDevicePlatformB(device)
-        dlc2_ApplyForce(nodeA, force)
-        dlc2_ApplyForce(nodeB, force)
+        dlc2_ApplyForce(device.nodeA, force)
+        dlc2_ApplyForce(device.nodeB, force)
     end
     FinalSuspensionForces = {}
     FinalPropulsionForces = {}
@@ -234,13 +231,13 @@ function Clamp(val, min, max)
 end
 
 function GetDeviceKeyFromId(structure, Id)
-    for key, value in pairs(data.structures[structure]) do
-        if value == Id then return key end
+    for key, device in pairs(Structures[structure]) do
+        if device.id == Id then return key end
     end
 end
 
 function GetDeviceIdFromKey(structure, key)
-    return data.structures[structure][key]
+    return Structures[structure][key].id
 end
 
 dofile(path .. "/debugMagic.lua")
