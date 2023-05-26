@@ -37,7 +37,7 @@ function UpdateCoreShields()
 end
 
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
-    for structure, device in pairs(Devices) do
+    for _, device in pairs(Devices) do
         if device.team % MAX_SIDES ~= deviceSide then continue end
         if not (Distance(shieldCoords, device.pos) < ShieldRadius) then continue end
 
