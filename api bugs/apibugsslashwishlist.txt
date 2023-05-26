@@ -1,0 +1,23 @@
+Api bugs:
+OnLinkDestroyed doesn't get called when links are deleted or hit the ground
+EnumerateStructureLinks matchSide doesn't do anything
+SetEffectPosition and SetEffectDirection don't work with existing effect sprites, because they spawn a free particle
+GetStructurePos either returns where it was first called, or the position of a structure when it was created
+
+
+
+
+
+
+Wishlist:
+
+OnBlockUpdated function or similar to allow for optimization of checking for block movements (useful if another mod/mission script is moving terrain blocks, and you need to reindex them every time they've moved)
+
+Scripting functions for the spawning and manipulation of sprites, rather than having to shoehorn it with effects
+Is that what AddSpriteControl is for? It doesn't seem to have any functions for setting the rotation
+
+Disable click through of sliders and buttons etc that are loaded via LoadControl, or otherwise add some way of defining custom HUD space
+
+GetBlockRadius, GetBlockName, GetBlockFlags, SetBlockName functions to allow full script manipulatability of terrain. And also make EnableTerrainBlock take an index or a savename, otherwise a savename would have to be assigned every time a new block needs to be disabled
+
+GetTerrainPos and GetTerrainRadius for the circular area that terrain blocks use for collision
