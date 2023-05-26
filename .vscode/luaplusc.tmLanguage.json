@@ -1,0 +1,11 @@
+{
+    "name": "LuaPlusC",
+    "scopeName": "source.luaplusc",
+    "fileTypes": ["lua"],
+    "patterns": [
+      {
+        "match": "\\b(continue)\\b",
+        "name": "keyword.control.luaplusc"
+      }
+    ]
+  }
