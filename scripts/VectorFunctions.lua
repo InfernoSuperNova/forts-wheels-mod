@@ -38,7 +38,8 @@ end
 ---@param polygon {table:{x:number, y:number}} Table of positions representing polygon
 ---
 function FindClosestEdge(point, polygon)
-    local closestEdge, closestDistance = nil, 10e11
+    local closestEdge = nil
+    local closestDistance = 10e11
     for i = 1, #polygon do
         local j = i % #polygon + 1
         local edgeStart, edgeEnd = polygon[i], polygon[j]
