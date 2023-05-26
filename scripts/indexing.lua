@@ -44,6 +44,10 @@ function IndexDevices()
         end
     end
 
+    EnumerateCarDevices()
+end
+
+function EnumerateCarDevices()
     Motors = {}
     Gearboxes ={}
     for _, device in pairs(Devices) do
@@ -63,8 +67,15 @@ function IndexDevices()
             end
         end
     end
+
 end
 
+function FindDeviceInMasterIndex(id)
+    for _, device in pairs(Devices) do
+        if id == device.id then return device end
+    end
+
+end
 function IndexLinks(frame)
     
     RoadLinks = {}

@@ -60,7 +60,7 @@ DeviceCounts = {}
 ---Devices table
 --[[
 {
-    [1] = {
+    [structureId: number] = {
         nodeA:number
         nodeB:number
         team:number
@@ -71,7 +71,7 @@ DeviceCounts = {}
     }
 }]]
 Devices = {}
-
+Structures = {}
 
 
 --- forts script API ---
