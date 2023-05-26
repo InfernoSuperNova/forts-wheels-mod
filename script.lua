@@ -170,15 +170,9 @@ end
 
 function ApplyForces()
     for device, force in pairs(FinalSuspensionForces) do
-        if FinalPropulsionForces[device] then
-            --Don't ask me why I have to do it like this, just trust that I do have to
-            local newForceX = force.x + FinalPropulsionForces[device].x
-            local newForceY = force.y + FinalPropulsionForces[device].y
 
-            FinalAddedForces[device] = { x = newForceX, y = newForceY }
-        else
-            FinalAddedForces[device] = force
-        end
+        FinalAddedForces[device] = force
+
     end
 
     for device, force in pairs(FinalAddedForces) do
