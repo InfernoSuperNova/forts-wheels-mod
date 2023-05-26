@@ -39,7 +39,7 @@ function ThrottleControl()
                 --if the structure doesn't already have a throttle, create it
                 if not data.throttles[deviceStructureId] then
                     if ControlExists("root", "PropulsionSlider") then
-                        SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                        SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
                     end
                     SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
                 end
@@ -53,7 +53,7 @@ function ThrottleControl()
             local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
             --send the pos to the throttles table
             if ControlExists("root", "PropulsionSlider") then
-                SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
             end
             if ControlExists("root", "brake") then
                 UpdateBrakeButton(deviceStructureId)

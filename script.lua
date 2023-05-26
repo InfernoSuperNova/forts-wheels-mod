@@ -282,3 +282,9 @@ function DiscoverTeams(sideId)
 	end
 	return teams
 end
+
+function IgnoreDecimalPlaces(number, decimalPoint)
+    local multiplier = 10 ^ decimalPoint
+    local roundedNumber = math.floor(number * multiplier) / multiplier
+    return roundedNumber
+  end
