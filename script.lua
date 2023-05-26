@@ -32,6 +32,7 @@ dofile(path .. "/scripts/drillScript.lua")
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    data.roadLinks = {}
     GetDeviceCounts()
     data.teams = {}
     data.teams[1] = DiscoverTeams(1)
@@ -42,15 +43,19 @@ end
 
 function InitializeScript()
     InitializeCommanders()
+    InitializeTerrainBlockSats()
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
     end
+    IndexLinks()
+    data.terrainCollisionBoxes = {}
+    IndexTerrainBlocks()
     InitializeTracks()
     InitializePropulsion()
     InitializeDrill()
     InitializeCoreShield()
     InitializeEffects()
-    data.terrainCollisionBoxes = {}
+    
     data.previousVals = {}
     data.wheelsTouchingGround = {}
     -- local circle = MinimumBoundingCircle(terrain)
@@ -66,16 +71,17 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
+    
     local startUpdateTime = GetRealTime()
     local delta
     DebugLog("---------Start of update---------")
-    if not ModDebug then
+    if not ModDebug.update then
         ClearDebugControls()
     end
+    DebugHighlightTerrain(frame)
     UpdateFunction("GetDeviceCounts", frame)
     UpdateFunction("IndexDevices", frame)
-    UpdateFunction("IndexLinks", frame)
-    UpdateFunction("IndexTerrainBlocks", frame)
+    UpdateFunction("UpdateLinks", frame)
     UpdateFunction("WheelCollisionHandler", frame)
     UpdateFunction("UpdateControls", frame)
     UpdateFunction("UpdatePropulsion", frame)
@@ -97,7 +103,7 @@ function Update(frame)
 end
 
 function UpdateFunction(callback, frame)
-    if ModDebug then
+    if ModDebug.update then
         local prevTime = GetRealTime()
         _G[callback](frame)
         local delta = (GetRealTime() - prevTime) * 1000
@@ -149,6 +155,18 @@ function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
 end
+
+
+function OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
+    CheckNewRoadLinks(saveName, nodeA, nodeB)
+end
+
+
+function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
+--broken until beeman fixes
+--     DestroyOldRoadLinks(saveName, nodeA, nodeB)
+end
+
 
 function ApplyForces()
     for device, force in pairs(FinalSuspensionForces) do
