@@ -1,27 +1,66 @@
+
+
+--[[
+{
+    [structureId] = {
+        DeviceTeam = 101,
+        DeviceId = 54,
+        SaveName = "bob",
+        Position = {x, y},
+
+    }
+}
+
+]]
+
+
+function GetDeviceCounts()
+    DeviceCounts = {}  
+    for side = 1, 2 do
+        DeviceCounts[side] = GetDeviceCountSide(side)
+    end
+end
 function IndexDevices()
-    Motors = {}
-    Gearboxes ={}
+    Devices = {}
     for side = 1, 2 do
         local count = DeviceCounts[side]
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             local structureId = GetDeviceStructureId(id)
-            if IsDeviceFullyBuilt(id) then
-                if  GetDeviceType(id) == GearboxSaveName then
-                    if not Gearboxes[structureId] then 
-                        Gearboxes[structureId] = 1 
-                    else
-                        Gearboxes[structureId] = Gearboxes[structureId] + 1
-                    end
-                elseif  GetDeviceType(id) == EngineSaveName then
-                    if not Motors[structureId] then 
-                        Motors[structureId] = 1 
-                    else
-                        Motors[structureId] = Motors[structureId] + 1
-                    end
+            local team = GetDeviceTeamId(id)
+            local SaveName = GetDeviceType(id)
+            local pos = GetDevicePosition(id)
+            local nodeA = GetDevicePlatformA(id)
+            local nodeB = GetDevicePlatformB(id)
+            Devices[structureId] = {
+                team = team,
+                id = id,
+                saveName = SaveName,
+                pos = pos,
+                nodeA = nodeA,
+                nodeB = nodeB,
+            }
+        end
+    end
+
+    Motors = {}
+    Gearboxes ={}
+
+    for structureId, device in pairs(Devices) do
+        if IsDeviceFullyBuilt(device.id) then
+            if device.saveName == GearboxSaveName then
+                if not Gearboxes[structureId] then
+                    Gearboxes[structureId] = 1
+                else
+                    Gearboxes[structureId] = Gearboxes[structureId] + 1
+                end
+            elseif device.saveName == EngineSaveName then
+                if not Motors[structureId] then
+                    Motors[structureId] = 1
+                else
+                    Motors[structureId] = Motors[structureId] + 1
                 end
             end
-            
         end
     end
 end

@@ -107,12 +107,7 @@ function UpdateFunction(callback, frame)
         _G[callback](frame)
     end
 end
-function GetDeviceCounts()
-    DeviceCounts = {}  
-    for side = 1, 2 do
-        DeviceCounts[side] = GetDeviceCountSide(side)
-    end
-end
+
 function CheckSaveNameTable(input, table)
     for k, v in pairs(table) do
         if input == v then return true end
