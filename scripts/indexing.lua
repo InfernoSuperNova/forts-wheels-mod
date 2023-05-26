@@ -32,36 +32,37 @@ function IndexDevices()
             local pos = GetDevicePosition(id)
             local nodeA = GetDevicePlatformA(id)
             local nodeB = GetDevicePlatformB(id)
-            Devices[structureId] = {
+            table.insert(Devices, {
+                strucId = structureId,
                 team = team,
                 id = id,
                 saveName = SaveName,
                 pos = pos,
                 nodeA = nodeA,
                 nodeB = nodeB,
-            }
+            })
         end
     end
 
     Motors = {}
     Gearboxes ={}
-
-    for structureId, device in pairs(Devices) do
+    for _, device in pairs(Devices) do
         if IsDeviceFullyBuilt(device.id) then
             if device.saveName == GearboxSaveName then
-                if not Gearboxes[structureId] then
-                    Gearboxes[structureId] = 1
+                if not Gearboxes[device.strucId] then
+                    Gearboxes[device.strucId] = 1
                 else
-                    Gearboxes[structureId] = Gearboxes[structureId] + 1
+                    Gearboxes[device.strucId] = Gearboxes[device.strucId] + 1
                 end
             elseif device.saveName == EngineSaveName then
-                if not Motors[structureId] then
-                    Motors[structureId] = 1
+                if not Motors[device.strucId] then
+                    Motors[device.strucId] = 1
                 else
-                    Motors[structureId] = Motors[structureId] + 1
+                    Motors[device.strucId] = Motors[device.strucId] + 1
                 end
             end
         end
+        BetterLog(Gearboxes[device.strucId])
     end
 end
 
