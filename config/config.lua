@@ -28,7 +28,8 @@ DrillsEnabled = false                               --whether to enable drills o
 ShieldRadius = 1800                                 --radius of the base protecting shield
 ShieldDamage = 2                                    --damage of the core shield at center (* 25 per sec)
 ShieldForce = 2500000                               --pushback force of the shield at center
-
+--roads
+RoadSaveName = "RoadLink"                           --SaveName for the road material
 
 --binds
 Keybinds = {

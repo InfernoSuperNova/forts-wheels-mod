@@ -32,7 +32,7 @@ function ThrottleControl()
             if not ControlExists("root", "PropulsionSlider") then
                 SetControlFrame(0)
                 LoadControl(path .. "/ui/controls.lua", "root")
-                AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
+                --AddTextControl("", tostring(teamId), "Gear: ", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
                 CreateBrakeButton(deviceStructureId)
                 --initialize throttle
                 local pos = {x = 273.5, y = 15}
@@ -55,6 +55,9 @@ function ThrottleControl()
             if ControlExists("root", "PropulsionSlider") then
                 SendScriptEvent("UpdateThrottles", pos.x .. "," .. pos.y .. "," .. deviceStructureId, "", false)
             end
+            if ControlExists("root", "brake") then
+                UpdateBrakeButton(deviceStructureId)
+            end
         else
             --once done with throttle widget, delete it
             if ControlExists("root", "PropulsionSlider") then
@@ -66,7 +69,7 @@ function ThrottleControl()
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 650, y = 460}, false, "normal")
+    AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 520, y = 460}, false, "normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
@@ -81,4 +84,8 @@ function CreateBrakeButton(deviceStructureId)
         end
     end
 
+end
+
+function UpdateBrakeButton(deviceStructureId)
+    SetButtonCallback("root", "brake", deviceStructureId)
 end

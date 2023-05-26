@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/RoadLinks.lua")
 dofile(path .. "/scripts/input.lua")
 dofile(path .. "/scripts/coreShield.lua")
 dofile(path .. "/scripts/resources.lua")
@@ -30,6 +31,9 @@ dofile(path .. "/scripts/drillScript.lua")
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    data.teams = {}
+    data.teams[1] = DiscoverTeams(1)
+    data.teams[2] = DiscoverTeams(2)
     InitializeScript()
     FillCoreShield()
 end
@@ -73,6 +77,10 @@ function Update(frame)
     IndexTerrainBlocks()
     delta = (GetRealTime() - prevTime) * 1000
     DebugLog("Index terrain blocks took " .. string.format("%.2f", delta) .. "ms")
+    prevTime = GetRealTime()
+    IndexRoadLinks(frame)
+    delta = (GetRealTime() - prevTime) * 1000
+    DebugLog("Index road links took " .. string.format("%.2f", delta) .. "ms")
     prevTime = GetRealTime()
     WheelCollisionHandler()
     delta = (GetRealTime() - prevTime) * 1000
@@ -267,4 +275,19 @@ function TimeCode(fn, arg0, arg1, arg2, arg3)
     fn(arg0, arg1, arg2, arg3)
     local t2 = GetRealTime()
     Log(tostring((t2 - t1) * 1000) .. " ms")
+end
+
+function DiscoverTeams(sideId)
+	local teamFound = {}
+	local teams = {}
+	local count = GetDeviceCountSide(sideId)
+	for i = 0, count - 1 do
+		local id = GetDeviceIdSide(sideId, i)
+		local currTeam = GetDeviceTeamIdActual(id)
+		if not teamFound[currTeam] and GetDeviceType(id) == "reactor" then
+			teamFound[currTeam] = true
+			table.insert(teams, currTeam)
+		end
+	end
+	return teams
 end

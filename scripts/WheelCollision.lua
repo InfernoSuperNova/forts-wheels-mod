@@ -14,10 +14,10 @@ function WheelCollisionHandler()
 
 
     for structureKey, devices in pairs(structures) do
-        local collidingBlocks = CheckBoundingBoxCollisions(devices)
+        local collisions = CheckBoundingBoxCollisions(devices)
 
         for deviceKey, device in pairs(devices) do
-            local displacement = CheckAndCounteractCollisions(device, collidingBlocks, structureKey)
+            local displacement = CheckAndCounteractCollisions(device, collisions.blocks, collisions.structures, structureKey)
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
 
@@ -59,9 +59,10 @@ function CheckBoundingBoxCollisions(devices)
         end
     end
     local collidingBlocks = {}
+    local collidingStructures = {}
     local collider = MinimumCircularBoundary(positions)
     if ModDebug == true then
-        SpawnCircle(collider, collider.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        SpawnCircle(collider, collider.r, {r = 100, g = 255, b = 100, a = 255}, 0.04)
     end
    
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do
@@ -69,13 +70,18 @@ function CheckBoundingBoxCollisions(devices)
             collidingBlocks[terrainId] = true
         end
     end
-    if collidingBlocks == nil then
-        return { false }
+    for structureId, structure in pairs(RoadStructureBoundaries) do
+        if Distance(collider, structure) < collider.r + structure.r + 50 then
+            collidingStructures[structureId] = true
+        end
     end
-    return collidingBlocks
+    if collidingBlocks == nil then
+        collidingBlocks = false
+    end
+    return {blocks = collidingBlocks, structures = collidingStructures}
 end
 
-function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
+function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructures, structureId)
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
@@ -87,6 +93,33 @@ function CheckAndCounteractCollisions(device, collidingBlocks, structureId)
 
     WheelPos[device] = pos
     --looping through blocks
+
+    for structure, _ in pairs(collidingStructures) do
+        local links = RoadStructures[structure]
+        for index, link in pairs(links) do
+            local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
+            
+            displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
+            
+            ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
+            if displacement == nil then --incase of degenerate blocks
+                displacement = Vec3(0,0)
+            end
+            local nodeA = GetDevicePlatformA(device)
+            local nodeB = GetDevicePlatformB(device)
+            local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
+    
+            SendDisplacementToTracks(displacement, device)
+            if displacement and displacement.y ~= 0 then
+                ApplyFinalForce(device, velocity, displacement, structureId)
+    
+                if math.abs(returnVal.y) < math.abs(displacement.y) then
+                    returnVal = { x = displacement.x, y = displacement.y }
+                end
+            end
+        end
+    end
+    
     for blockIndex, Nodes in pairs(collidingBlocks) do
         --looping through nodes in block
         -- for nodeIndex = 1, #Nodes do
@@ -194,18 +227,7 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
     if #terrain < 2 then
         return nil
     end
-
     local newPos = pos
-    if PointInsidePolygon(pos, terrain) then
-        local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
-        if perpendicularVector then
-            newPos = {
-                x = pos.x + perpendicularVector.x * radius,
-                y = pos.y + perpendicularVector.y * radius
-            }
-        end
-        return { x = pos.x - newPos.x, y = pos.y - newPos.y }
-    else
         local perpendicularVector = CirclePolygonCollision(pos, radius, terrain)
         if perpendicularVector then
             newPos = {
@@ -214,9 +236,7 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
             }
         end
         return { x = newPos.x - pos.x, y = newPos.y - pos.y }
-    end
 end
-
 -- Check if a circle is colliding with a polygon.
 function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
     --Centerpoint in polygon
@@ -239,6 +259,51 @@ function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
     -- If there is no collision, return nil.
     return nil
 end
+
+
+function CheckCollisionsOnBrace(terrain, pos, radius)
+    --Fix for single node blocks
+    if #terrain < 2 then
+        return nil
+    end
+    local newPos = pos
+        local perpendicularVector = CircleBraceCollision(pos, radius, terrain)
+        if perpendicularVector then
+            newPos = {
+                x = pos.x + perpendicularVector.x * -radius,
+                y = pos.y + perpendicularVector.y * -radius
+            }
+        end
+        if newPos.x then
+            return { x = newPos.x - pos.x, y = newPos.y - pos.y }
+        else
+            return {x = 0, y = 0}
+        end
+    
+end
+-- Check if a circle is colliding with a polygon.
+function CircleBraceCollision(circleCenter, wheelRadius, polygon)
+    --Centerpoint in polygon
+        
+        -- Check if any of the polygon's edges intersect with the circle.
+        local edgeStart = polygon[1]
+        local edgeEnd = polygon[2]
+        if edgeEnd.x < edgeStart.x then
+            local temp = DeepCopy(edgeStart)
+            edgeStart = DeepCopy(edgeEnd)
+            edgeEnd = temp
+        end
+        local obj = FindClosestEdge(circleCenter, polygon)
+        local final = CalculateCollisionResponseVector(obj.closestDistance, edgeStart,
+            edgeEnd,
+            wheelRadius)
+        if final then return final end
+
+    -- If there is no collision, return nil.
+    return nil
+end
+
+
 
 function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius)
     if distance <= wheelRadius then
