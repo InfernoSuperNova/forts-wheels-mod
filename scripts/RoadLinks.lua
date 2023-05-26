@@ -1,11 +1,4 @@
-RoadLinks = {}
---[[
-{
-    {nodeA = coord, nodeB = coord}
-    {nodeA = coord, nodeB = coord}
-    {nodeA = coord, nodeB = coord}
-}
-]]
+
 RoadStructures = {}
 --[[
     structure1 ={nodeA = coord, nodeB = coord}
@@ -23,47 +16,42 @@ RoadStructureBoundaries = {}
 
     }
 ]]
-function IndexRoadLinks(frame)
-    
-    RoadLinks = {}
-    
-    if frame % 25 == 0 then
-        RoadStructures = {}
+
+function CheckNewRoadLinks(saveName, nodeA, nodeB)
+    if saveName == RoadSaveName then
+        table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
     end
-    RoadCoords = {}
-    RoadStructureBoundaries = {}
-    EnumerateStructureLinks(0, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(1, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(2, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(101, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(201, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(301, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(401, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(102, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(202, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(302, -1, "PlaceRoadLinksInTable", true)
-    EnumerateStructureLinks(402, -1, "PlaceRoadLinksInTable", true)
-    IndexRoadStructures(frame)
+end
+function DestroyOldRoadLinks(saveName, nodeA, nodeB)
+    if saveName == RoadSaveName then
+        for key, link in pairs(data.roadLinks) do
+            BetterLog(link)
+            if nodeA == link.nodeA and nodeB == link.nodeB then
+                table.remove(data.roadLinks, key)
+            end
+        end
+    end
 end
 
-
-function PlaceRoadLinksInTable(nodeA, nodeB, linkPos, saveName, deviceId)
-    --BetterLog(saveName)
-    if saveName == RoadSaveName then 
-        table.insert(RoadLinks, {nodeA = nodeA, nodeB = nodeB})
+function CheckOldRoadLinks()
+    for key, link in pairs(data.roadLinks) do
+        if not IsNodeLinkedTo(link.nodeA, link.nodeB) then
+            table.remove(data.roadLinks, key)
+        end
     end
-    return true
-end
 
+end
 
 function IndexRoadStructures(frame)
     if frame % 25 == 0 then
-        for _, links in pairs(RoadLinks) do
+        RoadStructureBoundaries = {}
+        for _, links in pairs(data.roadLinks) do
             local structure = NodeStructureId(links.nodeA)
             if not RoadStructures[structure] then RoadStructures[structure] = {} end
             table.insert(RoadStructures[structure], links)
         end
     end
+    
     for structure, links in pairs(RoadStructures) do
         if not RoadCoords[structure] then RoadCoords[structure] = {} end
         for _, link in pairs(links) do
@@ -72,7 +60,7 @@ function IndexRoadStructures(frame)
         end
         local circle = MinimumCircularBoundary(RoadCoords[structure])
         RoadStructureBoundaries[structure] = circle
-        if ModDebug then
+        if ModDebug.collision then
             SpawnCircle(circle, circle.r, { r = 255, g = 100, b = 100, a = 255 }, 0.04)
         end
     end
