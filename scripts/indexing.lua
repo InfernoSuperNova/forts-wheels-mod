@@ -62,7 +62,6 @@ function IndexDevices()
                 end
             end
         end
-        BetterLog(Gearboxes[device.strucId])
     end
 end
 
