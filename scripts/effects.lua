@@ -110,7 +110,7 @@ end
 function SoundOnJoin()
     --attaches effects to devices that track sound upon joining
     for side = 1, 2 do
-        local count = GetDeviceCountSide(side)
+        local count = DeviceCounts[side]
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             --engine

@@ -3,28 +3,13 @@ function InitializeTracks()
     data.trackGroups = {}
 end
 
-function UpdateTracks()
+function UpdateTracks(frame)
     DebugLog("---------Start of UpdateTracks---------")
-    local prevTime = GetRealTime()
-    ClearEffects()
-    local delta = GetRealTime() - prevTime
-    DebugLog("  Clear effects took " .. delta .. "s")
-    prevTime = GetRealTime()
-    FillTracks()
-    delta = GetRealTime() - prevTime
-    DebugLog("  Fill tracks took " .. delta .. "s")
-    prevTime = GetRealTime()
-    SortTracks()
-    delta = GetRealTime() - prevTime
-    DebugLog("  Sort tracks took " .. delta .. "s")
-    prevTime = GetRealTime()
-    GetTrackSetPositions()
-    delta = GetRealTime() - prevTime
-    DebugLog("  GetTrackSetPositions took " .. delta .. "s")
-    prevTime = GetRealTime()
-    DrawTracks()
-    delta = GetRealTime() - prevTime
-    DebugLog("  Draw tracks took " .. delta .. "s")
+    UpdateFunction("ClearEffects", frame)
+    UpdateFunction("FillTracks", frame)
+    UpdateFunction("SortTracks", frame)
+    UpdateFunction("GetTrackSetPositions", frame)
+    UpdateFunction("DrawTracks", frame)
     DebugLog("---------End of UpdateTracks---------\n")
 end
 
@@ -56,7 +41,7 @@ function FillTracks()
     --insert new entries
     for side = 1, 2 do
         --get the count of devices on a side
-        local count = GetDeviceCountSide(side)
+        local count = DeviceCounts[side]
         for device = 0, count do
             local id = GetDeviceIdSide(side, device)
             PlaceSuspensionPosInTable(id)

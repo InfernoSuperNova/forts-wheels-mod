@@ -37,7 +37,7 @@ function UpdateCoreShields()
 end
 
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
-    local deviceCount = GetDeviceCountSide(deviceSide)
+    local deviceCount = DeviceCounts[deviceSide]
     for deviceIndex = 0, deviceCount do
         local id = GetDeviceIdSide(deviceSide, deviceIndex)
 

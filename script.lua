@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/indexing.lua")
 dofile(path .. "/scripts/RoadLinks.lua")
 dofile(path .. "/scripts/input.lua")
 dofile(path .. "/scripts/coreShield.lua")
@@ -31,6 +32,7 @@ dofile(path .. "/scripts/drillScript.lua")
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    GetDeviceCounts()
     data.teams = {}
     data.teams[1] = DiscoverTeams(1)
     data.teams[2] = DiscoverTeams(2)
@@ -65,66 +67,29 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
+    local startUpdateTime = GetRealTime()
+    local delta
+    DebugLog("---------Start of update---------")
     if not ModDebug then
         ClearDebugControls()
     end
+    UpdateFunction("GetDeviceCounts", frame)
+    UpdateFunction("IndexDevices", frame)
+    UpdateFunction("IndexLinks", frame)
+    UpdateFunction("IndexTerrainBlocks", frame)
+    UpdateFunction("WheelCollisionHandler", frame)
+    UpdateFunction("UpdateControls", frame)
+    UpdateFunction("UpdatePropulsion", frame)
+    UpdateFunction("UpdateTracks", frame)
+    UpdateFunction("TrueUpdateTracks", frame)
+    UpdateFunction("UpdateDrill", frame)
+    UpdateFunction("UpdateEffects", frame)
+    UpdateFunction("ApplyForces", frame)
+    UpdateFunction("UpdateResources", frame)
+    UpdateFunction("UpdateCoreShields", frame)
+    UpdateFunction("CheckHeldKeys", frame)
     LocalScreen = GetCamera()
-    local startUpdateTime = GetRealTime()
-    local prevTime
-    local delta
-    DebugLog("---------Start of update---------")
-    prevTime = GetRealTime()
-    IndexTerrainBlocks()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Index terrain blocks took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    IndexRoadLinks(frame)
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Index road links took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    WheelCollisionHandler()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Wheel collision handler took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateControls()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update controls took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdatePropulsion()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Propulsion took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateTracks()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update tracks took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    TrueUpdateTracks()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("True Update tracks took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateDrill(frame)
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update drill took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateEffects(frame)
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update effects took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    ApplyForces()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("apply forces took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateResources()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update resources took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    UpdateCoreShields()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Update core shields took " .. string.format("%.2f", delta) .. "ms")
-    prevTime = GetRealTime()
-    CheckHeldKeys()
-    delta = (GetRealTime() - prevTime) * 1000
-    DebugLog("Check held keys took " .. string.format("%.2f", delta) .. "ms")
+    
     JustJoined = false
     DebugLog("---------End of update---------")
     delta = (GetRealTime() - startUpdateTime) * 1000
@@ -132,6 +97,22 @@ function Update(frame)
     DebugUpdate()
 end
 
+function UpdateFunction(callback, frame)
+    if ModDebug then
+        local prevTime = GetRealTime()
+        _G[callback](frame)
+        local delta = (GetRealTime() - prevTime) * 1000
+        DebugLog(callback .. " took " .. string.format("%.2f", delta) .. "ms")
+    else
+        _G[callback](frame)
+    end
+end
+function GetDeviceCounts()
+    DeviceCounts = {}  
+    for side = 1, 2 do
+        DeviceCounts[side] = GetDeviceCountSide(side)
+    end
+end
 function CheckSaveNameTable(input, table)
     for k, v in pairs(table) do
         if input == v then return true end
@@ -280,7 +261,7 @@ end
 function DiscoverTeams(sideId)
 	local teamFound = {}
 	local teams = {}
-	local count = GetDeviceCountSide(sideId)
+	local count = DeviceCounts[sideId]
 	for i = 0, count - 1 do
 		local id = GetDeviceIdSide(sideId, i)
 		local currTeam = GetDeviceTeamIdActual(id)

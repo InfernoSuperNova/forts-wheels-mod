@@ -20,12 +20,8 @@ function InitializePropulsion()
     
 end
 function UpdatePropulsion()
-    Motors = {}
-    Gearboxes ={}
-    IndexDevices()
     LoopStructures()
     ClearOldStructures()
-
 
 end
 
@@ -46,7 +42,6 @@ function UpdateBrakes(state, structure)
     
 end
 function LoopStructures()
-    
     for structureKey, devices in pairs(data.structures) do
         local wheelCount = 0
         local wheelTouchingGroundCount = 0
@@ -90,31 +85,7 @@ function NormalizeThrottleVal(structure)
     return (data.throttles[structure].x - min) / ((max - min) / 2) - 1
 end
 
-function IndexDevices()
-    for side = 1, 2 do
-        local count = GetDeviceCountSide(side)
-        for index = 0, count do
-            local id = GetDeviceIdSide(side, index)
-            local structureId = GetDeviceStructureId(id)
-            if IsDeviceFullyBuilt(id) then
-                if  GetDeviceType(id) == GearboxSaveName then
-                    if not Gearboxes[structureId] then 
-                        Gearboxes[structureId] = 1 
-                    else
-                        Gearboxes[structureId] = Gearboxes[structureId] + 1
-                    end
-                elseif  GetDeviceType(id) == EngineSaveName then
-                    if not Motors[structureId] then 
-                        Motors[structureId] = 1 
-                    else
-                        Motors[structureId] = Motors[structureId] + 1
-                    end
-                end
-            end
-            
-        end
-    end
-end
+
 
 
 
@@ -153,7 +124,6 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     local velocityMag = VecMagnitudeDir(velocity)
     --now that we have the average velocity magnitude, we should select which gear should be used
 
-
     local currentGear = GetCurrentGearFromVelocity(applicableGears, velocityMag)
 
     
@@ -163,7 +133,6 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
 end
 
 function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag, brakeFactor)
-    
     if data.brakes[structureKey] == true then 
         for deviceKey, device in pairs(devices) do
             if data.wheelsTouchingGround[structureKey][deviceKey] then
@@ -204,7 +173,6 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 mag = (mag + data.previousThrottleMags[structureKey][deviceKey] * 4) / 5
             elseif not data.previousThrottleMags[structureKey] then data.previousThrottleMags[structureKey] = {} end
                 
-            
             data.previousThrottleMags[structureKey][deviceKey] = mag
             local force
             --right

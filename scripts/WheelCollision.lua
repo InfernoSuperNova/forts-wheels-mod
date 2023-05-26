@@ -33,7 +33,7 @@ end
 function GetDeviceStructureGroups()
     local structures = {}
     for side = 1, 2 do
-        local deviceCount = GetDeviceCountSide(side)
+        local deviceCount = DeviceCounts[side]
 
 
         for index = 0, deviceCount do
