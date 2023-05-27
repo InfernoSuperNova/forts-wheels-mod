@@ -138,7 +138,7 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 local signX = math.sign(velocity.x)
                 local brakeVelocity = velocity.x * 0.01
                 brakeVelocity = Clamp(brakeVelocity, -1, 1)
-                FinalPropulsionForces[device] = {x = -brakeVelocity * brakeFactor, y = 0}
+                FinalPropulsionForces[device.id] = {x = -brakeVelocity * brakeFactor, y = 0}
             end
         end
         return
@@ -181,7 +181,7 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             else
                 force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
             end
-            FinalPropulsionForces[device] = force
+            FinalPropulsionForces[device.id] = force
         end
     end
 end

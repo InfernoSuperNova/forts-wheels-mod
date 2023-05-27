@@ -169,20 +169,21 @@ end
 
 
 function ApplyForces()
-    for device, force in pairs(FinalSuspensionForces) do
-        if FinalPropulsionForces[device] then
+    for deviceId, force in pairs(FinalSuspensionForces) do
+        if FinalPropulsionForces[deviceId] then
             --Don't ask me why I have to do it like this, just trust that I do have to
-            local newForceX = IgnoreDecimalPlaces(force.x + FinalPropulsionForces[device].x, 5)
-            local newForceY = IgnoreDecimalPlaces(force.y + FinalPropulsionForces[device].y, 5)
+            local newForceX = IgnoreDecimalPlaces(force.x + FinalPropulsionForces[deviceId].x, 5)
+            local newForceY = IgnoreDecimalPlaces(force.y + FinalPropulsionForces[deviceId].y, 5)
             
 
-            FinalAddedForces[device] = { x = newForceX, y = newForceY }
+            FinalAddedForces[deviceId] = { x = newForceX, y = newForceY }
         else
-            FinalAddedForces[device] = force
+            FinalAddedForces[deviceId] = force
         end
     end
 
-    for device, force in pairs(FinalAddedForces) do
+    for deviceId, force in pairs(FinalAddedForces) do
+        local device = FindDeviceInMasterIndex(deviceId)
         dlc2_ApplyForce(device.nodeA, force)
         dlc2_ApplyForce(device.nodeB, force)
     end
