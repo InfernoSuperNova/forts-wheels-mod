@@ -162,11 +162,11 @@ end
 
 function SendDisplacementToTracks(displacement, device)
     if not Displacement[device.id] then
-        Displacement[device.id] = displacement
+        Displacement[device.id] = DeepCopy(displacement)
     else
         --set displacement to largest among all blocks
         if math.abs(Displacement[device.id].y) < math.abs(displacement.y) then
-            Displacement[device.id] = displacement
+            Displacement[device.id] = DeepCopy(displacement)
         end
     end
 end
