@@ -180,13 +180,13 @@ function ApplyFinalForce(device, velocity, displacement, structureId)
         x = SpringDampenedForce(SpringConst, displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
         y = SpringDampenedForce(SpringConst, displacement.y, Dampening * math.abs(surfaceNormal.y), velocity.y)
     }
-    if FinalSuspensionForces[device] and DampenedForce.x then
-        FinalSuspensionForces[device] = {
-            x = FinalSuspensionForces[device].x + DampenedForce.x,
-            y = FinalSuspensionForces[device].y + DampenedForce.y
+    if FinalSuspensionForces[device.id] and DampenedForce.x then
+        FinalSuspensionForces[device.id] = {
+            x = FinalSuspensionForces[device.id].x + DampenedForce.x,
+            y = FinalSuspensionForces[device.id].y + DampenedForce.y
         }
     else
-        FinalSuspensionForces[device] = DampenedForce
+        FinalSuspensionForces[device.id] = DampenedForce
     end
     
 end
