@@ -187,7 +187,7 @@ function ClosestPointOnLineSegment(p, a, b)
         return { x = a.x + t * ab.x, y = a.y + t * ab.y }
     end
 end
-
+--modify to return remainder
 function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
     local segmentLength = Distance(startPoint, endPoint)
     local directionX = (endPoint.x - startPoint.x) / segmentLength
@@ -202,7 +202,7 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
         t = t + distance
     end
 
-    return points
+    return {points = points, remainder = t}
 end
 
 function PointsAroundArc(center, radius, p1, p2, spacing, offset)
@@ -219,7 +219,7 @@ function PointsAroundArc(center, radius, p1, p2, spacing, offset)
     local trackFactor = 1.4
     local arc_length = angle_diff * radius
     local num_points = math.ceil(arc_length / spacing)
-    if num_points == 0 then return {} end
+    if num_points == 0 then return {points = {}, remainder = arc_length} end
     local angle_incr = angle_diff / (num_points - 1)
 
     local points = {}
@@ -229,7 +229,9 @@ function PointsAroundArc(center, radius, p1, p2, spacing, offset)
         local y = center.y + radius * math.sin(angle)
         table.insert(points, { x = x, y = y })
     end
-    return points
+
+    local remainder = arc_length - (spacing * (num_points - 1))
+    return { points = points, remainder = remainder }
 end
 
 function AngleToVector(angle)

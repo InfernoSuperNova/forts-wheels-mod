@@ -7,7 +7,7 @@ DebugText = ""
 --config values
 
 --wheels
-WheelRadius = 75                                    --radius of the wheels
+WHEEL_RADIUS = 75                                    --radius of the wheels
 TrackWidth = 20                                     --width of the tracks
 WheelSuspensionHeight = 150                         --height from the origin of the suspension to the wheel itself
 SpringConst = 30000                                 --spring constant, the force that wheels will push off with. Higher spring value will necessitate a higher dampening value
@@ -25,7 +25,7 @@ ControllerSaveName = {"vehicleControllerStructure", "vehicleControllerNoStructur
                                                     --savename of the controller
 GearboxSaveName = "gearbox"                         --savename of the transmission
 MetalCostPerSecMaxThrottle = 5                      --upper limit to the metal per second consumption of engines
-TrackLinkDistance = 40                              --distance between track links (visual)
+TRACK_LINK_DISTANCE = 40                              --distance between track links (visual)
 DrillsEnabled = false                               --whether to enable drills or not
 --Core shields
 ShieldRadius = 1800                                 --radius of the base protecting shield

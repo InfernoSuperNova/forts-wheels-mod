@@ -92,7 +92,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         for index, link in pairs(links) do
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             
-            displacement = CheckCollisionsOnBrace(newLink, pos, WheelRadius + TrackWidth)
+            displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TrackWidth)
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
             if displacement == nil then --incase of degenerate blocks
@@ -116,11 +116,11 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         -- for nodeIndex = 1, #Nodes do
         --     local node1 = Terrain[blockIndex]
         --     local node2 = Terrain[blockIndex % #Nodes + 1]
-        --     BetterLog(CircleLineSegmentCollision(pos, WheelRadius, node1, node2))
+        --     BetterLog(CircleLineSegmentCollision(pos, WHEEL_RADIUS, node1, node2))
         -- end
 
-        --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + TrackWidth)
+        --local segmentsToCheck = CircleLineSegmentCollision(pos, WHEEL_RADIUS)
+        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WHEEL_RADIUS + TrackWidth)
 
         if displacement == nil then --incase of degenerate blocks
             displacement = Vec3(0,0)

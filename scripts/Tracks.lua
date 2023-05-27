@@ -66,7 +66,7 @@ function PlaceSuspensionPosInTable(device)
                 }
             end
             
-            --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
+            --SpawnCircle(suspensionPos, WHEEL_RADIUS, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
 
@@ -88,11 +88,11 @@ function SortTracks()
                 
                 local prevTime = GetRealTime()
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
-                SortedTracks[structure][trackGroup] = GiftWrapping(trackSet)
+                SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
                 local delta = (GetRealTime() - prevTime) * 1000
                 DebugLog("Gift Wrapping took " .. string.format("%.2f", delta) .. "ms")
                 prevTime = GetRealTime()
-                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WheelRadius)
+                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
                 local delta = (GetRealTime() - prevTime) * 1000
                 DebugLog("Track Pushing took " .. string.format("%.2f", delta) .. "ms")
             else
@@ -121,7 +121,8 @@ function DrawTracks()
             --hide tracks on phantom
         if not IsCommanderAndEnemyActive("phantom", team) then
             for trackGroup, trackSet in pairs(trackSets) do
-                DrawTrackTreads(trackSet, base, trackGroup)
+                local avgPos = AverageCoordinates(trackSet)
+                EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
                 DrawTrackSprockets(base, trackGroup)
             end
         end
@@ -133,7 +134,7 @@ function DrawTrackSprockets(base, trackGroup)
     local angle
     --trackgroup of 11 represents wheel
     if trackGroup == 11 then
-        angle = (TrackOffsets[base].x / WheelRadius) * (WheelRadius - TrackWidth)
+        angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TrackWidth)
 
         effectPath = path .. "/effects/wheel.lua"
     else
@@ -148,11 +149,53 @@ function DrawTrackSprockets(base, trackGroup)
     end
 end
 
-function DrawTrackTreads(trackSet, base, trackGroup)
-    
+function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
+    if trackGroup == 11 then return end
+    local trackPoints = {}
+    local remainder = -avgPos.x % TRACK_LINK_DISTANCE
+    for segment = 1, #trackSet do
+        local wheel = segment / 2
+        --Only if there's more than 2 points (1 wheel) in set
+        if #trackSet > 2 then
+            if wheel % 1 == 0 then
+                local lineSegment = {trackSet[segment - 1], trackSet[segment]}
+                
+                local result = DrawTrackTreadsFlat(lineSegment, remainder)
+                remainder = result.remainder % TRACK_LINK_DISTANCE
+                --place the resulting track links into a table containing all the track points
+                for _, point in pairs(result.points) do
+                    table.insert(trackPoints, point)
+                end
+            else
+                local prevIndex = (segment - 2) % #trackSet + 1 
+                local lineSegment = {trackSet[prevIndex], trackSet[segment]}
+                
+                local wheelPos = SortedTracks[base][trackGroup][math.ceil(wheel)]
+                local result = DrawTrackTreadsRound(lineSegment, remainder, wheelPos)
+                remainder = result.remainder % TRACK_LINK_DISTANCE
+                --place the resulting track links into a table containing all the track points
+                for _, point in pairs(result.points) do
+                    table.insert(trackPoints, point)
+                end
+            end
+        end
+    end
+    HighlightPolygon(trackPoints)
 end
 
+function DrawTrackTreadsFlat(lineSegment, offset)
+    local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, offset)
+    return result
 
+end
+
+function DrawTrackTreadsRound(lineSegment, offset, wheelPos)
+    BetterLog(offset)
+    local offsetLength = offset / WHEEL_RADIUS * 1.2
+    --HighlightPolygon({wheelPos, lineSegment[1], lineSegment[2]})
+    local result = PointsAroundArc(wheelPos, WHEEL_RADIUS, lineSegment[2], lineSegment[1], TRACK_LINK_DISTANCE, offsetLength)
+    return result
+end
 -- Helper function to check if three points are clockwise, counterclockwise, or collinear
 function Orientation(p, q, r)
     local val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
