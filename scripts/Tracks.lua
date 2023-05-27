@@ -88,7 +88,7 @@ function SortTracks()
                 
                 local prevTime = GetRealTime()
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
-                SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
+                SortedTracks[structure][trackGroup] = GiftWrapping(trackSet)
                 local delta = (GetRealTime() - prevTime) * 1000
                 DebugLog("Gift Wrapping took " .. string.format("%.2f", delta) .. "ms")
                 prevTime = GetRealTime()
@@ -149,60 +149,7 @@ function DrawTrackSprockets(base, trackGroup)
 end
 
 function DrawTrackTreads(trackSet, base, trackGroup)
-    --exclude wheels
-    if trackGroup == 11 then return end
-    --loop through segments of the tracks
-    for wheel = 1, #trackSet, 2 do
-        --Only if there's more than 2 points (1 wheel) in set
-        if #trackSet > 2 then
-            DrawTrackTreadsFlat(trackSet, wheel, base)
-        end
-    end
-    for wheel = 2, #trackSet, 2 do
-        local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
-        local center = SortedTracks[base][trackGroup][index]
-        
-        DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
-
-            
-
-        
-
-    end
-end
-
-function DrawTrackTreadsRound(center, track1, track2, base)
-    local offset = TrackOffsets[base].x % TrackLinkDistance
-    local offset_length = offset / WheelRadius * 1.2
-
-    local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
-
-
-
-
-    for point = 1, #arc do
-        SpawnEffectEx(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
-        if arc[point + 1] then
-            local newPos = AverageCoordinates({ arc[point], arc[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center))
-        end
-    end
-end
-
-function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
-    local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
-
-    local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TrackLinkDistance,
-        -TrackOffsets[correspondingDevice].x % TrackLinkDistance)
-    --loop through points on the track
-    for point = 1, #points do
-        SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
-
-        if points[point + 1] then
-            local newPos = AverageCoordinates({ points[point], points[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, angle)
-        end
-    end
+    
 end
 
 
