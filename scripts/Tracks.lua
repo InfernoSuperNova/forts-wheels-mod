@@ -185,13 +185,13 @@ end
 
 function CalculateTrackTreadsFlat(lineSegment, offset)
     local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, offset)
-    BetterLog(result.remainder)
     return result
 
 end
 
 function CalculateTrackTreadsRound(lineSegment, offset, wheelPos)
-    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, offset)
+    BetterLog(offset)
+    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, TRACK_LINK_DISTANCE - offset)
     return result
 end
 

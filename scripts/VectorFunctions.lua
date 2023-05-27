@@ -206,26 +206,31 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
 end
 
 function SubdivideArc(centerPoint, startPoint, endPoint, radius, distance, startingOffset)
-    local points = {}
+    -- This function subdivides an arc into smaller segments and returns the points along the arc
+
+    local points = {} -- An array to store the points along the arc
     local startAngle = CalculateAngle(centerPoint.x, centerPoint.y, startPoint.x, startPoint.y)
     local endAngle = CalculateAngle(centerPoint.x, centerPoint.y, endPoint.x, endPoint.y)
 
-    local adjustedStartAngle = DisplaceAngle(startAngle, radius, startingOffset)
+    local adjustedStartAngle = startAngle - (startingOffset / radius)
     local adjustedStartPos = CalculateCirclePoint(centerPoint, radius, adjustedStartAngle)
-    table.insert(points, adjustedStartPos)
+    table.insert(points, adjustedStartPos) -- Insert the adjusted starting position into the points array
 
     local currentAngle = adjustedStartAngle
     local currentDistance = 0
 
+    -- Loop until the current distance along the arc exceeds the radius times the absolute difference between the end angle and adjusted start angle
     while currentDistance <= radius * math.abs(endAngle - adjustedStartAngle) do
-        currentAngle = currentAngle - (distance / radius) -- Subtract instead of add
-        local point = CalculateCirclePoint(centerPoint, radius, currentAngle)
-        table.insert(points, point)
-        currentDistance = currentDistance + distance
+        currentAngle = currentAngle - (distance / radius) -- Decrease the current angle by the specified distance divided by the radius
+        local point = CalculateCirclePoint(centerPoint, radius, currentAngle) -- Calculate the position on the circle based on the current angle
+        table.insert(points, point) -- Insert the calculated point into the points array
+        currentDistance = currentDistance + distance -- Increase the current distance by the specified distance
     end
 
-    local remainder = radius * math.abs(endAngle - currentAngle)
-    return { points = points, remainder = remainder }
+    local remainder = radius * math.abs(endAngle - currentAngle) -- Calculate the remaining arc length
+    HighlightCoords({startPoint, endPoint, adjustedStartPos})
+    --BetterLog(remainder) -- Output the remaining arc length (presumably for debugging or logging purposes)
+    return { points = points, remainder = remainder } -- Return the points array and the remaining arc length
 end
 
 function CalculateAngle(x1, y1, x2, y2)
