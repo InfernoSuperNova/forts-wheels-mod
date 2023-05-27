@@ -205,34 +205,48 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
     return {points = points, remainder = t}
 end
 
-function PointsAroundArc(center, radius, p1, p2, spacing, offset)
-    local angle1 = math.atan2(p1.y - center.y, p1.x - center.x)
-    local angle2 = math.atan2(p2.y - center.y, p2.x - center.x)
-    local angle_diff = angle2 - angle1
-    local start_angle = angle1 + offset
-    if math.sign(angle_diff) == -1 then
-        angle1, angle2 = angle2, angle1
-        angle_diff = angle1 - angle2
-        angle_diff = (math.pi * 2 + angle_diff)
-        start_angle = angle2 + offset
-    end
-    local trackFactor = 1.4
-    local arc_length = angle_diff * radius
-    local num_points = math.ceil(arc_length / spacing)
-    if num_points == 0 then return {points = {}, remainder = arc_length} end
-    local angle_incr = angle_diff / (num_points - 1)
-
+function SubdivideArc(centerPoint, startPoint, endPoint, radius, distance, startingOffset)
     local points = {}
-    for i = 1, num_points - 1, math.sign(num_points) do
-        local angle = start_angle + (i - 1) * angle_incr
-        local x = center.x + radius * math.cos(angle)
-        local y = center.y + radius * math.sin(angle)
-        table.insert(points, { x = x, y = y })
+    local startAngle = CalculateAngle(centerPoint.x, centerPoint.y, startPoint.x, startPoint.y)
+    local endAngle = CalculateAngle(centerPoint.x, centerPoint.y, endPoint.x, endPoint.y)
+
+    local adjustedStartAngle = DisplaceAngle(startAngle, radius, startingOffset)
+    local adjustedStartPos = CalculateCirclePoint(centerPoint, radius, adjustedStartAngle)
+    table.insert(points, adjustedStartPos)
+
+    local currentAngle = adjustedStartAngle
+    local currentDistance = 0
+
+    while currentDistance <= radius * math.abs(endAngle - adjustedStartAngle) do
+        currentAngle = currentAngle - (distance / radius) -- Subtract instead of add
+        local point = CalculateCirclePoint(centerPoint, radius, currentAngle)
+        table.insert(points, point)
+        currentDistance = currentDistance + distance
     end
 
-    local remainder = arc_length - (spacing * (num_points - 1))
+    local remainder = radius * math.abs(endAngle - currentAngle)
     return { points = points, remainder = remainder }
 end
+
+function CalculateAngle(x1, y1, x2, y2)
+    local dx = x2 - x1
+    local dy = y2 - y1
+    local angle = math.atan2(dy, dx)
+    return angle
+end
+
+function DisplaceAngle(originalAngle, radius, displacement)
+    local circumference = 2 * math.pi * radius
+    local fraction = displacement / circumference
+    local angle = originalAngle + (fraction * 2 * math.pi)
+    return angle
+end
+
+function CalculateCirclePoint(circle,  radius, angle)
+    local x = circle.x + radius * math.cos(angle)
+    local y = circle.y + radius * math.sin(angle)
+    return {x = x, y = y}
+  end
 
 function AngleToVector(angle)
     local radians = math.rad(angle)
@@ -240,8 +254,6 @@ function AngleToVector(angle)
     local y = math.sin(radians)
     return { x = x, y = y }
 end
-
-
 function CalculateSquare(points)
     -- Step 1: Determine the minimum and maximum x and y coordinates
     local minX, minY, maxX, maxY = math.huge, math.huge, -math.huge, -math.huge
