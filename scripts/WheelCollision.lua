@@ -172,7 +172,6 @@ function SendDisplacementToTracks(displacement, device)
 end
 
 function ApplyFinalForce(device, velocity, displacement, structureId)
-
     if data.brakes[structureId] == true then displacement.x = 0 end
     local surfaceNormal = NormalizeVector(displacement)
     local DampenedForce = {
