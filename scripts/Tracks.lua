@@ -152,7 +152,7 @@ end
 function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
     if trackGroup == 11 then return end
     local trackPoints = {}
-    local remainder = -avgPos.x % TRACK_LINK_DISTANCE
+    local remainder = avgPos.x % TRACK_LINK_DISTANCE
     for segment = 1, #trackSet do
         local wheel = segment / 2
         --Only if there's more than 2 points (1 wheel) in set
@@ -160,7 +160,7 @@ function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
             if wheel % 1 == 0 then
                 local lineSegment = {trackSet[segment - 1], trackSet[segment]}
                 
-                local result = DrawTrackTreadsFlat(lineSegment, remainder)
+                local result = CalculateTrackTreadsFlat(lineSegment, remainder)
                 remainder = result.remainder % TRACK_LINK_DISTANCE
                 --place the resulting track links into a table containing all the track points
                 for _, point in pairs(result.points) do
@@ -171,8 +171,8 @@ function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
                 local lineSegment = {trackSet[prevIndex], trackSet[segment]}
                 
                 local wheelPos = SortedTracks[base][trackGroup][math.ceil(wheel)]
-                local result = DrawTrackTreadsRound(lineSegment, remainder, wheelPos)
-                remainder = result.remainder % TRACK_LINK_DISTANCE
+                local result = CalculateTrackTreadsRound(lineSegment, remainder, wheelPos)
+                remainder = math.abs(result.remainder) % TRACK_LINK_DISTANCE
                 --place the resulting track links into a table containing all the track points
                 for _, point in pairs(result.points) do
                     table.insert(trackPoints, point)
@@ -180,21 +180,32 @@ function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
             end
         end
     end
-    HighlightPolygon(trackPoints)
+    DrawTrackTreads(trackPoints)
 end
 
-function DrawTrackTreadsFlat(lineSegment, offset)
+function CalculateTrackTreadsFlat(lineSegment, offset)
     local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, offset)
+    BetterLog(result.remainder)
     return result
 
 end
 
-function DrawTrackTreadsRound(lineSegment, offset, wheelPos)
-    BetterLog(offset)
-    local offsetLength = offset / WHEEL_RADIUS * 1.2
-    --HighlightPolygon({wheelPos, lineSegment[1], lineSegment[2]})
-    local result = PointsAroundArc(wheelPos, WHEEL_RADIUS, lineSegment[2], lineSegment[1], TRACK_LINK_DISTANCE, offsetLength)
+function CalculateTrackTreadsRound(lineSegment, offset, wheelPos)
+    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, offset)
     return result
+end
+
+
+function DrawTrackTreads(trackPoints)
+    for i = 1, #trackPoints - 1 do
+        local prevIndex = (i - 2) % #trackPoints + 1 
+        local angle = GetAngleVector(trackPoints[prevIndex], trackPoints[i + 1 % #trackPoints])
+        SpawnEffectEx(path .. "/effects/track.lua", trackPoints[i], angle)
+
+        local newPos = AverageCoordinates({trackPoints[i], trackPoints[i + 1 % #trackPoints]})
+        local newAngle = GetAngleVector(trackPoints[i], trackPoints[i + 1 % #trackPoints])
+        SpawnEffectEx(path .. "/effects/track_link.lua", newPos, newAngle)
+    end
 end
 -- Helper function to check if three points are clockwise, counterclockwise, or collinear
 function Orientation(p, q, r)
