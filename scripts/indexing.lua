@@ -113,21 +113,43 @@ function IndexTerrainBlocks()
     BlockStatistics.totalBlocks = terrainBlockCount
     --loop through all terrain blocks
     for currentBlock = 0, terrainBlockCount - 1 do
-        --create new array for that block
-        Terrain[currentBlock + 1] = {}
-        local vertexCount = GetBlockVertexCount(currentBlock)
-        BlockStatistics.totalNodes = BlockStatistics.totalNodes + vertexCount
-        if BlockStatistics.largestBlock < vertexCount then BlockStatistics.largestBlock = vertexCount end
-        --loop through all vertexes in that block
-        for currentVertex = 0, vertexCount - 1 do
-            --adds to table for maths
-            Terrain[currentBlock + 1][currentVertex + 1] = GetBlockVertexPos(currentBlock, currentVertex)
+        IndexTerrainBlock(currentBlock)
+    end
+
+    FindMovingBlocks(terrainBlockCount)
+end
+
+function IndexTerrainBlock(terrainBlock)
+    --create new array for that block
+    Terrain[terrainBlock + 1] = {}
+    local vertexCount = GetBlockVertexCount(terrainBlock)
+    BlockStatistics.totalNodes = BlockStatistics.totalNodes + vertexCount
+    if BlockStatistics.largestBlock < vertexCount then BlockStatistics.largestBlock = vertexCount end
+    --loop through all vertexes in that block
+    for currentVertex = 0, vertexCount - 1 do
+        --adds to table for maths
+        Terrain[terrainBlock + 1][currentVertex + 1] = GetBlockVertexPos(terrainBlock, currentVertex)
+    end
+    data.terrainCollisionBoxes[terrainBlock + 1] = MinimumCircularBoundary(Terrain[terrainBlock + 1])
+    if ModDebug.collision == true then
+        SpawnCircle(data.terrainCollisionBoxes[terrainBlock + 1], data.terrainCollisionBoxes[terrainBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+    end
+end
+
+function FindMovingBlocks(BlockCount)
+    MovingTerrain = {}
+    for movingIndex = 1, BlockCount do
+        local terrainIndex = GetTerrainBlockIndex("Moving Terrain " .. movingIndex)
+        if terrainIndex ~= -1 then
+            table.insert(MovingTerrain, terrainIndex)
         end
-        data.terrainCollisionBoxes[currentBlock + 1] = MinimumCircularBoundary(Terrain[currentBlock + 1])
-        if ModDebug.collision == true then
-            SpawnCircle(data.terrainCollisionBoxes[currentBlock + 1], data.terrainCollisionBoxes[currentBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
-        end
-        
+    end
+    
+end
+
+function IndexMovingBlocks()
+    for key, terrainIndex in pairs(MovingTerrain) do
+        IndexTerrainBlock(terrainBlock)
     end
 end
 
