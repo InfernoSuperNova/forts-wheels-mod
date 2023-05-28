@@ -113,7 +113,9 @@ function IndexTerrainBlocks()
     BlockStatistics.totalBlocks = terrainBlockCount
     --loop through all terrain blocks
     for currentBlock = 0, terrainBlockCount - 1 do
-        IndexTerrainBlock(currentBlock)
+        if SpecialTerrain.ignored[currentBlock] == false then
+            IndexTerrainBlock(currentBlock)
+        end
     end
 
     FindMovingBlocks(terrainBlockCount)
@@ -136,19 +138,25 @@ function IndexTerrainBlock(terrainBlock)
     end
 end
 
-function FindMovingBlocks(BlockCount)
-    MovingTerrain = {}
-    for movingIndex = 1, BlockCount do
-        local terrainIndex = GetTerrainBlockIndex("Moving Terrain " .. movingIndex)
-        if terrainIndex ~= -1 then
-            table.insert(MovingTerrain, terrainIndex)
+function IndexNamedBlocks(BlockCount)
+    SpecialTerrain = 
+    {["moving"] = {}, 
+    ["ignored"] = {}}
+    for specialIndex = 1, BlockCount do
+        local movingTerrainIndex = GetTerrainBlockIndex("Moving Terrain " .. specialIndex)
+        if movingTerrainIndex ~= -1 then
+            table.insert(SpecialTerrain["moving"], movingTerrainIndex)
+        end
+        local ignoredTerrainIndex = GetTerrainBlockIndex("Ignore " .. specialIndex)
+        if ignoredTerrainIndex ~= -1 then
+            SpecialTerrain["ignored"][ignoredTerrainIndex] = true
         end
     end
     
 end
 
 function IndexMovingBlocks()
-    for key, terrainIndex in pairs(MovingTerrain) do
+    for key, terrainIndex in pairs(SpecialTerrain.moving) do
         IndexTerrainBlock(terrainBlock)
     end
 end
