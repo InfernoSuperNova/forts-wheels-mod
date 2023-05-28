@@ -66,7 +66,7 @@ PushedTracks = {}
 LocalEffects = {}
 TrackGroups = {}
 Terrain = {}
-SpecialTerrain = {}
+SpecialTerrain = {moving = {}, ignored = {}}
 DeviceCounts = {}
 ---Devices table
 --[[
