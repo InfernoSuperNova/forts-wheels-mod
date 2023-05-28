@@ -111,14 +111,14 @@ function IndexTerrainBlocks()
     data.terrainCollisionBoxes = {}
     local terrainBlockCount = GetBlockCount()
     BlockStatistics.totalBlocks = terrainBlockCount
+
+    IndexNamedBlocks(terrainBlockCount)
     --loop through all terrain blocks
     for currentBlock = 0, terrainBlockCount - 1 do
-        if SpecialTerrain.ignored[currentBlock] == false then
+        if SpecialTerrain.ignored[currentBlock] ~= true then
             IndexTerrainBlock(currentBlock)
         end
     end
-
-    FindMovingBlocks(terrainBlockCount)
 end
 
 function IndexTerrainBlock(terrainBlock)
@@ -156,7 +156,7 @@ function IndexNamedBlocks(BlockCount)
 end
 
 function IndexMovingBlocks()
-    for key, terrainIndex in pairs(SpecialTerrain.moving) do
+    for key, terrainIndex in pairs(SpecialTerrain["moving"]) do
         IndexTerrainBlock(terrainBlock)
     end
 end
