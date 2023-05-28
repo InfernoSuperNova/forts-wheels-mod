@@ -117,6 +117,8 @@ function IndexTerrainBlocks()
     for currentBlock = 0, terrainBlockCount - 1 do
         if SpecialTerrain.ignored[currentBlock] ~= true then
             IndexTerrainBlock(currentBlock)
+        else
+            Terrain[currentBlock + 1] = {}
         end
     end
 end
@@ -143,11 +145,11 @@ function IndexNamedBlocks(BlockCount)
     {["moving"] = {}, 
     ["ignored"] = {}}
     for specialIndex = 1, BlockCount do
-        local movingTerrainIndex = GetTerrainBlockIndex("Moving Terrain " .. specialIndex)
+        local movingTerrainIndex = GetTerrainBlockIndex("moving" .. specialIndex)
         if movingTerrainIndex ~= -1 then
             table.insert(SpecialTerrain["moving"], movingTerrainIndex)
         end
-        local ignoredTerrainIndex = GetTerrainBlockIndex("Ignore " .. specialIndex)
+        local ignoredTerrainIndex = GetTerrainBlockIndex("ignored" .. specialIndex)
         if ignoredTerrainIndex ~= -1 then
             SpecialTerrain["ignored"][ignoredTerrainIndex] = true
         end
