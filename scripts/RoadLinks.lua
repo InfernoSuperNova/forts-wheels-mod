@@ -18,12 +18,12 @@ RoadStructureBoundaries = {}
 ]]
 
 function CheckNewRoadLinks(saveName, nodeA, nodeB)
-    if saveName == ROAD_SAVE_NAME then
+    if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
     end
 end
 function DestroyOldRoadLinks(saveName, nodeA, nodeB)
-    if saveName == ROAD_SAVE_NAME then
+    if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         for key, link in pairs(data.roadLinks) do
             BetterLog(link)
             if nodeA == link.nodeA and nodeB == link.nodeB then
@@ -35,7 +35,8 @@ end
 
 function CheckOldRoadLinks()
     for key, link in pairs(data.roadLinks) do
-        if not (IsNodeLinkedTo(link.nodeA, link.nodeB) and ROAD_SAVE_NAME == GetLinkMaterialSaveName(link.nodeA, link.nodeB)) then
+        local saveName = GetLinkMaterialSaveName(link.nodeA, link.nodeB)
+        if not (IsNodeLinkedTo(link.nodeA, link.nodeB) and CheckSaveNameTable(saveName, ROAD_SAVE_NAME)) then
             table.remove(data.roadLinks, key)
         end
     end

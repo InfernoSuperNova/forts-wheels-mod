@@ -80,7 +80,7 @@ function SoundAdd(saveName, deviceId)
     --attaches an effect to a new device that tracks sound
 
     --engine
-    if saveName == ENGINE_SAVE_NAME then
+    if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
         local id = SpawnEffect(path .. "/effects/engine_loop.lua", GetDevicePosition(deviceId))
         EffectsList.engine[tostring(deviceId)] = id
     --wheel
@@ -94,7 +94,7 @@ function SoundRemove(saveName, deviceId)
     --removes an effect when a device that tracks sound is removed
 
     --engine
-    if saveName == ENGINE_SAVE_NAME then
+    if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
         if EffectsList.engine[tostring(deviceId)] then
             CancelEffect(EffectsList.engine[tostring(deviceId)])
         end
@@ -114,10 +114,10 @@ function SoundOnJoin()
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             --engine
-            if GetDeviceType(id) == ENGINE_SAVE_NAME then
+            if CheckSaveNameTable(GetDeviceType(id), ENGINE_SAVE_NAME) then
                 SoundAdd(ENGINE_SAVE_NAME, id)
             --wheel
-            elseif GetDeviceType(id) == WHEEL_SAVE_NAME[1] or GetDeviceType(id) == WHEEL_SAVE_NAME[2] then
+            elseif CheckSaveNameTable(GetDeviceType(id), WHEEL_SAVE_NAME) then
                 SoundAdd(WHEEL_SAVE_NAME[1], id)
             end
         end

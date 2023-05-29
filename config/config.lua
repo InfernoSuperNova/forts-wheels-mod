@@ -20,10 +20,10 @@ GEAR_CHANGE_RATIO = 0.95                                --upper threshold of cur
 THROTTLE_DEADZONE = 0.02                                --portion of the throttle to ingore
 --devices
 WHEEL_SAVE_NAME = {"suspension", "suspensionInverted"}  --savenames of the wheel devices
-ENGINE_SAVE_NAME = "engine"                             --savename of engine device
+ENGINE_SAVE_NAME = {"engine"}                           --savename of engine device
 CONTROLLER_SAVE_NAME = {"vehicleControllerStructure", "vehicleControllerNoStructure"}                           
                                                         --savename of the controller
-GEARBOX_SAVE_NAME = "gearbox"                           --savename of the transmission
+GEARBOX_SAVE_NAME = {"gearbox"}                         --savename of the transmission
 ENGINE_RUN_COST = 5                                     --upper limit to the metal per second consumption of engines
 TRACK_LINK_DISTANCE = 40                                --distance between track links (visual)
 --Core shields
@@ -31,7 +31,7 @@ SHIELD_RADIUS = 1800                                    --radius of the base pro
 SHIELD_DAMAGE = 2                                       --damage of the core shield at center (* 25 per sec)
 SHIELD_FORCE = 2500000                                  --pushback force of the shield at center
 --roads
-ROAD_SAVE_NAME = "RoadLink"                             --SaveName for the road material
+ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road material
 
 --binds
 KEYBINDS = {
