@@ -159,11 +159,11 @@ end
 
 function IndexMovingBlocks()
     for key, terrainIndex in pairs(SpecialTerrain["moving"]) do
-        IndexTerrainBlock(terrainBlock)
+        IndexTerrainBlock(terrainIndex)
     end
 end
 
-
+    
 function DebugHighlightTerrain(frame)
     if frame % 25 == 1 then
         for _, boundary in pairs(data.terrainCollisionBoxes) do
