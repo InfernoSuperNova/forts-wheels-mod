@@ -1,6 +1,11 @@
 --VectorFunctions.lua
 --- forts script API ---
 
+
+
+
+
+
 -- Scale a vector by a factor
 ---@param vector{x:number, y:number} The vector to scale
 ---@param factor number The factor to scale by
@@ -8,6 +13,11 @@
 function ScaleVector(vector, factor)
     return { x = vector.x * factor, y = vector.y * factor }
 end
+
+
+
+
+
 
 -- Add two vectors
 ---@param vector1 {x:number, y:number} Vector one to add
@@ -17,6 +27,11 @@ function AddVectors(vector1, vector2)
     return { x = vector1.x + vector2.x, y = vector1.y + vector2.y }
 end
 
+
+
+
+
+
 -- Subtract one vector from another
 ---@param vector1 {x:number, y:number} Vector one to add
 ---@param vector2 {x:number, y:number} Vector two to add
@@ -25,6 +40,11 @@ function SubtractVectors(vector1, vector2)
     return { x = vector1.x - vector2.x, y = vector1.y - vector2.y }
 end
 
+
+
+
+
+
 -- Normalize a vector
 ---@param vector {x:number, y:number} Vector to normalize
 ---@return {x:number, y:number}
@@ -32,6 +52,11 @@ function NormalizeVector(vector)
     local length = ((vector.x) ^ 2 + (vector.y) ^ 2) ^ 0.5
     return { x = vector.x / length, y = vector.y / length }
 end
+
+
+
+
+
 
 -- Find the closest edge of a polygon to a point
 ---@param point {x:number, y:number} The position of the point to check from
@@ -52,6 +77,11 @@ function FindClosestEdge(point, polygon)
     return { closestEdge = closestEdge, closestDistance = closestDistance }
 end
 
+
+
+
+
+
 --- Computes the distance between a point and an edge.
 --- @param point table The point: {x:number, y:number}.
 --- @param edgeStart table The starting point of the edge: {x:number, y:number}.
@@ -62,6 +92,11 @@ function DistanceToEdge(point, edgeStart, edgeEnd)
     return Distance(point, closestPoint)
 end
 
+
+
+
+
+
 --- Computes the perpendicular vector from a point to a vertex.
 --- @param point table The point: {x:number, y:number}.
 --- @param vertex table The vertex: {x:number, y:number}.
@@ -70,6 +105,11 @@ function PerpendicularToVertex(point, vertex)
     local vector = SubtractVectors(vertex, point)
     return NormalizeVector({ x = -vector.y, y = vector.x })
 end
+
+
+
+
+
 
 --- Computes the perpendicular vector angle as a vector between two points.
 --- @param point1 table The first point: {x:number, y:number}.
@@ -86,6 +126,11 @@ function GetPerpendicularVectorAngle(point1, point2)
     return { x = nx, y = ny }
 end
 
+
+
+
+
+
 --- Computes the perpendicular vector from a point to an edge.
 --- @param point table The point: {x:number, y:number}.
 --- @param edgeStart table The starting point of the edge: {x:number, y:number}.
@@ -100,6 +145,11 @@ function PerpendicularToEdge(point, edgeStart, edgeEnd)
     return NormalizeVector({ x = -perpendicularVector.y, y = perpendicularVector.x })
 end
 
+
+
+
+
+
 --- Calculates the perpendicular vector to the given vector.
 --- @param vector table The input vector: {x:number, y:number}.
 --- @return table The perpendicular vector: {x:number, y:number}.
@@ -109,12 +159,22 @@ function PerpendicularVector(vector)
     return { x = nx, y = ny }
 end
 
+
+
+
+
+
 --- Calculates the magnitude (length) of a 2D vector.
 --- @param v table The input vector: {x:number, y:number}.
 --- @return number The magnitude of the vector.
 function VecMagnitude(v)
     return math.sqrt(v.x ^ 2 + v.y ^ 2)
 end
+
+
+
+
+
 
 --- Calculates the signed magnitude of a 2D vector based on the x-coordinate sign.
 --- @param v table The input vector: {x:number, y:number}.
@@ -126,6 +186,11 @@ function VecMagnitudeDir(v)
     end
     return magnitude
 end
+
+
+
+
+
 
 --- Calculates the offset perpendicular vector between two points.
 --- @param p1 table The first point: {x:number, y:number}.
@@ -149,6 +214,11 @@ function OffsetPerpendicular(p1, p2, offset)
     return offsetVector
 end
 
+
+
+
+
+
 --- Calculates the average coordinates of a list of points or forces.
 --- @param Coords table[] The list of coordinates: {{x:number, y:number}, ...}.
 --- @return table The average coordinates: {x:number, y:number}.
@@ -166,6 +236,11 @@ function AverageCoordinates(Coords)
     return output
 end
 
+
+
+
+
+
 --- Calculates the Euclidean distance between two points.
 --- @param point1 table The first point: {x:number, y:number}.
 --- @param point2 table The second point: {x:number, y:number}.
@@ -173,6 +248,11 @@ end
 function Distance(point1, point2)
     return math.sqrt((point2.x - point1.x) ^ 2 + (point2.y - point1.y) ^ 2)
 end
+
+
+
+
+
 
 --- Checks if a point is inside a polygon using the winding number algorithm.
 --- @param point table The point to check: {x:number, y:number}.
@@ -193,6 +273,11 @@ function PointInsidePolygon(point, polygon)
     return wn % 2 == 1
 end
 
+
+
+
+
+
 ---Dot product between two points
 ---@param point1{x:number, y:number} First point
 ---@param point2{x:number, y:number} Second point
@@ -201,6 +286,11 @@ function Dot(point1, point2)
     return point1.x * point2.x + point1.y * point2.y
 end
 
+
+
+
+
+
 ---Cross product between two points
 ---@param point1{x:number, y:number} First point
 ---@param point2{x:number, y:number} Second point
@@ -208,6 +298,11 @@ end
 function CrossProduct(point1, point2)
     return point1.x * point2.y - point2.x * point1.y
 end
+
+
+
+
+
 
 ---Gets the angle between two points as a vector
 ---@param point1{x:number, y:number} First point
@@ -223,6 +318,11 @@ function GetAngleVector(point1, point2)
         return { x = dx / len, y = dy / len }
     end
 end
+
+
+
+
+
 
 ---Finds the closest point on a line segment from another point
 ---@param p{x:number, y:number} Point to search from
@@ -242,6 +342,11 @@ function ClosestPointOnLineSegment(p, a, b)
         return { x = a.x + t * ab.x, y = a.y + t * ab.y }
     end
 end
+
+
+
+
+
 
 ---Subdivides a given line segment into a table of points.
 ---@param startPoint{x:number, y:number} First point of the line segment
@@ -265,6 +370,11 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
 
     return { points = points, remainder = t }
 end
+
+
+
+
+
 
 ---Creates an arc consisting of a table of points. Calculates the start and end angles of the arc from the angle between the startPoint and the centerPoint,
 ---and the angle between the endPoint and the centerPoint. Radius is radius, startingOffset is the offset in distance for the first point. distance is for all of the rest of the points.
@@ -304,6 +414,11 @@ function SubdivideArc(centerPoint, startPoint, endPoint, radius, distance, start
     return { points = points, remainder = remainder } -- Return the points array and the remaining arc length
 end
 
+
+
+
+
+
 --- Calculates the angle between two points.
 --- @param point1 table The first point: {x:number, y:number}.
 --- @param point2 table The second point: {x:number, y:number}.
@@ -314,6 +429,11 @@ function CalculateAngle(point1, point2)
     local angle = math.atan2(dy, dx)
     return angle
 end
+
+
+
+
+
 
 --- Displaces an angle along a circle given a radius and displacement value.
 --- @param originalAngle number The original angle, in radians.
@@ -327,6 +447,11 @@ function DisplaceAngle(originalAngle, radius, displacement)
     return angle
 end
 
+
+
+
+
+
 --- Calculates the coordinates of a point on a circle given the center, radius, and angle.
 --- @param circle table The center of the circle: {x:number, y:number}.
 --- @param radius number The radius of the circle.
@@ -338,6 +463,11 @@ function CalculateCirclePoint(circle, radius, angle)
     return { x = x, y = y }
 end
 
+
+
+
+
+
 --- Converts an angle in degrees to a normalized 2D vector.
 --- @param angle number The angle in degrees.
 --- @return table The 2D vector representation of the angle: {x:number, y:number}.
@@ -347,6 +477,11 @@ function AngleToVector(angle)
     local y = math.sin(radians)
     return { x = x, y = y }
 end
+
+
+
+
+
 
 ---Creates a bounding square that encompasses a table of points
 ---@param points table[] -- Table containing {x, y} pairs
@@ -393,6 +528,11 @@ function CalculateSquare(points)
     }
 end
 
+
+
+
+
+
 ---Gets the minimum bounding circle of a table of points
 ---@param points table[] -- Table containing {x, y} pairs
 ---@return {x:number, y:number, r:number} table returns the position and radius
@@ -404,6 +544,11 @@ function MinimumCircularBoundary(points)
         x = pos.x, y = pos.y, r = radius
     }
 end
+
+
+
+
+
 
 ---Checks the collision between a circle and a line segment
 ---@param circleCenter{x:number, y:number} Centerpoint of the circle
