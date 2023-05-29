@@ -8,7 +8,7 @@ function UpdateResources()
             if Motors[structure] == nil then 
                 cost = 0 
             else
-                cost = Motors[structure] * throttle ^ 2 * MetalCostPerSecMaxThrottle * data.updateDelta
+                cost = Motors[structure] * throttle ^ 2 * ENGINE_RUN_COST * data.updateDelta
             end
             AddResources(teamId, {metal = -cost}, false, {x = 0, y = 0})
         end

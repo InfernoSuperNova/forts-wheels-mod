@@ -18,12 +18,12 @@ RoadStructureBoundaries = {}
 ]]
 
 function CheckNewRoadLinks(saveName, nodeA, nodeB)
-    if saveName == RoadSaveName then
+    if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
     end
 end
 function DestroyOldRoadLinks(saveName, nodeA, nodeB)
-    if saveName == RoadSaveName then
+    if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         for key, link in pairs(data.roadLinks) do
             BetterLog(link)
             if nodeA == link.nodeA and nodeB == link.nodeB then
@@ -35,7 +35,8 @@ end
 
 function CheckOldRoadLinks()
     for key, link in pairs(data.roadLinks) do
-        if not IsNodeLinkedTo(link.nodeA, link.nodeB) then
+        local saveName = GetLinkMaterialSaveName(link.nodeA, link.nodeB)
+        if not (IsNodeLinkedTo(link.nodeA, link.nodeB) and CheckSaveNameTable(saveName, ROAD_SAVE_NAME)) then
             table.remove(data.roadLinks, key)
         end
     end
@@ -75,8 +76,8 @@ function ApplyForceToRoadLinks(nodeA, nodeB, displacement)
         if math.abs(displacement.y) > 0 then
             local DampenedForce = {
                 --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-                x = SpringDampenedForce(SpringConst, -displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, avgVelocity.x),
-                y = SpringDampenedForce(SpringConst, -displacement.y, Dampening * math.abs(surfaceNormal.y) * 0.2, avgVelocity.y)
+                x = SpringDampenedForce(SPRING_CONST, -displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, avgVelocity.x),
+                y = SpringDampenedForce(SPRING_CONST, -displacement.y, DAMPENING * math.abs(surfaceNormal.y) * 0.2, avgVelocity.y)
             }
             dlc2_ApplyForce(nodeA, DampenedForce)
             dlc2_ApplyForce(nodeB, DampenedForce)

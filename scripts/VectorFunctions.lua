@@ -292,7 +292,7 @@ function MinimumCircularBoundary(points)
 
 end
 
-function CircleLineSegmentCollision(circleCenter, wheelRadius, segmentStart, segmentEnd)
+function CircleLineSegmentCollision(circleCenter, WHEEL_RADIUS, segmentStart, segmentEnd)
     -- Calculate the vector from the segment start to the circle center
     local segmentVector = SubtractVectors(segmentEnd, segmentStart)
     local circleVector = SubtractVectors(circleCenter, segmentStart)
@@ -315,10 +315,10 @@ function CircleLineSegmentCollision(circleCenter, wheelRadius, segmentStart, seg
     local distance = Distance(closestPoint, circleCenter)
 
     -- Check if the distance is less than or equal to the circle radius
-    if distance <= wheelRadius then
+    if distance <= WHEEL_RADIUS then
         -- Calculate the collision response vector
         local collisionResponse = ScaleVector(NormalizeVector(SubtractVectors(circleCenter, closestPoint)),
-            wheelRadius - distance)
+        WHEEL_RADIUS - distance)
         return collisionResponse
     else
         return nil
@@ -341,4 +341,39 @@ function Circumcircle(a, b, c)
         local r = math.sqrt((a.x - cx) ^ 2 + (a.y - cy) ^ 2)
         return { x = cx, y = cy, r = r }
     end
+end
+
+
+
+
+
+
+---Calculates the normal of a point and a line segment
+---@param lineA{x:number, y:number} First point of the line segment
+---@param lineB{x:number, y:number} Second point of the line segment
+---@param pos{x:number, y:number} Point to check from
+---@return number Normal Normal ranging between -1 and 1
+-- function CalculateCollisionNormal(lineA, lineB, pos)
+--     local lineSegment = { x = lineB.x - lineA.x, y = lineB.y - lineA.y }
+--     local point = { x = pos.x - lineA.x, y = pos.y - lineA.y }
+--     local dot = Dot(lineSegment, point)
+--     return (dot >= 0) and 1 or -1
+-- end
+
+
+
+function CalculateCollisionNormal(lineA, lineB, point)
+    -- Calculate the direction vector perpendicular to the line segment
+    local direction = {x = lineB.y - lineA.y, y = lineA.x - lineB.x}
+
+    -- Calculate the vector from lineA to the given point
+    local lineToPoint = {x = point.x - lineA.x, y = point.y - lineA.y}
+
+    -- Calculate the dot product of the direction vector and the line-to-point vector
+    local dotProduct = direction.x * lineToPoint.x + direction.y * lineToPoint.y
+
+    -- Determine the sign of the dot product
+    local sign = dotProduct >= 0 and 1 or -1
+
+    return sign
 end

@@ -27,7 +27,7 @@ function ThrottleControl()
     end
     local teamId = GetLocalTeamId()
         --If the controller device is selected
-        if CheckSaveNameTable(GetDeviceType(selectedDevice), ControllerSaveName) and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == teamId) then
+        if CheckSaveNameTable(GetDeviceType(selectedDevice), CONTROLLER_SAVE_NAME) and IsDeviceFullyBuilt(selectedDevice) and (GetDeviceTeamIdActual(selectedDevice) == teamId) then
             --if it doesn't exist in it's current instance, create it
             if not ControlExists("root", "PropulsionSlider") then
                 SetControlFrame(0)
