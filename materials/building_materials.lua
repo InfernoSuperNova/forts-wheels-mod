@@ -38,7 +38,7 @@ local road = DeepCopy(FindMaterial("armour"))
 if road then
     road.SaveName = "RoadLink"
     road.Sprite = "road"
-    road.MaxAngle = 20
+    --road.MaxAngle = 20
 
 
     table.insert(Materials, road)

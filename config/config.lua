@@ -25,7 +25,7 @@ ControllerSaveName = {"vehicleControllerStructure", "vehicleControllerNoStructur
                                                     --savename of the controller
 GearboxSaveName = "gearbox"                         --savename of the transmission
 MetalCostPerSecMaxThrottle = 5                      --upper limit to the metal per second consumption of engines
-TrackLinkDistance = 40                              --distance between track links (visual)
+TRACK_LINK_DISTANCE = 40                              --distance between track links (visual)
 DrillsEnabled = false                               --whether to enable drills or not
 --Core shields
 ShieldRadius = 1800                                 --radius of the base protecting shield

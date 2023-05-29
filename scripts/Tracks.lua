@@ -172,10 +172,10 @@ function DrawTrackTreads(trackSet, base, trackGroup)
 end
 
 function DrawTrackTreadsRound(center, track1, track2, base)
-    local offset = TrackOffsets[base].x % TrackLinkDistance
+    local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
     local offset_length = offset / WheelRadius * 1.2
 
-    local arc = PointsAroundArc(center, WheelRadius, track2, track1, TrackLinkDistance, offset_length)
+    local arc = PointsAroundArc(center, WheelRadius, track2, track1, TRACK_LINK_DISTANCE, offset_length)
 
 
 
@@ -192,8 +192,8 @@ end
 function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
     local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
 
-    local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TrackLinkDistance,
-        -TrackOffsets[correspondingDevice].x % TrackLinkDistance)
+    local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TRACK_LINK_DISTANCE,
+        -TrackOffsets[correspondingDevice].x % TRACK_LINK_DISTANCE)
     --loop through points on the track
     for point = 1, #points do
         SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
