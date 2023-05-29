@@ -35,7 +35,7 @@ end
 
 function CheckOldRoadLinks()
     for key, link in pairs(data.roadLinks) do
-        if not IsNodeLinkedTo(link.nodeA, link.nodeB) then
+        if not (IsNodeLinkedTo(link.nodeA, link.nodeB) and RoadSaveName == GetLinkMaterialSaveName(link.nodeA, link.nodeB)) then
             table.remove(data.roadLinks, key)
         end
     end
