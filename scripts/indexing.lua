@@ -16,13 +16,13 @@
 
 function GetDeviceCounts()
     DeviceCounts = {}  
-    for side = 1, 2 do
+    for side = 0, 2 do
         DeviceCounts[side] = GetDeviceCountSide(side)
     end
 end
 function IndexDevices()
     Devices = {}
-    for side = 1, 2 do
+    for side = 0, 2 do
         local count = DeviceCounts[side]
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
