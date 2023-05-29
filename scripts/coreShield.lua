@@ -39,11 +39,11 @@ end
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
     for _, device in pairs(Devices) do
         if device.team % MAX_SIDES ~= deviceSide then continue end
-        if not (Distance(shieldCoords, device.pos) < ShieldRadius) then continue end
+        if not (Distance(shieldCoords, device.pos) < SHIELD_RADIUS) then continue end
 
         local color = { r = 255, g = 94, b = 94, a = 255 }
         if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
-        SpawnCircle(shieldCoords, ShieldRadius, color, 0.04)
+        SpawnCircle(shieldCoords, SHIELD_RADIUS, color, 0.04)
         EvaluatePositionInShield(device, shieldCoords)
     end
 end
@@ -52,18 +52,18 @@ function EvaluatePositionInShield(device, shieldPos)
     local distance = Distance(shieldPos, device.pos)
     local direction = GetAngleVector(shieldPos, device.pos)
 
-    local insideShieldFactor = (1 - distance / ShieldRadius) ^ 0.5
+    local insideShieldFactor = (1 - distance / SHIELD_RADIUS) ^ 0.5
     DamageDevicesInShield(insideShieldFactor, device.id)
     PushDeviceOutOfShield(insideShieldFactor, direction, device.pos, device)
 end
 
 function DamageDevicesInShield(insideShieldFactor, deviceId)
-    ApplyDamageToDevice(deviceId, insideShieldFactor * ShieldDamage)
+    ApplyDamageToDevice(deviceId, insideShieldFactor * SHIELD_DAMAGE)
 end
 
 function PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, device)
-    local force = { x = direction.x * insideShieldFactor * ShieldForce,
-        y = direction.y * insideShieldFactor * ShieldForce }
+    local force = { x = direction.x * insideShieldFactor * SHIELD_FORCE,
+        y = direction.y * insideShieldFactor * SHIELD_FORCE }
     --HighlightDirectionalVector(devicePos, direction)
     dlc2_ApplyForce(device.nodeA, force)
     dlc2_ApplyForce(device.nodeB, force)
@@ -81,7 +81,7 @@ end
 --             local radius = GetStructureRadius(id)
 --             local pos = GetStructurePos(id)
 --             SpawnCircle(pos, radius, {r = 255, g = 255, b = 255, a= 255}, 0.1)
---             if Distance(pos, shieldCoords) < radius + ShieldRadius then
+--             if Distance(pos, shieldCoords) < radius + SHIELD_RADIUS then
 --                 DamageDevicesInShieldRadius(shieldCoords, side, id)
 --             end
 --         end
@@ -95,8 +95,8 @@ end
 --         local id = GetDeviceIdSide(side, deviceIndex)
 --         if GetDeviceStructureId(id) == structureId then
 --             local pos = GetDevicePosition(id)
---             if Distance(shieldCoords, pos) < ShieldRadius then
---                 ApplyDamageToDevice(id, ShieldDamage)
+--             if Distance(shieldCoords, pos) < SHIELD_RADIUS then
+--                 ApplyDamageToDevice(id, SHIELD_DAMAGE)
 --             end
 --         end
 --     end

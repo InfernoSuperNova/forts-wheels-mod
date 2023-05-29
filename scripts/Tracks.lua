@@ -47,7 +47,7 @@ end
 
 function PlaceSuspensionPosInTable(device)
     
-    if DeviceExists(device.id) and CheckSaveNameTable(device.saveName, WheelSaveName) and IsDeviceFullyBuilt(device.id) then
+    if DeviceExists(device.id) and CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAME) and IsDeviceFullyBuilt(device.id) then
         if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
@@ -66,7 +66,7 @@ function PlaceSuspensionPosInTable(device)
                 }
             end
             
-            --SpawnCircle(suspensionPos, WheelRadius, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
+            --SpawnCircle(suspensionPos, WHEEL_RADIUS, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
 
@@ -92,7 +92,7 @@ function SortTracks()
                 local delta = (GetRealTime() - prevTime) * 1000
                 DebugLog("Gift Wrapping took " .. string.format("%.2f", delta) .. "ms")
                 prevTime = GetRealTime()
-                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WheelRadius)
+                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
                 local delta = (GetRealTime() - prevTime) * 1000
                 DebugLog("Track Pushing took " .. string.format("%.2f", delta) .. "ms")
             else
@@ -133,7 +133,7 @@ function DrawTrackSprockets(base, trackGroup)
     local angle
     --trackgroup of 11 represents wheel
     if trackGroup == 11 then
-        angle = (TrackOffsets[base].x / WheelRadius) * (WheelRadius - TrackWidth)
+        angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TRACK_WIDTH)
 
         effectPath = path .. "/effects/wheel.lua"
     else
@@ -173,9 +173,9 @@ end
 
 function DrawTrackTreadsRound(center, track1, track2, base)
     local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
-    local offset_length = offset / WheelRadius * 1.2
+    local offset_length = offset / WHEEL_RADIUS * 1.2
 
-    local arc = PointsAroundArc(center, WheelRadius, track2, track1, TRACK_LINK_DISTANCE, offset_length)
+    local arc = PointsAroundArc(center, WHEEL_RADIUS, track2, track1, TRACK_LINK_DISTANCE, offset_length)
 
 
 
@@ -308,7 +308,7 @@ end
 --TRACK GROUPING
 
 function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
-    if CheckSaveNameTable(saveName, WheelSaveName) then
+    if CheckSaveNameTable(saveName, WHEEL_SAVE_NAME) then
         AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
         for i = 1, 10 do
             AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)

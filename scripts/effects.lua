@@ -24,7 +24,7 @@ function WheelSmoke(frame)
             local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), 75)
             local finalOffset
 
-            if GetDeviceType(deviceId) == WheelSaveName[1] then
+            if GetDeviceType(deviceId) == WHEEL_SAVE_NAME[1] then
                 finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
             else
                 finalOffset = {x = pos.x + -offset.x, y = pos.y + -offset.y}
@@ -80,12 +80,12 @@ function SoundAdd(saveName, deviceId)
     --attaches an effect to a new device that tracks sound
 
     --engine
-    if saveName == EngineSaveName then
+    if saveName == ENGINE_SAVE_NAME then
         local id = SpawnEffect(path .. "/effects/engine_loop.lua", GetDevicePosition(deviceId))
         EffectsList.engine[tostring(deviceId)] = id
     --wheel
     --[[
-    elseif saveName == WheelSaveName[1] or saveName == WheelSaveName[2] then
+    elseif saveName == WHEEL_SAVE_NAME[1] or saveName == WHEEL_SAVE_NAME[2] then
         local id = SpawnEffect(path .. "/effects/wheel_sound.lua", GetDevicePosition(deviceId))
         EffectsList.wheel[tostring(deviceId)] = id]]
     end
@@ -94,13 +94,13 @@ function SoundRemove(saveName, deviceId)
     --removes an effect when a device that tracks sound is removed
 
     --engine
-    if saveName == EngineSaveName then
+    if saveName == ENGINE_SAVE_NAME then
         if EffectsList.engine[tostring(deviceId)] then
             CancelEffect(EffectsList.engine[tostring(deviceId)])
         end
         EffectsList.engine[tostring(deviceId)] = nil
     --wheel
-    elseif saveName == WheelSaveName[1] or saveName == WheelSaveName[2] then
+    elseif saveName == WHEEL_SAVE_NAME[1] or saveName == WHEEL_SAVE_NAME[2] then
         if EffectsList.wheel[tostring(deviceId)] then
             CancelEffect(EffectsList.wheel[tostring(deviceId)])
         end
@@ -114,11 +114,11 @@ function SoundOnJoin()
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             --engine
-            if GetDeviceType(id) == EngineSaveName then
-                SoundAdd(EngineSaveName, id)
+            if GetDeviceType(id) == ENGINE_SAVE_NAME then
+                SoundAdd(ENGINE_SAVE_NAME, id)
             --wheel
-            elseif GetDeviceType(id) == WheelSaveName[1] or GetDeviceType(id) == WheelSaveName[2] then
-                SoundAdd(WheelSaveName[1], id)
+            elseif GetDeviceType(id) == WHEEL_SAVE_NAME[1] or GetDeviceType(id) == WHEEL_SAVE_NAME[2] then
+                SoundAdd(WHEEL_SAVE_NAME[1], id)
             end
         end
     end

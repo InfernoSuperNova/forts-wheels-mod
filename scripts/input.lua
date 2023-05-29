@@ -10,7 +10,7 @@ end
 
 
 function CheckHeldKeys()
-    for callback, bind in pairs(Keybinds) do
+    for callback, bind in pairs(KEYBINDS) do
         local held = true
         for _, key in pairs(bind) do
             if not HeldKeys[key] then held = false end
