@@ -3,7 +3,7 @@ function UpdateControls()
 end
 
 function OnControlActivated(name, code, doubleClick)
-    if name == "brake" then
+    if name == "brake" and code then
         if data.brakes[code] then
             SendScriptEvent("UpdateBrakes", 0 .. "," .. code, "", false)
             SetControlText("root", "brake", "Brakes: Off")
