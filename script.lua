@@ -73,6 +73,7 @@ end
 
 function Update(frame)
     
+    LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
     local delta
     DebugLog("---------Start of update---------")
@@ -95,7 +96,7 @@ function Update(frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("CheckHeldKeys", frame)
-    LocalScreen = GetCamera()
+    
     
     JustJoined = false
     DebugLog("---------End of update---------")
