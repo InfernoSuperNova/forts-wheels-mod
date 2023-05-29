@@ -292,7 +292,7 @@ function MinimumCircularBoundary(points)
 
 end
 
-function CircleLineSegmentCollision(circleCenter, wheelRadius, segmentStart, segmentEnd)
+function CircleLineSegmentCollision(circleCenter, WHEEL_RADIUS, segmentStart, segmentEnd)
     -- Calculate the vector from the segment start to the circle center
     local segmentVector = SubtractVectors(segmentEnd, segmentStart)
     local circleVector = SubtractVectors(circleCenter, segmentStart)
@@ -315,10 +315,10 @@ function CircleLineSegmentCollision(circleCenter, wheelRadius, segmentStart, seg
     local distance = Distance(closestPoint, circleCenter)
 
     -- Check if the distance is less than or equal to the circle radius
-    if distance <= wheelRadius then
+    if distance <= WHEEL_RADIUS then
         -- Calculate the collision response vector
         local collisionResponse = ScaleVector(NormalizeVector(SubtractVectors(circleCenter, closestPoint)),
-            wheelRadius - distance)
+        WHEEL_RADIUS - distance)
         return collisionResponse
     else
         return nil

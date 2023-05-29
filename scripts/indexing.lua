@@ -52,13 +52,13 @@ function EnumerateCarDevices()
     Gearboxes ={}
     for _, device in pairs(Devices) do
         if IsDeviceFullyBuilt(device.id) then
-            if device.saveName == GearboxSaveName then
+            if device.saveName == GEARBOX_SAVE_NAME then
                 if not Gearboxes[device.strucId] then
                     Gearboxes[device.strucId] = 1
                 else
                     Gearboxes[device.strucId] = Gearboxes[device.strucId] + 1
                 end
-            elseif device.saveName == EngineSaveName then
+            elseif device.saveName == ENGINE_SAVE_NAME then
                 if not Motors[device.strucId] then
                     Motors[device.strucId] = 1
                 else
@@ -99,7 +99,7 @@ end
 
 function DetermineLinks(nodeA, nodeB, linkPos, saveName, deviceId)
     --BetterLog(saveName)
-    if saveName == RoadSaveName then 
+    if saveName == ROAD_SAVE_NAME then 
         table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
     end
     return true

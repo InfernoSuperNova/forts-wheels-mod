@@ -33,7 +33,7 @@ end
 function GetDeviceStructureGroups()
     local structures = {}
     for _, device in pairs(Devices) do
-        if CheckSaveNameTable(device.saveName, WheelSaveName) and IsDeviceFullyBuilt(device.id) then
+        if CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAME) and IsDeviceFullyBuilt(device.id) then
             local structureId = device.strucId
             if not structures[structureId] then structures[structureId] = {} end
             table.insert(structures[structureId], device)
@@ -46,10 +46,10 @@ function CheckBoundingBoxCollisions(devices)
     local positions = {}
 
     for k, device in pairs(devices) do
-        if device.saveName == WheelSaveName[1] then
-            positions[k] = GetOffsetDevicePos(device, WheelSuspensionHeight)
+        if device.saveName == WHEEL_SAVE_NAME[1] then
+            positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT)
         else
-            positions[k] = GetOffsetDevicePos(device, -WheelSuspensionHeight)
+            positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT)
         end
     end
     local collidingBlocks = {}
@@ -79,10 +79,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
-    if device.saveName == WheelSaveName[1] then
-        pos = GetOffsetDevicePos(device, WheelSuspensionHeight)
+    if device.saveName == WHEEL_SAVE_NAME[1] then
+        pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT)
     else
-        pos = GetOffsetDevicePos(device, -WheelSuspensionHeight)
+        pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT)
     end
     WheelPos[device.id] = pos
     --looping through blocks
@@ -92,7 +92,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         for index, link in pairs(links) do
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
-            displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TrackWidth, uid)
+            displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TRACK_WIDTH, uid)
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
             if displacement == nil then --incase of degenerate blocks
@@ -116,11 +116,11 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         -- for nodeIndex = 1, #Nodes do
         --     local node1 = Terrain[blockIndex]
         --     local node2 = Terrain[blockIndex % #Nodes + 1]
-        --     BetterLog(CircleLineSegmentCollision(pos, WheelRadius, node1, node2))
+        --     BetterLog(CircleLineSegmentCollision(pos, WHEEL_RADIUS, node1, node2))
         -- end
 
-        --local segmentsToCheck = CircleLineSegmentCollision(pos, WheelRadius)
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WheelRadius + TrackWidth)
+        --local segmentsToCheck = CircleLineSegmentCollision(pos, WHEEL_RADIUS)
+        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WHEEL_RADIUS + TRACK_WIDTH)
 
         if displacement == nil then --incase of degenerate blocks
             displacement = Vec3(0,0)
@@ -176,8 +176,8 @@ function ApplyFinalForce(device, velocity, displacement, structureId)
     local surfaceNormal = NormalizeVector(displacement)
     local DampenedForce = {
         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(SpringConst, displacement.x, Dampening * math.abs(surfaceNormal.x) * 0.2, velocity.x),
-        y = SpringDampenedForce(SpringConst, displacement.y, Dampening * math.abs(surfaceNormal.y), velocity.y)
+        x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, velocity.x),
+        y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y), velocity.y)
     }
     if FinalSuspensionForces[device.id] and DampenedForce.x then
         FinalSuspensionForces[device.id] = {
@@ -208,13 +208,13 @@ function CheckCollisionsOnBlock(terrain, pos, radius)
         return { x = newPos.x - pos.x, y = newPos.y - pos.y }
 end
 -- Check if a circle is colliding with a polygon.
-function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
+function CirclePolygonCollision(circleCenter, WHEEL_RADIUS, polygon)
     --Centerpoint in polygon
     if PointInsidePolygon(circleCenter, polygon) then
         local obj = FindClosestEdge(circleCenter, polygon)
         local final = CalculateCollisionResponseVector(-obj.closestDistance, obj.closestEdge.edgeStart,
             obj.closestEdge.edgeEnd,
-            wheelRadius)
+            WHEEL_RADIUS)
         if final then return final end
         --Centerpoint out of polygon
     else
@@ -222,7 +222,7 @@ function CirclePolygonCollision(circleCenter, wheelRadius, polygon)
         local obj = FindClosestEdge(circleCenter, polygon)
         local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart,
             obj.closestEdge.edgeEnd,
-            wheelRadius)
+            WHEEL_RADIUS)
         if final then return final end
     end
 
@@ -269,7 +269,7 @@ WheelLinksColliding = {
 ]]
 
 
-function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
+function CircleBraceCollision(circleCenter, WHEEL_RADIUS, polygon, uid)
     --Centerpoint in polygon
         
         -- Check if any of the polygon's edges intersect with the circle.
@@ -283,7 +283,7 @@ function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
 
         local obj = FindClosestEdge(circleCenter, polygon)
         local final = CalculateCollisionResponseVector(obj.closestDistance, edgeStart,
-            edgeEnd, wheelRadius, normal)
+            edgeEnd, WHEEL_RADIUS, normal)
         --BetterLog(uid)
         --if final is > 0, then set the normal, otherwise clear the normal, to ensure that it collides with the initial side`
         if final then 
@@ -300,15 +300,15 @@ end
 
 
 
-function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius, normal)
+function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, WHEEL_RADIUS, normal)
     if not normal then normal = 1 end
-    if distance <= wheelRadius then
+    if distance <= WHEEL_RADIUS then
         -- Calculate the perpendicular vector to the edge
         local edgeVector = SubtractVectors(edgeEnd, edgeStart)
         local perpendicularVector = NormalizeVector({ x = -edgeVector.y, y = edgeVector.x })
 
         -- Scale the perpendicular vector based on the overlap between the circle and the edge
-        local distanceFactor = (wheelRadius - distance) / wheelRadius
+        local distanceFactor = (WHEEL_RADIUS - distance) / WHEEL_RADIUS
         local final = ScaleVector(perpendicularVector, distanceFactor)
         return {x = final.x * normal, y = final.y * normal}
     end
