@@ -58,6 +58,7 @@ function InitializeScript()
     
     data.previousVals = {}
     data.wheelsTouchingGround = {}
+    data.wheelLinksColliding = {}
     -- local circle = MinimumBoundingCircle(terrain)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
