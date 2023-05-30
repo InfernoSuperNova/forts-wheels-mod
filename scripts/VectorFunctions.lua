@@ -251,23 +251,21 @@ function CalculateSquare(points)
     end
     
     local pointA = {x = minX, y = minY}
-    local pointB = {x = maxX, y = maxY}
-    if ModDebug.collision and not IsPaused() then
-        local pointC = {x = minX, y = maxY}
-        local pointD = {x = maxX, y = minY}
-        HighlightPolygon({pointA, pointC, pointB, pointD})
-        HighlightPolygon(points)
-    end
-    return {pointA, pointB}
+    local pointB = {x = minX, y = maxY}
+    local pointC = {x = maxX, y = maxY}
+    local pointD = {x = maxX, y = minY}
+    
+    
+    return {pointA, pointB, pointC, pointD}
 end
 
   
 function MinimumCircularBoundary(points)
     local square = CalculateSquare(points)
-    local radius = Distance(square[1], square[2]) / 2
+    local radius = Distance(square[1], square[3]) / 2
     local pos = AverageCoordinates(square)
     return {
-        x = pos.x, y = pos.y, r = radius
+        x = pos.x, y = pos.y, r = radius, square = square
     }
 
 end
@@ -305,23 +303,6 @@ function CircleLineSegmentCollision(circleCenter, WHEEL_RADIUS, segmentStart, se
     end
 end
 
-function Circumcircle(a, b, c)
-    local A = b.x - a.x
-    local B = b.y - a.y
-    local C = c.x - a.x
-    local D = c.y - a.y
-    local E = A * (a.x + b.x) + B * (a.y + b.y)
-    local F = C * (a.x + c.x) + D * (a.y + c.y)
-    local G = 2 * (A * (c.y - b.y) - B * (c.x - b.x))
-    if G == 0 then
-        return { x = 0, y = 0, r = math.huge }
-    else
-        local cx = (D * E - B * F) / G
-        local cy = (A * F - C * E) / G
-        local r = math.sqrt((a.x - cx) ^ 2 + (a.y - cy) ^ 2)
-        return { x = cx, y = cy, r = r }
-    end
-end
 
 
 
