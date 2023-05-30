@@ -39,16 +39,23 @@ KEYBINDS = {
     ToggleCollisionDebug = {"left control", "left alt", "d"},
     
 }
+---@class PressedKeyBinds Keybinds that are currently being pressed.
+---@field [callback] boolean
 PressedKeyBinds = {}
+---@class PressedKeys Keys that are currently being pressed.
+---@field [key] boolean
 HeldKeys = {}
 
 
---script.lua
+---@class BlockStatistics Table for block statistics
+---@field largestBlock number The node count of the largest block in the map
+---@field totalNodes number The total node count across all blocks
+---@field totalBlocks number The total amount of blocks in the map
 BlockStatistics = {
     largestBlock = 0,
     totalNodes = 0,
     totalBlocks = 0,
-} --stats for collision debug overlay
+}
 DrillsEnabled = false                               --whether to enable drills or not
 JustJoined = true --to run something once upon joining through Update. (used for effects)
 Displacement = {}
@@ -82,6 +89,12 @@ DrivechainDetails = {}
 
     }
 }]]
+---@class Pos
+---@field x number
+---@field y number
+
+---@class Devices Table containing relevant device detail
+---@field key{strucId:number, team:number, id:number, saveName:string, pos:Pos, nodeA:number, nodeB:number}
 Devices = {}
 Structures = {}
 
