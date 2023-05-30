@@ -87,6 +87,25 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     WheelPos[device.id] = pos
     --looping through blocks
 
+
+    
+    for blockIndex, Nodes in pairs(collidingBlocks) do
+        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WHEEL_RADIUS + TRACK_WIDTH)
+
+        if displacement == nil then --incase of degenerate blocks
+            displacement = Vec3(0,0)
+        end
+
+        local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
+        SendDisplacementToTracks(displacement, device)
+        if displacement and displacement.y ~= 0 then
+            ApplyFinalForce(device, velocity, displacement, structureId)
+
+            if math.abs(returnVal.y) < math.abs(displacement.y) then
+                returnVal = { x = displacement.x, y = displacement.y }
+            end
+        end
+    end
     for structure, _ in pairs(collidingStructures) do
         local links = RoadStructures[structure]
         for index, link in pairs(links) do
@@ -95,9 +114,6 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TRACK_WIDTH, uid)
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
-            if displacement == nil then --incase of degenerate blocks
-                displacement = Vec3(0,0)
-            end
             local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
     
             SendDisplacementToTracks(displacement, device)
@@ -110,39 +126,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             end
         end
     end
-    
-    for blockIndex, Nodes in pairs(collidingBlocks) do
-        --looping through nodes in block
-        -- for nodeIndex = 1, #Nodes do
-        --     local node1 = Terrain[blockIndex]
-        --     local node2 = Terrain[blockIndex % #Nodes + 1]
-        --     BetterLog(CircleLineSegmentCollision(pos, WHEEL_RADIUS, node1, node2))
-        -- end
-
-        --local segmentsToCheck = CircleLineSegmentCollision(pos, WHEEL_RADIUS)
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WHEEL_RADIUS + TRACK_WIDTH)
-
-        if displacement == nil then --incase of degenerate blocks
-            displacement = Vec3(0,0)
-        end
-
-        local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
-
-
-
-
-        SendDisplacementToTracks(displacement, device)
-        if displacement and displacement.y ~= 0 then
-            ApplyFinalForce(device, velocity, displacement, structureId)
-
-            if math.abs(returnVal.y) < math.abs(displacement.y) then
-                returnVal = { x = displacement.x, y = displacement.y }
-            end
-        end
-    end
     if returnVal.y ~= 0 then
         return returnVal
     end
+    
 end
 
 function GetOffsetDevicePos(device, offset)

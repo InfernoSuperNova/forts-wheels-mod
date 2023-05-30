@@ -14,7 +14,7 @@ Root =
             ValIsPercentage = false,
             Static =
             {
-                Texture = "ui/textures/FE-PanelTiny.dds",
+                --Texture = "ui/textures/FE-PanelTiny.dds",
                 Control =
                 {
                     ClipChildren = true,

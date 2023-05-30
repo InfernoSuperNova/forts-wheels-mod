@@ -68,6 +68,7 @@ TrackGroups = {}
 Terrain = {}
 SpecialTerrain = {moving = {}, ignored = {}}
 DeviceCounts = {}
+DrivechainDetails = {}
 ---Devices table
 --[[
 {
