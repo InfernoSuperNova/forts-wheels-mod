@@ -102,7 +102,7 @@ function Update(frame)
     DebugLog("---------End of update---------")
     delta = (GetRealTime() - startUpdateTime) * 1000
     DebugLog("Update took " .. string.format("%.2f", delta) .. "ms")
-    DebugUpdate()
+    UpdateFunction("DebugUpdate", frame)
 end
 
 function UpdateFunction(callback, frame)

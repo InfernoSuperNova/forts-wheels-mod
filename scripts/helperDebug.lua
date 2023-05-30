@@ -36,10 +36,7 @@ function ToggleUpdateDebug()
     ModDebug.update = not ModDebug.update
 end
 function ClearDebugControls()
-    for i = 1, 100 do
-        DeleteControl("", "debugLine" .. i)
-    end
-    
+        DeleteControl("", "debugControl")  
 end
 
 function DebugLog(string)
@@ -48,18 +45,50 @@ function DebugLog(string)
     end 
 end
 function DebugUpdate()
+    if not ControlExists("root", "debugControl") then
+        AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
+    end
+
     local lines = SplitLines(DebugText)
     for i = 1, #lines do
-        if not ControlExists("root", "debugLine" .. i) then
-            AddTextControl("", "debugLine" .. i, lines[i], ANCHOR_TOP_RIGHT, {x = 1050, y = 0 + 15 * i}, false, "")
+        local text = lines[i]
+        
+        
+        if not ControlExists("debugControl", "debugLine" .. i) then
+            AddTextControl("debugControl", "debugLine" .. i, text, ANCHOR_TOP_RIGHT, {x = 0, y = 0 + 9 * i}, false, "Readout")
         else
-            SetControlText("", "debugLine" .. i, lines[i])
+            SetControlText("debugControl", "debugLine" .. i, text)
         end
         
     end
     DebugText = ""
 end
 
+function SplitStringAtPosition(inputString, position)
+    local firstPart = string.sub(inputString, 1, position)
+    local secondPart = string.sub(inputString, position + 1)
+    return { firstPart, secondPart }
+end
+
+function CheckCharacterAtPosition(inputString, position)
+    local character = string.sub(inputString, position, position)
+    return character
+end
+
+function ParseColorString(colorString)
+    local colorTable = {}
+
+    -- Extracting the numerical values using pattern matching
+    local r, g, b, a = colorString:match("r = (%d+), g = (%d+), b = (%d+), a = (%d+)")
+
+    -- Converting the values to numbers and storing in the table
+    colorTable.r = tonumber(r)
+    colorTable.g = tonumber(g)
+    colorTable.b = tonumber(b)
+    colorTable.a = tonumber(a)
+
+    return colorTable
+end
 function InitializeTerrainBlockSats()
     AddTextControl("", "terrainStat1", "", ANCHOR_TOP_LEFT, {x = 550, y = 15}, false, "")
     AddTextControl("", "terrainStat2", "", ANCHOR_TOP_LEFT, {x = 550, y = 30}, false, "")
