@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/editor.lua")
 dofile(path .. "/scripts/indexing.lua")
 dofile(path .. "/scripts/RoadLinks.lua")
 dofile(path .. "/scripts/input.lua")
@@ -32,6 +33,11 @@ dofile(path .. "/scripts/drillScript.lua")
 --if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
 --then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    if GetGameMode() == "Editor" then 
+        InEditor = true 
+        ModDebug.update = true
+        ModDebug.collision = true
+    end
     data.roadLinks = {}
     GetDeviceCounts()
     data.teams = {}
@@ -132,7 +138,9 @@ function OnSeekStart()
 end
 
 function OnDraw()
-
+    if InEditor then
+        UpdateEditor()
+    end
 end
 
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)

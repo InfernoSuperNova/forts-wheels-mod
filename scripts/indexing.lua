@@ -108,6 +108,7 @@ end
 
 
 function IndexTerrainBlocks()
+    BlockStatistics.totalNodes = 0
     data.terrainCollisionBoxes = {}
     local terrainBlockCount = GetBlockCount()
     BlockStatistics.totalBlocks = terrainBlockCount
@@ -136,7 +137,7 @@ function IndexTerrainBlock(terrainBlock)
     end
     data.terrainCollisionBoxes[terrainBlock + 1] = MinimumCircularBoundary(Terrain[terrainBlock + 1])
     if ModDebug.collision == true then
-        SpawnCircle(data.terrainCollisionBoxes[terrainBlock + 1], data.terrainCollisionBoxes[terrainBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+        --SpawnCircle(data.terrainCollisionBoxes[terrainBlock + 1], data.terrainCollisionBoxes[terrainBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
     end
 end
 

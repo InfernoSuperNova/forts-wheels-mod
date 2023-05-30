@@ -56,6 +56,7 @@ BlockStatistics = {
     totalNodes = 0,
     totalBlocks = 0,
 }
+InEditor = false                                    --Whether the user is in the editor
 DrillsEnabled = false                               --whether to enable drills or not
 JustJoined = true --to run something once upon joining through Update. (used for effects)
 Displacement = {}
