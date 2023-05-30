@@ -37,7 +37,7 @@ function ThrottleControl()
                 SetControlFrame(0)
                 local position = { x =200, y = 450}
                 local size = { x = 662, y = 371.25}
-                AddSpriteControl("", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, false)
+                AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
                 LoadControl(path .. "/ui/controls.lua", "root")
                 for i = 1, 3 do
                     AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Info", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
@@ -80,7 +80,7 @@ function ThrottleControl()
             --once done with throttle widget, delete it
             if ControlExists("root", "PropulsionSlider") then
                 DeleteControl("", "close")
-                DeleteControl("root", "throttle backdrop")
+                DeleteControl("HUD", "throttle backdrop")
                 DeleteControl("root", "PropulsionSlider")
                 DeleteControl("root", "brake")
                 for i = 1, 6 do

@@ -55,8 +55,10 @@ function CheckBoundingBoxCollisions(devices)
     local collidingBlocks = {}
     local collidingStructures = {}
     local collider = MinimumCircularBoundary(positions)
+    collider.r = collider.r + WHEEL_RADIUS + TRACK_WIDTH 
     if ModDebug.collision == true then
         SpawnCircle(collider, collider.r, {r = 100, g = 255, b = 100, a = 255}, 0.04)
+        HighlightPolygon(collider.square)
     end
    
     for terrainId, terrainCollider in pairs(data.terrainCollisionBoxes) do

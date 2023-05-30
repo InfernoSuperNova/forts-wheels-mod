@@ -59,10 +59,11 @@ function IndexRoadStructures(frame)
             table.insert(RoadCoords[structure], NodePosition(link.nodeA))
             table.insert(RoadCoords[structure], NodePosition(link.nodeB))
         end
-        local circle = MinimumCircularBoundary(RoadCoords[structure])
-        RoadStructureBoundaries[structure] = circle
+        local boundary = MinimumCircularBoundary(RoadCoords[structure])
+        RoadStructureBoundaries[structure] = boundary
         if ModDebug.collision then
-            SpawnCircle(circle, circle.r, { r = 255, g = 100, b = 100, a = 255 }, 0.04)
+            SpawnCircle(boundary, boundary.r, { r = 255, g = 100, b = 100, a = 255 }, 0.04)
+            HighlightPolygon(boundary.square)
         end
     end
 end
