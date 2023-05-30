@@ -134,7 +134,6 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     DrivechainDetails[structureKey][2] = applicableGears[#applicableGears].maxSpeed or 0
     DrivechainDetails[structureKey][3] = currentGear.gear
     DrivechainDetails[structureKey][4] = currentGear.propulsionFactor
-
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
     velocity, velocityMag, propulsionFactor * 0.2)
 end

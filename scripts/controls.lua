@@ -40,13 +40,13 @@ function ThrottleControl()
                 AddSpriteControl("", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, false)
                 LoadControl(path .. "/ui/controls.lua", "root")
                 for i = 1, 3 do
-                    AddTextButtonControl("", "info" .. uid .. i, "", ANCHOR_TOP_LEFT, {x = 350, y = 500 + i * 20, z = -10}, false, "Panel")
+                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Info", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
                 end
-                for i = 4, 5 do
-                    AddTextButtonControl("", "info" .. uid .. i, "", ANCHOR_TOP_LEFT, {x = 250, y = 440 + i * 20, z = -10}, false, "Panel")
+                for i = 4, 6 do
+                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Info", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
                 end
-                AddTextButtonControl("", "info" .. uid .. "6", "", ANCHOR_TOP_LEFT, {x = 600, y = 540, z = -10}, false, "Panel")
-                AddTextButtonControl("", "close", "x", ANCHOR_TOP_LEFT, {x = 800, y = 480, z = -10}, false, "Heading")
+                --AddTextButtonControl("throttle backdrop", "info" .. uid .. "6", "", ANCHOR_TOP_LEFT, {x = 600, y = 540, z = -10}, false, "Panel")
+                AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
                 
                 CreateBrakeButton(deviceStructureId)
                 --initialize throttle
@@ -92,25 +92,28 @@ end
 
 
 function UpdateVehicleInfo(structure, uid)
+    --make sure the details exist
     if DrivechainDetails[structure] and DrivechainDetails[structure][1] then
+        --define variables
         local velocity = math.abs(DrivechainDetails[structure][1])
-        
-        local kmhr = string.format("%.0f", velocity / 100 * 3.6)
-        local mph = string.format("%.0f", velocity / 100 * 2.23694)
         local maxSpeed = DrivechainDetails[structure][2]
-        local maxkmhr = string.format("%.0f", maxSpeed / 100 * 3.6)
-        local maxmph = string.format("%.0f", maxSpeed / 100 * 2.23694)
-        local gear = DrivechainDetails[structure][3]
-        local power = DrivechainDetails[structure][4]
-        SetControlText("root", "info" .. uid .. "1", "Max speed: " .. maxkmhr .. "km/hr   " .. maxmph .. " mph")
-        SetControlText("root", "info" .. uid .. "2", kmhr .. " km/hr")
-        SetControlText("root", "info" .. uid .. "3", mph .. " mph")
-        SetControlText("root", "info" .. uid .. "4", "")
-        SetControlText("root", "info" .. uid .. "5", "Gear: " .. gear)
-        SetControlText("root", "info" .. uid .. "6", "Power: " .. power)
+        local details = {
+            kmhr = string.format("%.0f", velocity / 100 * 3.6),
+            mph = string.format("%.0f", velocity / 100 * 2.23694),
+            maxkmhr = string.format("%.0f", maxSpeed / 100 * 3.6),
+            maxmph = string.format("%.0f", maxSpeed / 100 * 2.23694),
+            gear = DrivechainDetails[structure][3],
+            power = DrivechainDetails[structure][4],
+        }
+        
+            SetControlText("throttle backdrop", "info" .. uid .. "1",
+                "Max speed: " .. details.maxkmhr .. "km/hr   " .. details.maxmph .. " mph")
+            SetControlText("throttle backdrop", "info" .. uid .. "2", details.kmhr .. " km/hr")
+            SetControlText("throttle backdrop", "info" .. uid .. "3", details.mph .. " mph")
+            SetControlText("throttle backdrop", "info" .. uid .. "4", "")
+            SetControlText("throttle backdrop", "info" .. uid .. "5", "Gear: " .. details.gear)
+            SetControlText("throttle backdrop", "info" .. uid .. "6", "Power: " .. details.power)
     end
-    
-    
 end
 function CreateBrakeButton(deviceStructureId)
     AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 520, y = 560}, false, "normal")

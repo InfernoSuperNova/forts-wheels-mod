@@ -10,15 +10,15 @@ Root =
         {
             Type = "SliderBar",
             Name = "PropulsionSlider",
-            Style = "SliderBar",
+            Style = "Panel",
             ValIsPercentage = false,
             Static =
             {
-                --Texture = "ui/textures/FE-PanelTiny.dds",
+                Texture = path .. "/empty.png",
                 Control =
                 {
                     ClipChildren = true,
-                    Position = { 230, 480, },
+                    Position = { 250, 480, },
                     Size = { 600, 30, },
                     TabStop = 6,
                     Children =
