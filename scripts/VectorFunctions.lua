@@ -239,48 +239,28 @@ function AngleToVector(angle)
     return { x = x, y = y }
 end
 
-
+--create a minimum sized rectangle around a polygon
 function CalculateSquare(points)
-    -- Step 1: Determine the minimum and maximum x and y coordinates
     local minX, minY, maxX, maxY = math.huge, math.huge, -math.huge, -math.huge
-    for _, point in ipairs(points) do
-        if point.x < minX then
-            minX = point.x
-        end
-        if point.y < minY then
-            minY = point.y
-        end
-        if point.x > maxX then
-            maxX = point.x
-        end
-        if point.y > maxY then
-            maxY = point.y
-        end
+
+    for _, point in pairs(points) do
+        if point.x < minX then minX = point.x end
+        if point.x > maxX then maxX = point.x end
+        if point.y < minY then minY = point.y end
+        if point.y > maxY then maxY = point.y end
     end
-
-    -- Step 2: Calculate the width and height of the square
-    local width = maxX - minX
-    local height = maxY - minY
-
-    -- Step 3: Determine the size of the square
-    local size = math.max(width, height)
-
-    -- Step 4: Calculate the center point of the square
-    local centerX = minX + width / 2
-    local centerY = minY + height / 2
-
-    -- Step 5: Calculate the coordinates of the square's corners
-    local topLeftX = centerX - size / 2
-    local topLeftY = centerY - size / 2
-    local bottomRightX = centerX + size / 2
-    local bottomRightY = centerY + size / 2
-
-    -- Return the coordinates of the square's corners as a table
-    return {
-        { x = topLeftX, y = topLeftY },
-        { x = bottomRightX, y = bottomRightY }
-    }
+    
+    local pointA = {x = minX, y = minY}
+    local pointB = {x = maxX, y = maxY}
+    if ModDebug.collision and not IsPaused() then
+        local pointC = {x = minX, y = maxY}
+        local pointD = {x = maxX, y = minY}
+        HighlightPolygon({pointA, pointC, pointB, pointD})
+        HighlightPolygon(points)
+    end
+    return {pointA, pointB}
 end
+
   
 function MinimumCircularBoundary(points)
     local square = CalculateSquare(points)

@@ -45,6 +45,7 @@ function DebugLog(string)
     end 
 end
 function DebugUpdate()
+    DebugLog("Press Ctrl + Alt + T to hide")
     if not ControlExists("root", "debugControl") then
         AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
     end
@@ -90,18 +91,26 @@ function ParseColorString(colorString)
     return colorTable
 end
 function InitializeTerrainBlockSats()
-    AddTextControl("", "terrainStat1", "", ANCHOR_TOP_LEFT, {x = 550, y = 15}, false, "")
-    AddTextControl("", "terrainStat2", "", ANCHOR_TOP_LEFT, {x = 550, y = 30}, false, "")
-    AddTextControl("", "terrainStat3", "", ANCHOR_TOP_LEFT, {x = 550, y = 45}, false, "")
+    for i = 1, 4 do
+        AddTextControl("", "terrainStat" .. i, "", ANCHOR_TOP_LEFT, {x = 200, y = 9 * i}, false, "Readout")
+    end
 end
 
 function EnableTerrainDebug()
-    SetControlText("", "terrainStat1", "Largest block: " .. BlockStatistics.largestBlock)
+    local largestBlock
+    if BlockStatistics.largestBlock > 20 then 
+        largestBlock = BlockStatistics.largestBlock .. " WARNING: There are too many nodes in this block! Consider splitting it into smaller blocks"
+    else
+        largestBlock = BlockStatistics.largestBlock
+    end
+    SetControlText("", "terrainStat1", "Largest block: " .. largestBlock)
     SetControlText("", "terrainStat2", "Total vertex count: " .. BlockStatistics.totalNodes)
     SetControlText("", "terrainStat3", "Total block count: " .. BlockStatistics.totalBlocks)
+    SetControlText("", "terrainStat4", "Press Ctrl + Alt + D to hide")
 end
 function DisableTerrainDebug()
     SetControlText("", "terrainStat1", "")
     SetControlText("", "terrainStat2", "")
     SetControlText("", "terrainStat3", "")
+    SetControlText("", "terrainStat4", "")
 end
