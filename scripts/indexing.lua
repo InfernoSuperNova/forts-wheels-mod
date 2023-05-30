@@ -169,9 +169,11 @@ function DebugHighlightTerrain(frame)
 
         for index, boundary in pairs(data.terrainCollisionBoxes) do
             if ModDebug.collision == true then
-                SpawnCircle(boundary, boundary.r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
-                HighlightPolygon(boundary.square)
-                HighlightPolygon(Terrain[index])
+                local colour1 = {r = 255, g = 255, b = 255, a = 255}
+                local colour2 = {r = 150, g = 150, b = 150, a = 255}
+                SpawnCircle(boundary, boundary.r, colour1, 0.04)
+                HighlightPolygon(boundary.square, colour2)
+                HighlightPolygon(Terrain[index], colour2)
             end
         end
 

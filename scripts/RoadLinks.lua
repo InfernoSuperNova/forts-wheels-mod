@@ -62,8 +62,12 @@ function IndexRoadStructures(frame)
         local boundary = MinimumCircularBoundary(RoadCoords[structure])
         RoadStructureBoundaries[structure] = boundary
         if ModDebug.collision then
-            SpawnCircle(boundary, boundary.r, { r = 255, g = 100, b = 100, a = 255 }, 0.04)
-            HighlightPolygon(boundary.square)
+            local colour1 = { r = 255, g = 100, b = 100, a = 255 }
+            local colour2 = { r = 255, g = 150, b = 100, a = 255 }
+            local colour3 = { r = 255, g = 0, b = 0, a = 255 }
+            SpawnCircle(boundary, boundary.r, colour2, 0.04)
+            HighlightPolygon(boundary.square, colour1)
+            HighlightPolygon(RoadCoords[structure], colour3)
         end
     end
 end

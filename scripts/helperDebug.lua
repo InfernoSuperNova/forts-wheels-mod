@@ -6,10 +6,10 @@ function HighlightCoords(coords)
     end
 end
 
-function HighlightPolygon(coords)
+function HighlightPolygon(coords, colour1)
     for coord = 1, #coords do
-        SpawnCircle(coords[coord], 50, { r = 255, g = 100, b = 100, a = 255 }, data.updateDelta)
-        SpawnLine(coords[coord], coords[coord % #coords + 1], {r = 255, g = 255, b = 255, a = 255}, data.updateDelta)
+        --SpawnCircle(coords[coord], 50, colour1, data.updateDelta)
+        SpawnLine(coords[coord], coords[coord % #coords + 1], colour1, data.updateDelta)
     end
 end
 
