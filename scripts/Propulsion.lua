@@ -103,7 +103,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
             
             propulsionFactor = propulsionFactor / gearFactor,
             maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.975/wheelCount/wheelCount^0.01,
-
+            gear = gear
             
         }
 
@@ -120,11 +120,20 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     end
     local velocity = AverageCoordinates(velocities)
     local velocityMag = VecMagnitudeDir(velocity)
+
+    
+    
     --now that we have the average velocity magnitude, we should select which gear should be used
 
     local currentGear = GetCurrentGearFromVelocity(applicableGears, velocityMag)
 
-    
+    if not DrivechainDetails[structureKey] then DrivechainDetails[structureKey] = {} end
+    if math.abs(velocityMag) > 0 then
+        DrivechainDetails[structureKey][1] = velocityMag
+    end
+    DrivechainDetails[structureKey][2] = applicableGears[#applicableGears].maxSpeed or 0
+    DrivechainDetails[structureKey][3] = currentGear.gear
+    DrivechainDetails[structureKey][4] = currentGear.propulsionFactor
 
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
     velocity, velocityMag, propulsionFactor * 0.2)
