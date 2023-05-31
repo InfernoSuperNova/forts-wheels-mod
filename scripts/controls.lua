@@ -3,6 +3,7 @@ function UpdateControls()
 end
 
 function OnControlActivated(name, code, doubleClick)
+    local uid = GetLocalClientIndex()
     if name == "brake" and code then
         if data.brakes[code] then
             SendScriptEvent("UpdateBrakes", 0 .. "," .. code, "", false)
@@ -11,10 +12,13 @@ function OnControlActivated(name, code, doubleClick)
             SendScriptEvent("UpdateBrakes", 1 .. "," .. code, "", false)
             SetControlText("root", "brake", "Brakes: On")
         end
-
-
-    end
-    if name == "close" then
+    elseif name == "info" .. uid .. "1" or name == "info" .. uid .. "2" then
+        if Metric then
+            Metric = false
+        else
+            Metric = true
+        end
+    elseif name == "close" then
         Deselect()
     end
 end
@@ -39,15 +43,17 @@ function ThrottleControl()
                 local size = { x = 662, y = 371.25}
                 AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
                 LoadControl(path .. "/ui/controls.lua", "root")
-                for i = 1, 3 do
-                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
+                for i = 1, 2 do
+                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 70 + i * 20, z = -10}, false, "Panel")
+                    SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
                 end
-                for i = 4, 6 do
-                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
+                for i = 3, 5 do
+                    AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = 10 + i * 20, z = -10}, false, "Panel")
                 end
                 --AddTextButtonControl("throttle backdrop", "info" .. uid .. "6", "", ANCHOR_TOP_LEFT, {x = 600, y = 540, z = -10}, false, "Panel")
                 AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
-                
+                SetButtonCallback("root", "close", deviceStructureId)
+                --brake
                 CreateBrakeButton(deviceStructureId)
                 --initialize throttle
                 local pos = {x = 273.5, y = 15}
@@ -105,14 +111,24 @@ function UpdateVehicleInfo(structure, uid)
             gear = DrivechainDetails[structure][3],
             power = DrivechainDetails[structure][4],
         }
-        
-            SetControlText("throttle backdrop", "info" .. uid .. "1",
-                "Max speed: " .. details.maxkmhr .. "km/hr   " .. details.maxmph .. " mph")
-            SetControlText("throttle backdrop", "info" .. uid .. "2", details.kmhr .. " km/hr")
-            SetControlText("throttle backdrop", "info" .. uid .. "3", details.mph .. " mph")
-            SetControlText("throttle backdrop", "info" .. uid .. "4", "Right click world to close")
-            SetControlText("throttle backdrop", "info" .. uid .. "5", "Gear: " .. details.gear)
-            SetControlText("throttle backdrop", "info" .. uid .. "6", "Power: " .. details.power)
+        --to stop things from flashing around as much.
+        if tonumber(details.kmhr) < 10 then details.kmhr = "  " .. details.kmhr end
+        if tonumber(details.mph) < 10 then details.mph = "  " .. details.mph end
+        --power
+        details.power = math.floor(details.power / 1000)
+        if details.power < 1000 then details.power = "  " .. details.power end
+        details.power = details.power .. "K"
+        --set text
+        if Metric then
+            SetControlText("throttle backdrop", "info" .. uid .. "1", "Speed: " .. details.kmhr .. " km/h")
+            SetControlText("throttle backdrop", "info" .. uid .. "2", "Top speed: " .. details.maxkmhr .. " km/h")
+        else
+            SetControlText("throttle backdrop", "info" .. uid .. "1", "Speed: " .. details.mph .. " mph")
+            SetControlText("throttle backdrop", "info" .. uid .. "2", "Top speed: " .. details.maxmph .. " mph")
+        end
+        SetControlText("throttle backdrop", "info" .. uid .. "3", "Right click world to close")
+        SetControlText("throttle backdrop", "info" .. uid .. "4", "Gear: " .. details.gear)
+        SetControlText("throttle backdrop", "info" .. uid .. "5", "Power: " .. details.power)
     end
 end
 function CreateBrakeButton(deviceStructureId)
