@@ -82,7 +82,6 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
-    
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
     local delta
@@ -153,16 +152,10 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
     
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
-    if saveName == "orbital_laser_source" then
-        OrbitalLasers[weaponId] = true
-        ScheduleCall(20, RemoveOldOrbital, weaponId)
-    end
+    FillOLTable(saveName, weaponId)
 end
 
-function RemoveOldOrbital(weaponId)
 
-    OrbitalLasers[weaponId] = nil
-end
 function OnDeviceCompleted(teamId, deviceId, saveName)
     SoundAdd(saveName, deviceId)
     DrillAdd(saveName, deviceId)
@@ -184,7 +177,17 @@ function OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
     CheckNewRoadLinks(saveName, nodeA, nodeB)
 end
 
+function OnLinkHit(nodeIdA, nodeIdB, objectId, objectTeamId, objectSaveName, damage, pos, reflectedByEnemy)
+    FillAwaitingOLTable(nodeIdA, nil)
+    
+end
+function OnDeviceHit(teamId, deviceId, saveName, newHealth, projectileNodeId, projectileTeamId, pos, reflectedByEnemy)
+    FillAwaitingOLTable(nil, deviceId)
+end
 
+function OnTerrainHit(terrainId, damage, projectileNodeId, projectileSaveName, surfaceType, pos, normal, reflectedByEnemy)
+    FillAwaitingOLTable(nil, nil)
+end
 function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
 --broken until beeman fixes
 --     DestroyOldRoadLinks(saveName, nodeA, nodeB)
