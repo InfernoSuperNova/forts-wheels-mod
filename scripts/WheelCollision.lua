@@ -115,6 +115,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     for structure, _ in pairs(collidingStructures) do
         local links = RoadStructures[structure]
         for index, link in pairs(links) do
+            
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
             displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TRACK_WIDTH, uid)
