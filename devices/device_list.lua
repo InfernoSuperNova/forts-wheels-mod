@@ -132,6 +132,7 @@ table.insert(Sprites, DetailSprite("hud-detail-drills", "drill", path))
 local drill = DeepCopy(FindDevice("battery"))
 if drill then
     --base drill device
+    drill.ExplosionRadius = 0
     drill.SaveName = "drill"
     drill.BuildTimeComplete = 30.0
     drill.MetalCost = 200
