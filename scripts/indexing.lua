@@ -78,6 +78,7 @@ function FindDeviceInMasterIndex(id)
 end
 function IndexLinks()
     EnumerateStructureLinks(0, -1, "DetermineLinks", true)
+    EnumerateStructureLinks(3, -1, "DetermineLinks", true)
     for side, teams in pairs(data.teams) do
         for index, team in pairs(teams) do
             EnumerateStructureLinks(team, -1, "DetermineLinks", false)
