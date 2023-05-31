@@ -78,6 +78,7 @@ SpecialTerrain = {moving = {}, ignored = {}}
 DeviceCounts = {}
 DrivechainDetails = {}
 OrbitalLasers = {}
+AwaitingOrbitalLasers = {}
 
 ---@class Pos
 ---@field x number
