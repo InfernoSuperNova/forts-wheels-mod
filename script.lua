@@ -7,6 +7,7 @@ dofile("scripts/forts.lua")
 dofile(path .. "/config/config.lua")
 dofile(path .. "/config/commanders.lua")
 
+dofile(path .. "/scripts/weapons.lua")
 dofile(path .. "/scripts/editor.lua")
 dofile(path .. "/scripts/indexing.lua")
 dofile(path .. "/scripts/RoadLinks.lua")
@@ -48,10 +49,13 @@ function Load(GameStart)
 end
 
 function InitializeScript()
+    
     InitializeCommanders()
     InitializeTerrainBlockSats()
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
+        EnableDevice("turbine", true, side)
+        EnableDevice("smokestack", true, side)
     end
     IndexLinks()
     data.terrainCollisionBoxes = {}
@@ -102,7 +106,7 @@ function Update(frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("CheckHeldKeys", frame)
-    
+    UpdateFunction("UpdateWeapons", frame)
     
     JustJoined = false
     DebugLog("---------End of update---------")
@@ -144,13 +148,21 @@ function OnDraw()
 end
 
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
-    if (saveName == "vehicleController") then
-        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
-        ApplyDamageToDevice(deviceId, 1000000)
-    end
+    AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     DrillPlaceEffect(saveName, deviceId)
+    
+end
+function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
+    if saveName == "orbital_laser_source" then
+        OrbitalLasers[weaponId] = true
+        ScheduleCall(20, RemoveOldOrbital, weaponId)
+    end
 end
 
+function RemoveOldOrbital(weaponId)
+
+    OrbitalLasers[weaponId] = nil
+end
 function OnDeviceCompleted(teamId, deviceId, saveName)
     SoundAdd(saveName, deviceId)
     DrillAdd(saveName, deviceId)
@@ -201,6 +213,12 @@ function ApplyForces()
     FinalSuspensionForces = {}
     FinalPropulsionForces = {}
     FinalAddedForces = {}
+end
+function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
+    if saveName == "vehicleController" then
+        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+        ApplyDamageToDevice(deviceId, 1000000)
+    end
 end
 
 --I stole this from fortships >:)

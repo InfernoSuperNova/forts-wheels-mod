@@ -77,19 +77,8 @@ Terrain = {}
 SpecialTerrain = {moving = {}, ignored = {}}
 DeviceCounts = {}
 DrivechainDetails = {}
----Devices table
---[[
-{
-    [structureId: number] = {
-        nodeA:number
-        nodeB:number
-        team:number
-        id:number
-        saveName:number
-        pos{x:number, y:number}
+OrbitalLasers = {}
 
-    }
-}]]
 ---@class Pos
 ---@field x number
 ---@field y number
