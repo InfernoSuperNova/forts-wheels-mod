@@ -59,6 +59,7 @@ BlockStatistics = {
 InEditor = false                                    --Whether the user is in the editor
 DrillsEnabled = false                               --whether to enable drills or not
 JustJoined = true --to run something once upon joining through Update. (used for effects)
+Metric = true --switch hud elements between mph and km/h
 Displacement = {}
 WheelPos = {}
 TracksId = {}
