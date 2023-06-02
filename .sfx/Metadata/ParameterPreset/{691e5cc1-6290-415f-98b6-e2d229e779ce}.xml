@@ -19,7 +19,7 @@
 			<value>10000</value>
 		</property>
 		<property name="initialValue">
-			<value>500</value>
+			<value>-100</value>
 		</property>
 		<property name="seekSpeed">
 			<value>9000</value>

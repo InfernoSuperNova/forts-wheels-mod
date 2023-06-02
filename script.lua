@@ -138,6 +138,7 @@ end
 
 function OnSeekStart()
     InitializeScript()
+    SoundOnJoin()
 end
 
 function OnDraw()
@@ -149,7 +150,7 @@ end
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     DrillPlaceEffect(saveName, deviceId)
-    
+    SoundAdd(saveName, deviceId)
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
@@ -157,7 +158,6 @@ end
 
 
 function OnDeviceCompleted(teamId, deviceId, saveName)
-    SoundAdd(saveName, deviceId)
     DrillAdd(saveName, deviceId)
 end
 
