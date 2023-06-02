@@ -37,7 +37,10 @@ ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road 
 KEYBINDS = {
     ToggleUpdateDebug = {"left control", "left alt", "t"},
     ToggleCollisionDebug = {"left control", "left alt", "d"},
-    
+
+    MoveLeft = {"left shift", "a"},
+    MoveRight = {"left shift", "d"},
+    ToggleBrake = {"left shift", " "}
 }
 ---@class PressedKeyBinds Keybinds that are currently being pressed.
 ---@field [callback] boolean

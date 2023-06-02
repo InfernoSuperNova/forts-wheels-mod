@@ -160,3 +160,35 @@ end
 function UpdateBrakeButton(deviceStructureId)
     SetButtonCallback("root", "brake", deviceStructureId)
 end
+
+function SetMyThrottle(val)
+    if ControlExists("PropulsionSlider", "SliderBar") then
+        local pos = {x = val, y = 15}
+        SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
+    end
+end
+
+-------Keybind callbacks
+function MoveLeft()
+    SetMyThrottle(33)
+end
+
+function MoveLeft_Up()
+    SetMyThrottle(273.5)
+end
+
+function MoveRight()
+    SetMyThrottle(514)
+end
+
+function MoveRight_Up()
+    SetMyThrottle(273.5)
+end
+
+function ToggleBrake()
+    local deviceStructureId = GetControlledStructureId()
+    
+    if deviceStructureId then
+        OnControlActivated("brake", deviceStructureId)
+    end
+end
