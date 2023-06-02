@@ -18,7 +18,7 @@ function CheckHeldKeys()
         if held then 
             if not PressedKeyBinds[callback] then
                 PressedKeyBinds[callback] = true
-            _G[callback]() 
+                _G[callback]() 
             end
         else
             PressedKeyBinds[callback] = nil
