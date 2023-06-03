@@ -19,4 +19,8 @@ Merge(Weapon,
 	missilestructure2inv = L"Warhead (Structure, Inverted)",
 	missilestructure2invTip2 = L"Warhead silo that can be placed on your base. Inverted version",
 	missilestructure2invTip3 = L"Requires: Workshop, Upgrade Centre",
+
+    turretCannon = L"Cannon Turret",
+    turretCannonTip2 = L"A large and well protected cannon. Upgrade to rotate the turret around.",
+    turretCannonTip3 = L"Requires: Munitions Plant",
 })
