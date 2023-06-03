@@ -1,4 +1,9 @@
+local moveLeft_down = false --keybinds
+local moveRight_down = false
+local keybind_down_last_frame = false
+
 function UpdateControls()
+    EvalMoveKeybinds()
     ThrottleControl()
 end
 
@@ -161,28 +166,46 @@ function UpdateBrakeButton(deviceStructureId)
     SetButtonCallback("root", "brake", deviceStructureId)
 end
 
-function SetMyThrottle(val)
-    if ControlExists("PropulsionSlider", "SliderBar") then
-        local pos = {x = val, y = 15}
-        SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
+function EvalMoveKeybinds()
+    local new_throttle = nil
+
+    if moveLeft_down and moveRight_down then
+        keybind_down_last_frame = true
+        new_throttle = 273.5
+
+    elseif moveLeft_down then
+        keybind_down_last_frame = true
+        new_throttle = 33
+
+    elseif moveRight_down then
+        keybind_down_last_frame = true
+        new_throttle = 514
+
+    elseif keybind_down_last_frame then --keybind was released so we set neutral throttle once
+        keybind_down_last_frame = false
+        new_throttle = 273.5
+    end
+
+    if new_throttle and ControlExists("PropulsionSlider", "SliderBar") then
+        SetControlRelativePos("PropulsionSlider", "SliderBar", {x = new_throttle, y = 15})
     end
 end
 
 -------Keybind callbacks
 function MoveLeft()
-    SetMyThrottle(33)
+    moveLeft_down = true
 end
 
 function MoveLeft_Up()
-    SetMyThrottle(273.5)
+    moveLeft_down = false
 end
 
 function MoveRight()
-    SetMyThrottle(514)
+    moveRight_down = true
 end
 
 function MoveRight_Up()
-    SetMyThrottle(273.5)
+    moveRight_down = false
 end
 
 function ToggleBrake()
