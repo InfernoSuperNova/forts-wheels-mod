@@ -4,17 +4,23 @@ function InitializeTracks()
 end
 
 function UpdateTracks(frame)
-    DebugLog("---------Start of UpdateTracks---------")
-    UpdateFunction("ClearEffects", frame)
-    UpdateFunction("FillTracks", frame)
-    UpdateFunction("SortTracks", frame)
-    UpdateFunction("GetTrackSetPositions", frame)
-    UpdateFunction("DrawTracks", frame)
-    DebugLog("---------End of UpdateTracks---------\n")
+    -- DebugLog("---------Start of UpdateTracks---------")
+    -- UpdateFunction("ClearEffects", frame)
+    -- UpdateFunction("FillTracks", frame)
+    -- UpdateFunction("SortTracks", frame)
+    -- UpdateFunction("GetTrackSetPositions", frame)
+    -- UpdateFunction("DrawTracks", frame)
+    -- DebugLog("---------End of UpdateTracks---------\n")
+
+    ClearEffects()
+    FillTracks()
+    SortTracks()
+    GetTrackSetPositions()
+    DrawTracks()
 end
 
 function TrueUpdateTracks()
-    Displacement = {}
+    
 end
 
 --clears any wheel sprites on the screen
@@ -86,15 +92,10 @@ function SortTracks()
                 
 
                 
-                local prevTime = GetRealTime()
+
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
                 SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
-                local delta = (GetRealTime() - prevTime) * 1000
-                DebugLog("Gift Wrapping took " .. string.format("%.2f", delta) .. "ms")
-                prevTime = GetRealTime()
                 PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
-                local delta = (GetRealTime() - prevTime) * 1000
-                DebugLog("Track Pushing took " .. string.format("%.2f", delta) .. "ms")
             else
                 PushedTracks[structure][trackGroup] = trackSet
             end
