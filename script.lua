@@ -65,7 +65,7 @@ function InitializeScript()
     InitializeDrill()
     InitializeCoreShield()
     InitializeEffects()
-    
+    LoadWeapons()
     data.previousVals = {}
     data.wheelsTouchingGround = {}
     data.wheelLinksColliding = {}
