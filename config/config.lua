@@ -40,7 +40,7 @@ KEYBINDS = {
 
     MoveLeft = {"left shift", "a"},
     MoveRight = {"left shift", "d"},
-    ToggleBrake = {"left shift", " "}
+    ToggleBrake = {"left shift", "f"}
 }
 ---@class PressedKeyBinds Keybinds that are currently being pressed.
 ---@field [callback] boolean
