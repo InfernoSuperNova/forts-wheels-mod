@@ -46,16 +46,19 @@ function UpdateWeapons(frame)
 
 end
 
+function LoadWeapons()
+    data.currentTurretDirections = {}
 
+end
 function CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     if upgradedId == 0 then return end
     if not CheckSaveNameTable(saveName, TURRET_SAVE_NAME) then return end
     local direction = teamId %MAX_SIDES
     local reloadTime = GetWeaponReloadTime(upgradedId)
     local health = GetDeviceHealth(deviceId)
-    if CurrentTurretDirections[upgradedId] then
-        direction = CurrentTurretDirections[upgradedId]
-        CurrentTurretDirections[upgradedId] = nil
+    if data.currentTurretDirections[upgradedId] then
+        direction = data.currentTurretDirections[upgradedId]
+        data.currentTurretDirections[upgradedId] = nil
     end
     FlipTurret(deviceId, direction, nodeA, nodeB, t, reloadTime, health)
 end
@@ -106,7 +109,7 @@ function FlipTurret7(parse)
     EnableWeaponAllSides("turretCannon3", true)
     local newDevice = CreateDevice(parse.direction, "turretCannon3", parse.nodeA, parse.nodeB, parse.t)
     EnableWeaponAllSides("turretCannon3", false)
-    CurrentTurretDirections[newDevice] = parse.direction
+    data.currentTurretDirections[newDevice] = parse.direction
     SetWeaponReloadTime(newDevice, parse.reloadTime)
     --local currentHealth = GetDeviceHitpoints(parse.deviceId)
     local currentHealth = 2900
@@ -114,7 +117,7 @@ function FlipTurret7(parse)
 end
 
 function RemoveTurretDirection(id)
-    CurrentTurretDirections[id] = nil
+    data.currentTurretDirections[id] = nil
 end
 function ScheduleDeviceDestruction(id)
     ApplyDamageToDevice(id, 9999999)

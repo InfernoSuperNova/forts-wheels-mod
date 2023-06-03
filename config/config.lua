@@ -81,7 +81,6 @@ DeviceCounts = {}
 DrivechainDetails = {}
 OrbitalLasers = {}
 AwaitingOrbitalLasers = {}
-CurrentTurretDirections = {}
 ---@class Pos
 ---@field x number
 ---@field y number
