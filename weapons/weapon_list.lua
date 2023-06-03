@@ -275,7 +275,7 @@ table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
     ScrapPeriod = 8,
     MetalCost = 3000,
     EnergyCost = 9001,
-    MetalRepairCost = 150,
+    MetalRepairCost = 1000,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
     MaxUpAngle = StandardMaxUpAngle,
@@ -306,9 +306,10 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MetalRepairCost = 150,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
-    MaxUpAngle = StandardMaxUpAngle,
+    MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
+    
 })
 table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     SaveName = "turretCannon3",
@@ -324,7 +325,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MetalRepairCost = 150,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
-    MaxUpAngle = StandardMaxUpAngle,
+    MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
     Upgrades =
@@ -352,7 +353,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MetalRepairCost = 150,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
-    MaxUpAngle = StandardMaxUpAngle,
+    MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
 })
@@ -370,7 +371,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MetalRepairCost = 150,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
-    MaxUpAngle = StandardMaxUpAngle,
+    MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
 })
@@ -388,7 +389,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MetalRepairCost = 150,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
-    MaxUpAngle = StandardMaxUpAngle,
+    MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
 })

@@ -1,4 +1,4 @@
-function Merge(t1, t2) for k, v in pairs(t2) do t1[k] = v end end
+
 -- some mod strings are in the weapons folder therefore i need to put them in here
 Merge(Weapon,
 {
