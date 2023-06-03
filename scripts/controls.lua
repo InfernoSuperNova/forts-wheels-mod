@@ -1,6 +1,7 @@
 local moveLeft_down = false --keybinds
 local moveRight_down = false
 local keybind_down_last_frame = false
+local last_selected_controllerId = -1
 
 function UpdateControls()
     EvalMoveKeybinds()
@@ -28,24 +29,29 @@ function OnControlActivated(name, code, doubleClick)
     end
 end
 
-
-function GetControlledStructureId()
-    local selectedDevice = GetLocalSelectedDeviceId()
-
-    if  selectedDevice ~= -1
-    and CheckSaveNameTable(GetDeviceType(selectedDevice), CONTROLLER_SAVE_NAME)
-    and IsDeviceFullyBuilt(selectedDevice)
-    and (GetDeviceTeamIdActual(selectedDevice) == GetLocalTeamId())
+function IsValidController(deviceId)
+    if  deviceId ~= -1
+    and CheckSaveNameTable(GetDeviceType(deviceId), CONTROLLER_SAVE_NAME)
+    and IsDeviceFullyBuilt(deviceId)
+    and (GetDeviceTeamIdActual(deviceId) == GetLocalTeamId())
     then
+        return true
+    else
+        return false
+    end
+end
+
+function GetControlledStructureId(controllerId)
+    if IsValidController(controllerId) then
         -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
-        return NodeStructureId(GetDevicePlatformA(selectedDevice))
+        return NodeStructureId(GetDevicePlatformA(controllerId))
     else
         return nil
     end
 end
 
 function ThrottleControl()
-    local deviceStructureId = GetControlledStructureId()
+    local deviceStructureId = GetControlledStructureId(GetLocalSelectedDeviceId())
     local uid = GetLocalClientIndex()
     
     if deviceStructureId then
@@ -166,8 +172,29 @@ function UpdateBrakeButton(deviceStructureId)
     SetButtonCallback("root", "brake", deviceStructureId)
 end
 
+--returns the selected, or as a fallback the last selected controllerId
+function GetMostRecentController()
+    local controller = GetLocalSelectedDeviceId()
+
+    if IsValidController(controller) then
+        last_selected_controllerId = controller
+
+    elseif IsValidController(last_selected_controllerId) then
+        controller = last_selected_controllerId
+
+    else
+        last_selected_controllerId = -1
+        return nil
+    end
+
+    return controller
+end
+
 function EvalMoveKeybinds()
-    local deviceStructureId = GetControlledStructureId()
+    local controller = GetMostRecentController()
+    if not controller then return end
+
+    local deviceStructureId = GetControlledStructureId(controller)
     if not deviceStructureId or not data.throttles[deviceStructureId] then return end
 
     local old_throttle = data.throttles[deviceStructureId].x
@@ -190,9 +217,14 @@ function EvalMoveKeybinds()
         new_throttle = 273.5
     end
 
-    if new_throttle and ControlExists("PropulsionSlider", "SliderBar") then
+    if new_throttle then
         new_throttle = Clamp(new_throttle, 33, 514)
-        SetControlRelativePos("PropulsionSlider", "SliderBar", {x = new_throttle, y = 15})
+        
+        if ControlExists("PropulsionSlider", "SliderBar") then
+            SetControlRelativePos("PropulsionSlider", "SliderBar", {x = new_throttle, y = 15})
+        else
+            SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(new_throttle, 3) .. "," .. 15 .. "," .. deviceStructureId, "", false)
+        end
     end
 end
 
@@ -214,9 +246,19 @@ function MoveRight_Up()
 end
 
 function ToggleBrake()
-    local deviceStructureId = GetControlledStructureId()
-    
+    local controller = GetMostRecentController()
+    if not controller then return end
+
+    local deviceStructureId = GetControlledStructureId(controller)
     if deviceStructureId then
-        OnControlActivated("brake", deviceStructureId)
+        if ControlExists("root", "brake") then
+            OnControlActivated("brake", deviceStructureId)
+        else
+            if data.brakes[deviceStructureId] then
+                SendScriptEvent("UpdateBrakes", 0 .. "," .. deviceStructureId, "", false)
+            else
+                SendScriptEvent("UpdateBrakes", 1 .. "," .. deviceStructureId, "", false)
+            end
+        end
     end
 end
