@@ -6,6 +6,7 @@
 
 
 function WheelCollisionHandler()
+    Displacement = {}
     data.wheelsTouchingGround = {}
     local structures = GetDeviceStructureGroups()
 

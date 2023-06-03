@@ -16,7 +16,9 @@ function WheelSmoke(frame)
     --spawns smoke particles where tires touch ground
     for structure, wheels in pairs(TracksId) do
         for deviceId, pos in pairs(wheels) do
-            local wheelIsTouchingGround = data.wheelsTouchingGround[structure][GetDeviceKeyFromId(structure, deviceId)]
+            local deviceKey = GetDeviceKeyFromId(structure, deviceId)
+            if not deviceKey then continue end
+            local wheelIsTouchingGround = data.wheelsTouchingGround[structure][deviceKey]
 
             local nodeA = GetDevicePlatformA(deviceId)
             local nodeB = GetDevicePlatformB(deviceId)

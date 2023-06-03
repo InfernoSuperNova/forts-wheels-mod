@@ -97,7 +97,7 @@ function Update(frame)
     UpdateFunction("WheelCollisionHandler", frame)
     UpdateFunction("UpdateControls", frame)
     UpdateFunction("UpdatePropulsion", frame)
-    UpdateFunction("UpdateTracks", frame)
+    --UpdateFunction("UpdateTracks", frame)
     UpdateFunction("TrueUpdateTracks", frame)
     UpdateFunction("UpdateDrill", frame)
     UpdateFunction("UpdateEffects", frame)
@@ -141,7 +141,11 @@ function OnSeekStart()
     SoundOnJoin()
 end
 
-function OnDraw()
+function OnDraw(frame)
+    if not IsPaused() then
+        UpdateTracks()
+    end
+    
     if InEditor then
         UpdateEditor()
     end
@@ -286,6 +290,7 @@ function Clamp(val, min, max)
 end
 
 function GetDeviceKeyFromId(structure, Id)
+    if not Structures[structure] then return nil end
     for key, device in pairs(Structures[structure]) do
         if device.id == Id then return key end
     end
