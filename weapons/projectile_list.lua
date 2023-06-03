@@ -27,3 +27,5 @@ turretCannon.SpeedIndicatorFactor = 1
 turretCannon.BeamTileRate = 0.05
 
 table.insert(Projectiles, turretCannon)
+
+MakeFlamingVersion("turretCannon", 1.25, 0.4, flamingTrail, 80, nil, nil)

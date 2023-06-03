@@ -31,7 +31,7 @@ ConstructEffect = "effects/device_construct.lua"
 CompleteEffect = "effects/device_complete.lua"
 DestroyEffect = "effects/cannon_explode.lua"
 DestroyUnderwaterEffect = "mods/dlc2/effects/device_explode_submerged_large.lua"
-ShellEffect = "effects/shell_eject_cannon.lua"
+ShellEffect = nil
 ReloadEffect = "effects/reload_cannon.lua"
 ReloadEffectOffset = -1.5
 Projectile = "turretCannon"
@@ -68,6 +68,11 @@ BarrelReturnForce = 3
 
 dofile("effects/device_smoke.lua")
 SmokeEmitter = StandardDeviceSmokeEmitter
+
+EagleEyeReloadBank = 
+{
+	ReloadTime = 5,
+}
 
 Sprites =
 {
@@ -183,7 +188,13 @@ Root =
 						{
 							Name = "LaserSight",
 							Angle = 90,
-							Pivot = { 0.18, -0.35 },
+							Pivot = { 0.16, -0.35 },
+							PivotOffset = { 0, 0 },
+						},
+						{
+							Name = "Chamber",
+							Angle = 0,
+							Pivot = { -0.5, 0.05 },
 							PivotOffset = { 0, 0 },
 						},
 					},

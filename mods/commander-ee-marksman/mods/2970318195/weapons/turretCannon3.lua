@@ -1,0 +1,1 @@
+HasLaserSight = true
