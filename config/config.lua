@@ -32,7 +32,8 @@ SHIELD_DAMAGE = 2                                       --damage of the core shi
 SHIELD_FORCE = 2500000                                  --pushback force of the shield at center
 --roads
 ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road material
-
+--Turrets
+TURRET_SAVE_NAME = {"turretCannon2"} 
 --binds
 KEYBINDS = {
     ToggleUpdateDebug = {"left control", "left alt", "t"},
@@ -80,7 +81,7 @@ DeviceCounts = {}
 DrivechainDetails = {}
 OrbitalLasers = {}
 AwaitingOrbitalLasers = {}
-
+CurrentTurretDirections = {}
 ---@class Pos
 ---@field x number
 ---@field y number

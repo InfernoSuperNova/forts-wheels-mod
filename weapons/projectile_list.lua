@@ -1,3 +1,4 @@
+--needs fixing
 EngineToDeviceDamage = function()
    for index, ProjectileTable in ipairs(Projectiles) do
       if ProjectileTable.WeaponDamageBonus then
@@ -13,3 +14,12 @@ EngineToDeviceDamage = function()
    end
 end
 RegisterApplyMod(EngineToDeviceDamage)
+
+
+local turretCannon = DeepCopy(FindProjectile("cannon"))
+
+turretCannon.SaveName = "turretCannon"
+turretCannon.ProjectileDamage = turretCannon.ProjectileDamage * 2
+turretCannon.ProjectileSplashDamage = 0
+
+table.insert(Projectiles, turretCannon)

@@ -260,3 +260,135 @@ table.insert(Weapons, IndexOfWeapon("missilestructureinv") + 1,
 		"missilestructure2inv",
 	},
 })
+
+
+
+
+table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
+    SaveName = "turretCannon",
+    FileName = path .. "/weapons/turretCannon.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 150.0,
+    ScrapPeriod = 8,
+    MetalCost = 3000,
+    EnergyCost = 9001,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannon2"] =
+		{
+			Enabled = true,
+			SaveName = "turretCannon2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannon2",
+    FileName = path .. "/weapons/turretCannon2.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannon3",
+    FileName = path .. "/weapons/turretCannon3.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannon2"] =
+		{
+			Enabled = true,
+			SaveName = "turretCannon2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip1",
+    FileName = path .. "/weapons/turretCannonFlip1.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip2",
+    FileName = path .. "/weapons/turretCannonFlip2.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip3",
+    FileName = path .. "/weapons/turretCannonFlip3.lua",
+    Icon = "hud-cannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-cannon",
+    Prerequisite = "munitions ",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})

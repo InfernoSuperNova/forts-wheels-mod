@@ -1,16 +1,16 @@
 Scale = 1
-SelectionWidth = 95.0
-SelectionHeight = 60.0
-SelectionOffset = { -18, -60.5 }
+SelectionWidth = 450.0
+SelectionHeight = 70.0
+SelectionOffset = { -18, -75.5 }
 RecessionBox =
 {
-	Size = { 200, 25 },
+	Size = { 500, 25 },
 	Offset = { -300, -70 },
 }
-CanFlip = false
+CanFlip = true
 
-WeaponMass = 120.0
-HitPoints = 550.0
+WeaponMass = 500.0
+HitPoints = 2900.0
 EnergyProductionRate = 0.0
 MetalProductionRate = 0.0
 EnergyStorageCapacity = 0.0
@@ -18,13 +18,13 @@ MetalStorageCapacity = 0.0
 MinWindEfficiency = 1
 MaxWindHeight = 0
 MaxRotationalSpeed = 0
-DeviceSplashDamage = 150
+DeviceSplashDamage = 200
 DeviceSplashDamageMaxRadius = 400
 DeviceSplashDamageDelay = 0.2
-IncendiaryRadius = 120
-IncendiaryRadiusHeated = 150
-StructureSplashDamage = 200
-StructureSplashDamageMaxRadius = 150
+IncendiaryRadius = 250
+IncendiaryRadiusHeated = 300
+StructureSplashDamage = 300
+StructureSplashDamageMaxRadius = 250
 
 FireEffect = "effects/fire_cannon.lua"
 ConstructEffect = "effects/device_construct.lua"
@@ -34,16 +34,16 @@ DestroyUnderwaterEffect = "mods/dlc2/effects/device_explode_submerged_large.lua"
 ShellEffect = "effects/shell_eject_cannon.lua"
 ReloadEffect = "effects/reload_cannon.lua"
 ReloadEffectOffset = -1.5
-Projectile = "cannon"
+Projectile = "turretCannon"
 BarrelLength = 100.0
 MinFireClearance = 500
 FireClearanceOffsetInner = 20
 FireClearanceOffsetOuter = 40
 AttractZoomOutDuration = 5
-ReloadTime = 26.0
+ReloadTime = 45.0
 ReloadTimeIncludesBurst = false
-MinFireSpeed = 6000.0 -- Move to Ammo
-MaxFireSpeed = 6000.1 -- Move to Ammo
+MinFireSpeed = 18000.0 -- Move to Ammo
+MaxFireSpeed = 18000.1 -- Move to Ammo
 MinFireRadius = 600.0
 MaxFireRadius = 1200.0
 MinVisibility = 0.7
@@ -62,9 +62,9 @@ MetalFireCost = 50.0 -- Move to Ammo
 
 ShowFireAngle = true
 
-BarrelRecoilLimit = -0.25
+BarrelRecoilLimit = -0.1
 BarrelRecoilSpeed = -2
-BarrelReturnForce = 0.5
+BarrelReturnForce = 3
 
 dofile("effects/device_smoke.lua")
 SmokeEmitter = StandardDeviceSmokeEmitter
@@ -72,77 +72,82 @@ SmokeEmitter = StandardDeviceSmokeEmitter
 Sprites =
 {
 	{
-		Name = "cannon-base",
+		Name = "turretCannon-base",
 		States =
 		{
-			Normal = { Frames = { { texture = "weapons/cannon/base.dds" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/base.png" }, mipmap = true, }, },
+			Idle = Normal,
+            
+		},
+	},
+	{
+		Name = "turretCannon-head",
+		States =
+		{
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/head.png" }, mipmap = true, }, },
 			Idle = Normal,
 		},
 	},
 	{
-		Name = "cannon-head",
+		Name = "turretCannon-barrel",
 		States =
 		{
-			Normal = { Frames = { { texture = "weapons/cannon/head.dds" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/barrel.png" }, mipmap = true, }, },
 			Idle = Normal,
 		},
 	},
-	{
-		Name = "cannon-barrel",
+    {
+		Name = "turretCannon-commander",
 		States =
 		{
-			Normal = { Frames = { { texture = "weapons/cannon/barrel.dds" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/commander.png" }, mipmap = true, }, },
 			Idle = Normal,
 		},
 	},
-	{
-		Name = "cannon-reload",
+    {
+		Name = "turretCannon-basket",
 		States =
 		{
-			Normal = { Frames = { { texture = "weapons/cannon/Cannon-Reload01.png" }, mipmap = true, }, },
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/basket.png" }, mipmap = true, }, },
 			Idle = Normal,
-			Reload =
-			{
-				Frames =
-				{
-					{ texture = "weapons/cannon/Cannon-Reload03.png", duration = 120, },
-					mipmap = true,
-					duration = 0.1,
-				},
-			},
-			ReloadEnd =
-			{
-				Frames =
-				{
-					{ texture = "weapons/cannon/Cannon-Reload04.png" },
-					{ texture = "weapons/cannon/Cannon-Reload05.png" },
-					{ texture = "weapons/cannon/Cannon-Reload06.png" },
-					{ texture = "weapons/cannon/Cannon-Reload07.png" },
-					{ texture = "weapons/cannon/Cannon-Reload08.png" },
-					{ texture = "weapons/cannon/Cannon-Reload09.png" },
-					{ texture = "weapons/cannon/Cannon-Reload10.png" },
-					{ texture = "weapons/cannon/Cannon-Reload11.png" },
-					{ texture = "weapons/cannon/Cannon-Reload12.png" },
-					{ texture = "weapons/cannon/Cannon-Reload13.png" },
-					{ texture = "weapons/cannon/Cannon-Reload14.png" },
-					{ texture = "weapons/cannon/Cannon-Reload15.png" },
-					{ texture = "weapons/cannon/Cannon-Reload01.png" },
-					mipmap = true,
-					duration = 0.1,
-				},
-				NextState = "Normal",
-			},
 		},
+	},
+    {
+		Name = "turretCannon-flip1",
+		States =
+		{
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/turning_straight.png" }, mipmap = true, }, },
+			Idle = Normal,
+            
+		}
+	},
+    {
+		Name = "turretCannon-flip2",
+		States =
+		{
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/turning_angled.png" }, mipmap = true, }, },
+			Idle = Normal,
+            
+		}
+	},
+    {
+		Name = "turretCannon-flip3",
+		States =
+		{
+			Normal = { Frames = { { texture = path .. "/weapons/turretCannon/turning_middle.png" }, mipmap = true, }, },
+			Idle = Normal,
+            
+		}
 	},
 }
 
 Root =
 {
-	Name = "Cannon",
+	Name = "TurretCannon",
 	Angle = 0,
-	Pivot = { 0, -0.57 },
+	Pivot = { 0.01, -0.52 },
 	PivotOffset = { 0, 0 },
-	Sprite = "cannon-base",
+	Sprite = "turretCannon-base",
 	UserData = 0,
 	
 	ChildrenBehind =
@@ -150,20 +155,22 @@ Root =
 		{
 			Name = "Head",
 			Angle = 0,
-			Pivot = { 0, -0.05 },
-			PivotOffset = { 0.1, 0 },
-			Sprite = "cannon-head",
-			UserData = 50,
+            --negative is left, positive is right, negative is up, positive is down
+
+			Pivot = { 0.062, 0.35 },
+			PivotOffset = { 0.3, 0 },
+			Sprite = "turretCannon-head",
+			UserData = 20,
 
 			ChildrenBehind =
 			{
 				{
 					Name = "Barrel",
 					Angle = 0,
-					Pivot = { -0.5, -0.15},
+					Pivot = { -0.355, -0.02},
 					PivotOffset = { 0.5, 0 },
-					Sprite = "cannon-barrel",
-					UserData = 100,
+					Sprite = "turretCannon-barrel",
+					UserData = 50,
 
 					ChildrenInFront =
 					{
@@ -179,25 +186,7 @@ Root =
 							Pivot = { 0.18, -0.35 },
 							PivotOffset = { 0, 0 },
 						},
-						{
-							Name = "Chamber",
-							Angle = 0,
-							Pivot = { -0.32, -0.15 },
-							PivotOffset = { 0, 0 },
-						},
 					},
-				},
-			},
-			
-			ChildrenInFront =
-			{
-				{
-					Name = "LoaderBottom",
-					Angle = 0,
-					Pivot = { -0.41, -0.085 },
-					PivotOffset = { 0, 0 },
-					Sprite = "cannon-reload",
-					UserData = 100,
 				},
 			},
 		},
@@ -205,5 +194,17 @@ Root =
 			Name = "Icon",
 			Pivot = { 0, 0.5 },
 		},
+        {
+            Name = "Commander",
+            Pivot = {-0.1, 0.1},
+            Sprite = "turretCannon-commander",
+            UserData = 100,
+        },
+        {
+            Name = "Basket",
+            Pivot = {-0.01, 0.67},
+            Sprite = "turretCannon-basket",
+            UserData = 80,
+        },
 	},
 }

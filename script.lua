@@ -151,6 +151,7 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
     AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     DrillPlaceEffect(saveName, deviceId)
     SoundAdd(saveName, deviceId)
+    CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
@@ -165,11 +166,13 @@ function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
     RemoveCoreShield(deviceId)
+    RemoveTurretDirection(deviceId)
 end
 
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
+    RemoveTurretDirection(deviceId)
 end
 
 
@@ -322,3 +325,11 @@ function IgnoreDecimalPlaces(number, decimalPoint)
     local roundedNumber = math.floor(number * multiplier) / multiplier
     return roundedNumber
   end
+
+  function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
+    TrackContextMenu(saveName)
+end
+
+function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
+    TrackContextButton(name, deviceId)
+end
