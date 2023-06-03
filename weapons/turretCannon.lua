@@ -9,8 +9,8 @@ RecessionBox =
 }
 CanFlip = true
 
-WeaponMass = 500.0
-HitPoints = 2900.0
+WeaponMass = 1200.0
+HitPoints = 1400.0
 EnergyProductionRate = 0.0
 MetalProductionRate = 0.0
 EnergyStorageCapacity = 0.0
@@ -42,8 +42,8 @@ FireClearanceOffsetOuter = 40
 AttractZoomOutDuration = 5
 ReloadTime = 45.0
 ReloadTimeIncludesBurst = false
-MinFireSpeed = 18000.0 -- Move to Ammo
-MaxFireSpeed = 18000.1 -- Move to Ammo
+MinFireSpeed = 9000.0 -- Move to Ammo
+MaxFireSpeed = 9000.1 -- Move to Ammo
 MinFireRadius = 600.0
 MaxFireRadius = 1200.0
 MinVisibility = 0.7
@@ -57,8 +57,8 @@ PanDuration = 0
 FireStdDev = 0.01 -- Move to Ammo
 FireStdDevAuto = 0.012 -- Move to Ammo
 Recoil = 600000
-EnergyFireCost = 2000.0 -- Move to Ammo
-MetalFireCost = 50.0 -- Move to Ammo
+EnergyFireCost = 5000.0 -- Move to Ammo
+MetalFireCost = 200.0 -- Move to Ammo
 
 ShowFireAngle = true
 
