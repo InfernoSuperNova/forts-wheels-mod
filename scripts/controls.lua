@@ -167,6 +167,10 @@ function UpdateBrakeButton(deviceStructureId)
 end
 
 function EvalMoveKeybinds()
+    local deviceStructureId = GetControlledStructureId()
+    if not deviceStructureId or not data.throttles[deviceStructureId] then return end
+
+    local old_throttle = data.throttles[deviceStructureId].x
     local new_throttle = nil
 
     if moveLeft_down and moveRight_down then
@@ -175,11 +179,11 @@ function EvalMoveKeybinds()
 
     elseif moveLeft_down then
         keybind_down_last_frame = true
-        new_throttle = 33
+        new_throttle = math.min(old_throttle, 273.5) - 50
 
     elseif moveRight_down then
         keybind_down_last_frame = true
-        new_throttle = 514
+        new_throttle = math.max(old_throttle, 273.5) + 50
 
     elseif keybind_down_last_frame then --keybind was released so we set neutral throttle once
         keybind_down_last_frame = false
@@ -187,6 +191,7 @@ function EvalMoveKeybinds()
     end
 
     if new_throttle and ControlExists("PropulsionSlider", "SliderBar") then
+        new_throttle = Clamp(new_throttle, 33, 514)
         SetControlRelativePos("PropulsionSlider", "SliderBar", {x = new_throttle, y = 15})
     end
 end
