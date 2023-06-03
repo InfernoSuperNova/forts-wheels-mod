@@ -66,34 +66,46 @@ function FlipTurret(deviceId, direction, nodeA, nodeB, t, reloadTime, health)
     ScheduleCall(0.2, FlipTurret2, parse)
 end
 function FlipTurret2(parse)
+    EnableWeaponAllSides("turretCannonFlip1", true)
     local newDevice = CreateDevice(parse.direction, "turretCannonFlip1", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannonFlip1", false)
     ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
     ScheduleCall(0.2, FlipTurret3, parse)
 end
 function FlipTurret3(parse)
+    EnableWeaponAllSides("turretCannonFlip2", true)
     local newDevice = CreateDevice(parse.direction, "turretCannonFlip2", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannonFlip2", false)
     ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
     ScheduleCall(0.2, FlipTurret4, parse)
 end
 
 function FlipTurret4(parse)
+    EnableWeaponAllSides("turretCannonFlip3", true)
     local newDevice = CreateDevice(parse.direction, "turretCannonFlip3", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannonFlip3", false)
     parse.direction = 3 - parse.direction
     ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
     ScheduleCall(0.2, FlipTurret5, parse)
 end
 function FlipTurret5(parse)
+    EnableWeaponAllSides("turretCannonFlip2", true)
     local newDevice = CreateDevice(parse.direction, "turretCannonFlip2", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannonFlip2", false)
     ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
     ScheduleCall(0.2, FlipTurret6, parse)
 end
 function FlipTurret6(parse)
+    EnableWeaponAllSides("turretCannonFlip1", true)
     local newDevice = CreateDevice(parse.direction, "turretCannonFlip1", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannonFlip1", false)
     ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
     ScheduleCall(0.2, FlipTurret7, parse)
 end
 function FlipTurret7(parse)
+    EnableWeaponAllSides("turretCannon3", true)
     local newDevice = CreateDevice(parse.direction, "turretCannon3", parse.nodeA, parse.nodeB, parse.t)
+    EnableWeaponAllSides("turretCannon3", false)
     CurrentTurretDirections[newDevice] = parse.direction
     SetWeaponReloadTime(newDevice, parse.reloadTime)
     --local currentHealth = GetDeviceHitpoints(parse.deviceId)
@@ -106,4 +118,16 @@ function RemoveTurretDirection(id)
 end
 function ScheduleDeviceDestruction(id)
     ApplyDamageToDevice(id, 9999999)
+end
+
+function EnableDeviceAllSides(saveName, enable)
+    for side = 1, 2 do
+        EnableDevice(saveName, enable, side)
+    end
+end
+
+function EnableWeaponAllSides(saveName, enable)
+    for side = 1, 2 do
+        EnableWeapon(saveName, enable, side)
+    end
 end
