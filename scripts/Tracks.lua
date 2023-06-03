@@ -307,7 +307,8 @@ end
 
 --TRACK GROUPING
 
-function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
+
+function TrackContextMenu(saveName)
     if CheckSaveNameTable(saveName, WHEEL_SAVE_NAME) then
         AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
         for i = 1, 10 do
@@ -316,7 +317,7 @@ function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
     end
 end
 
-function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
+function TrackContextButton(name, deviceId)
     for i = 1, 10 do
         if name == "Set suspension to track group " .. i then
             SendScriptEvent("UpdateTrackGroups", deviceId .. "," .. i, "", false)
@@ -325,7 +326,9 @@ function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
     if name == "Set suspension to wheel" then
         SendScriptEvent("UpdateTrackGroups", deviceId .. ",11", "", false)
     end
+
 end
+
 
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group
