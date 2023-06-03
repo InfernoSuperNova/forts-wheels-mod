@@ -45,6 +45,7 @@ function SoundUpdate()
         SoundOnJoin()
     end
     --BetterLog(EffectsList)
+    --BetterLog(data.throttles)
     --engines
     for structureIndex, engine in pairs(data.currentRevs) do
         --pow engine 2 for better revs
@@ -54,6 +55,10 @@ function SoundUpdate()
         for engine, effect in pairs(EffectsList.engine) do
             --BetterLog(GetDeviceStructureId(tonumber(engine)))
             --BetterLog(structureIndex)
+            --BetterLog(engine .. "=" .. tostring(GetDeviceStructureId(tonumber(engine))))
+            --BetterLog(structureIndex)
+            --BetterLog(throttle)
+            --BetterLog(rpm)
             if GetDeviceStructureId(tonumber(engine)) == structureIndex then
                 if needEngine then
                     if throttle < 0.1 or data.brakes[structureIndex] then rpm = 500 end
@@ -67,6 +72,16 @@ function SoundUpdate()
             end
         end
     end
+    --turn off stuffs
+    for engine, effect in pairs(EffectsList.engine) do
+        if not IsDeviceFullyBuilt(tonumber(engine)) then
+            SetAudioParameter(effect, "rpm", -100)
+        end
+        if GetDeviceTeamIdActual(tonumber(engine)) < 1 then
+            SetAudioParameter(effect, "rpm", -100)
+        end
+    end
+
     --wheels
     --[[
     for wheel, effect in pairs(EffectsList.wheel) do
