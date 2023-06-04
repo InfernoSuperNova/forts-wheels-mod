@@ -9,7 +9,7 @@ Root =
     {
         {
             Type = "SliderBar",
-            Name = "PropulsionSlider",
+            Name = "ThrottleSlider",
             Style = "Panel",
             ValIsPercentage = false,
             Static =
