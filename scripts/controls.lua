@@ -57,75 +57,97 @@ function ThrottleControl()
     local uid = GetLocalClientIndex()
     
     if deviceStructureId then
-        --if it doesn't exist in it's current instance, create it
-        if not ControlExists("root", "PropulsionSlider") then
-            SetControlFrame(0)
-            local position = { x =200, y = 450}
-            local size = { x = 662, y = 371.25}
-            AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
-            LoadControl(path .. "/ui/controls.lua", "root")
+        --user has a valid controller selected so we should show the UI and read throttle slider
 
-            for i = 1, 3 do
-                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
-                SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
+        if not ControlExists("root", "ThrottleSlider") then
+            CreateUI(deviceStructureId, uid)
+        else
+            local pos = GetControlRelativePos("ThrottleSlider", "SliderBar")
+            --send the pos to the throttles table
+            if ControlExists("root", "ThrottleSlider") then
+                SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
             end
-            SetControlText("throttle backdrop", "info" .. uid .. "3", "Show hotkeys")
-            SetControlStyle("throttle backdrop", "info" .. uid .. "3", "Fine")
-
-            for i = 4, 6 do
-                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
-            end
-            SetControlText("throttle backdrop", "info" .. uid .. "6", "Right click world to close")
-            SetControlStyle("throttle backdrop", "info" .. uid .. "6", "Fine")
-
-            --AddTextButtonControl("throttle backdrop", "info" .. uid .. "6", "", ANCHOR_TOP_LEFT, {x = 600, y = 540, z = -10}, false, "Panel")
-            AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
-            SetButtonCallback("root", "close", deviceStructureId)
-            --brake
-            CreateBrakeButton(deviceStructureId)
-            --initialize throttle
-            local pos = {x = 273.5, y = 15}
-            --if the structure doesn't already have a throttle, create it
-            if not data.throttles[deviceStructureId] then
-                if ControlExists("root", "PropulsionSlider") then
-                    SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-                end
-                SetControlRelativePos("PropulsionSlider", "SliderBar", pos)
-            end
-            
-            --set the device slider to whatever the throttle is in the structure throttles table
-            if data.throttles[deviceStructureId] then
-                SetControlRelativePos("PropulsionSlider", "SliderBar", data.throttles[deviceStructureId])
-            end
-        end
-        --update starts here
-        --Get the pos from the slider
-        local pos = GetControlRelativePos("PropulsionSlider", "SliderBar")
-        --send the pos to the throttles table
-        if ControlExists("root", "PropulsionSlider") then
-            SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
-        end
-        if ControlExists("root", "brake") then
-            UpdateBrakeButton(deviceStructureId)
         end
 
         UpdateVehicleInfo(deviceStructureId, uid)
     else
-        --once done with throttle widget, delete it
-        if ControlExists("root", "PropulsionSlider") then
-            DeleteControl("", "close")
-            DeleteControl("HUD", "throttle backdrop")
-            DeleteControl("root", "PropulsionSlider")
-            DeleteControl("root", "brake")
-            for i = 1, 6 do
-                DeleteControl("root", "info" .. uid .. i)
-            end
+        DestroyUI(uid)
+    end
+end
+
+function CreateUI(deviceStructureId, uid)
+    SetControlFrame(0)
+    local position = { x =200, y = 450}
+    local size = { x = 662, y = 371.25}
+    AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
+    LoadControl(path .. "/ui/controls.lua", "root")
+
+    for i = 1, 3 do
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
+        SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
+    end
+    SetControlText("throttle backdrop", "info" .. uid .. "3", "Show hotkeys")
+    SetControlStyle("throttle backdrop", "info" .. uid .. "3", "Fine")
+
+    for i = 4, 6 do
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
+    end
+    SetControlText("throttle backdrop", "info" .. uid .. "6", "Right click world to close")
+    SetControlStyle("throttle backdrop", "info" .. uid .. "6", "Fine")
+
+    AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
+    SetButtonCallback("root", "close", deviceStructureId)
+
+    CreateBrakeButton(deviceStructureId)
+
+    --initialize throttle
+    local pos = {x = 273.5, y = 15}
+    --if the structure doesn't already have a throttle, create it
+    if not data.throttles[deviceStructureId] then
+        if ControlExists("root", "ThrottleSlider") then
+            SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+        end
+        SetControlRelativePos("ThrottleSlider", "SliderBar", pos)
+    end
+    
+    --set the device slider to whatever the throttle is in the structure throttles table
+    if data.throttles[deviceStructureId] then
+        SetControlRelativePos("ThrottleSlider", "SliderBar", data.throttles[deviceStructureId])
+    end
+end
+
+function CreateBrakeButton(deviceStructureId)
+    AddButtonControl("", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
+    SetButtonCallback("root", "brake", deviceStructureId)
+    --if the structure doesn't already have a brake, then create it
+
+    if data.brakes[deviceStructureId] == nil then
+        SendScriptEvent("UpdateBrakes", 0 .. "," .. deviceStructureId, "", false)
+    else
+        
+        if data.brakes[deviceStructureId] then
+            SetControlSpriteByParent("root", "brake", "hud-brake-pressed-icon")
+        else
+            SetControlSpriteByParent("root", "brake", "hud-brake-icon")
         end
     end
 end
 
+function DestroyUI(uid)
+    if ControlExists("root", "ThrottleSlider") then
+        DeleteControl("", "close")
+        DeleteControl("HUD", "throttle backdrop")
+        DeleteControl("root", "ThrottleSlider")
+        DeleteControl("root", "brake")
+        for i = 1, 6 do
+            DeleteControl("root", "info" .. uid .. i)
+        end
+    end
+end
 
 function UpdateVehicleInfo(structure, uid)
+    local uid = GetLocalClientIndex()
+
     --make sure the details exist
     if DrivechainDetails[structure] and DrivechainDetails[structure][1] then
         --define variables
@@ -158,27 +180,6 @@ function UpdateVehicleInfo(structure, uid)
         SetControlText("throttle backdrop", "info" .. uid .. "4", "Gear: " .. details.gear)
         SetControlText("throttle backdrop", "info" .. uid .. "5", "Power: " .. details.power)
     end
-end
-function CreateBrakeButton(deviceStructureId)
-    AddButtonControl("", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
-    SetButtonCallback("root", "brake", deviceStructureId)
-    --if the structure doesn't already have a brake, then create it
-
-    if data.brakes[deviceStructureId] == nil then
-        SendScriptEvent("UpdateBrakes", 0 .. "," .. deviceStructureId, "", false)
-    else
-        
-        if data.brakes[deviceStructureId] then
-            SetControlSpriteByParent("root", "brake", "hud-brake-pressed-icon")
-        else
-            SetControlSpriteByParent("root", "brake", "hud-brake-icon")
-        end
-    end
-
-end
-
-function UpdateBrakeButton(deviceStructureId)
-    SetButtonCallback("root", "brake", deviceStructureId)
 end
 
 --returns the selected, or as a fallback the last selected controllerId
@@ -229,8 +230,8 @@ function EvalMoveKeybinds()
     if new_throttle then
         new_throttle = Clamp(new_throttle, 33, 514)
         
-        if ControlExists("PropulsionSlider", "SliderBar") then
-            SetControlRelativePos("PropulsionSlider", "SliderBar", {x = new_throttle, y = 15})
+        if ControlExists("ThrottleSlider", "SliderBar") then
+            SetControlRelativePos("ThrottleSlider", "SliderBar", {x = new_throttle, y = 15})
         else
             SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(new_throttle, 3) .. "," .. 15 .. "," .. deviceStructureId, "", false)
         end
