@@ -65,7 +65,7 @@ function InitializeScript()
     InitializeDrill()
     InitializeCoreShield()
     InitializeEffects()
-    
+    LoadWeapons()
     data.previousVals = {}
     data.wheelsTouchingGround = {}
     data.wheelLinksColliding = {}
@@ -97,7 +97,7 @@ function Update(frame)
     UpdateFunction("WheelCollisionHandler", frame)
     UpdateFunction("UpdateControls", frame)
     UpdateFunction("UpdatePropulsion", frame)
-    UpdateFunction("UpdateTracks", frame)
+    --UpdateFunction("UpdateTracks", frame)
     UpdateFunction("TrueUpdateTracks", frame)
     UpdateFunction("UpdateDrill", frame)
     UpdateFunction("UpdateEffects", frame)
@@ -141,7 +141,11 @@ function OnSeekStart()
     SoundOnJoin()
 end
 
-function OnDraw()
+function OnDraw(frame)
+    if not IsPaused() then
+        UpdateTracks()
+    end
+    
     if InEditor then
         UpdateEditor()
     end
@@ -151,6 +155,7 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
     AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     DrillPlaceEffect(saveName, deviceId)
     SoundAdd(saveName, deviceId)
+    CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
@@ -165,11 +170,13 @@ function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
     RemoveCoreShield(deviceId)
+    RemoveTurretDirection(deviceId)
 end
 
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
+    RemoveTurretDirection(deviceId)
 end
 
 
@@ -283,6 +290,7 @@ function Clamp(val, min, max)
 end
 
 function GetDeviceKeyFromId(structure, Id)
+    if not Structures[structure] then return nil end
     for key, device in pairs(Structures[structure]) do
         if device.id == Id then return key end
     end
@@ -322,3 +330,11 @@ function IgnoreDecimalPlaces(number, decimalPoint)
     local roundedNumber = math.floor(number * multiplier) / multiplier
     return roundedNumber
   end
+
+  function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
+    TrackContextMenu(saveName)
+end
+
+function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
+    TrackContextButton(name, deviceId)
+end
