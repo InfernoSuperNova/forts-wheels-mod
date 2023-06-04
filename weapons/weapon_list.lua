@@ -1,5 +1,24 @@
 
 dofile(path .. "/scripts/BetterLog.lua")
+
+function LCAddComp(weapons)
+	--To streamline the tedious work of adding all possible group weapons to every single weapon in the group
+	--example usage: LCAddComp({"rocketemp", "rocket", "firerocket", "acidrocket"})
+	for k, v in pairs(weapons) do
+		local weapon = FindWeapon(v)
+		if weapon then
+			if not weapon.CompatibleGroupTypes then
+				weapon.CompatibleGroupTypes = {}
+			end
+			for k, vv in pairs(weapons) do
+				if FindWeapon(vv) then
+					table.insert(weapon.CompatibleGroupTypes, 1, vv)
+				end
+			end
+		end
+	end
+end
+
 table.insert(Sprites, ButtonSprite("hud-group-throttle", "groups/Group-throttle", GroupButtonSpriteBottom, GroupButtonSpriteBottom, nil, nil, path))
 table.insert(Weapons, 1,
 {
@@ -260,3 +279,138 @@ table.insert(Weapons, IndexOfWeapon("missilestructureinv") + 1,
 		"missilestructure2inv",
 	},
 })
+
+
+
+table.insert(Sprites, ButtonSprite("hud-turretCannon-icon", "HUD/HUD-turretcannon", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-turretcannon", "turretcannon", path))
+table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
+    SaveName = "turretCannon",
+    FileName = path .. "/weapons/turretCannon.lua",
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    Prerequisite = "munitions",
+    BuildTimeComplete = 150.0,
+    ScrapPeriod = 8,
+    MetalCost = 3000,
+    EnergyCost = 9001,
+    MetalRepairCost = 1000,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannon2"] =
+		{
+			Enabled = true,
+			SaveName = "turretCannon2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannon2",
+    FileName = path .. "/weapons/turretCannon2.lua",
+    Enabled = false,
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannon3",
+    FileName = path .. "/weapons/turretCannon3.lua",
+    Enabled = false,
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannon2"] =
+		{
+			Enabled = true,
+			SaveName = "turretCannon2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip1",
+    FileName = path .. "/weapons/turretCannonFlip1.lua",
+    Enabled = false,
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip2",
+    FileName = path .. "/weapons/turretCannonFlip2.lua",
+    Enabled = false,
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
+    SaveName = "turretCannonFlip3",
+    FileName = path .. "/weapons/turretCannonFlip3.lua",
+    Enabled = false,
+    Icon = "hud-turretCannon-icon",
+    GroupButton = "hud-group-cannon",
+    Detail = "hud-detail-turretcannon",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+})
+LCAddComp({"turretCannon", "turretCannon2", "turretCannon3", "turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip3"})

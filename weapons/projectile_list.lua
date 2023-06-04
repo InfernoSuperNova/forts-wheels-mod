@@ -1,3 +1,4 @@
+--needs fixing
 EngineToDeviceDamage = function()
    for index, ProjectileTable in ipairs(Projectiles) do
       if ProjectileTable.WeaponDamageBonus then
@@ -13,3 +14,18 @@ EngineToDeviceDamage = function()
    end
 end
 RegisterApplyMod(EngineToDeviceDamage)
+
+
+local turretCannon = DeepCopy(FindProjectile("cannon"))
+
+turretCannon.SaveName = "turretCannon"
+turretCannon.ProjectileDamage = turretCannon.ProjectileDamage * 2
+turretCannon.ProjectileSplashDamage = 40
+turretCannon.ProjectileSplashDamageMaxRadius = 400
+turretCannon.ProjectileThickness = 15
+turretCannon.SpeedIndicatorFactor = 1
+turretCannon.BeamTileRate = 0.05
+
+table.insert(Projectiles, turretCannon)
+
+MakeFlamingVersion("turretCannon", 1.25, 0.4, flamingTrail, 80, nil, nil)

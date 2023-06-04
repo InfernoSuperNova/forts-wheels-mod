@@ -4,17 +4,23 @@ function InitializeTracks()
 end
 
 function UpdateTracks(frame)
-    DebugLog("---------Start of UpdateTracks---------")
-    UpdateFunction("ClearEffects", frame)
-    UpdateFunction("FillTracks", frame)
-    UpdateFunction("SortTracks", frame)
-    UpdateFunction("GetTrackSetPositions", frame)
-    UpdateFunction("DrawTracks", frame)
-    DebugLog("---------End of UpdateTracks---------\n")
+    -- DebugLog("---------Start of UpdateTracks---------")
+    -- UpdateFunction("ClearEffects", frame)
+    -- UpdateFunction("FillTracks", frame)
+    -- UpdateFunction("SortTracks", frame)
+    -- UpdateFunction("GetTrackSetPositions", frame)
+    -- UpdateFunction("DrawTracks", frame)
+    -- DebugLog("---------End of UpdateTracks---------\n")
+
+    ClearEffects()
+    FillTracks()
+    SortTracks()
+    GetTrackSetPositions()
+    DrawTracks()
 end
 
 function TrueUpdateTracks()
-    Displacement = {}
+    
 end
 
 --clears any wheel sprites on the screen
@@ -86,15 +92,10 @@ function SortTracks()
                 
 
                 
-                local prevTime = GetRealTime()
+
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
                 SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
-                local delta = (GetRealTime() - prevTime) * 1000
-                DebugLog("Gift Wrapping took " .. string.format("%.2f", delta) .. "ms")
-                prevTime = GetRealTime()
                 PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
-                local delta = (GetRealTime() - prevTime) * 1000
-                DebugLog("Track Pushing took " .. string.format("%.2f", delta) .. "ms")
             else
                 PushedTracks[structure][trackGroup] = trackSet
             end
@@ -307,7 +308,8 @@ end
 
 --TRACK GROUPING
 
-function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
+
+function TrackContextMenu(saveName)
     if CheckSaveNameTable(saveName, WHEEL_SAVE_NAME) then
         AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
         for i = 1, 10 do
@@ -316,7 +318,7 @@ function OnContextMenuDevice(deviceTeamId, deviceId, saveName)
     end
 end
 
-function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
+function TrackContextButton(name, deviceId)
     for i = 1, 10 do
         if name == "Set suspension to track group " .. i then
             SendScriptEvent("UpdateTrackGroups", deviceId .. "," .. i, "", false)
@@ -325,7 +327,9 @@ function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
     if name == "Set suspension to wheel" then
         SendScriptEvent("UpdateTrackGroups", deviceId .. ",11", "", false)
     end
+
 end
+
 
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group

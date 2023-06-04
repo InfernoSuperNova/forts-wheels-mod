@@ -13,10 +13,10 @@ function OnControlActivated(name, code, doubleClick)
     if name == "brake" and code then
         if data.brakes[code] then
             SendScriptEvent("UpdateBrakes", 0 .. "," .. code, "", false)
-            SetControlText("root", "brake", "Brakes: Off")
+            SetControlSpriteByParent("root", "brake", "hud-brake-icon")
         else
             SendScriptEvent("UpdateBrakes", 1 .. "," .. code, "", false)
-            SetControlText("root", "brake", "Brakes: On")
+            SetControlSpriteByParent("root", "brake", "hud-brake-pressed-icon")
         end
     elseif name == "info" .. uid .. "1" or name == "info" .. uid .. "2" then
         if Metric then
@@ -151,7 +151,7 @@ function UpdateVehicleInfo(structure, uid)
     end
 end
 function CreateBrakeButton(deviceStructureId)
-    AddTextButtonControl("", "brake", "Brakes: Off", ANCHOR_CENTER_CENTER, {x = 520, y = 560}, false, "normal")
+    AddButtonControl("", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
@@ -160,9 +160,9 @@ function CreateBrakeButton(deviceStructureId)
     else
         
         if data.brakes[deviceStructureId] then
-            SetControlText("root", "brake", "Brakes: On")
+            SetControlSpriteByParent("root", "brake", "hud-brake-pressed-icon")
         else
-            SetControlText("root", "brake", "Brakes: Off")
+            SetControlSpriteByParent("root", "brake", "hud-brake-icon")
         end
     end
 
