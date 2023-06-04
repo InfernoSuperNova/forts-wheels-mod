@@ -24,6 +24,8 @@ function OnControlActivated(name, code, doubleClick)
         else
             Metric = true
         end
+    elseif name == "info" .. uid .. "3" then
+        PrintKeybinds()
     elseif name == "close" then
         Deselect()
     end
@@ -62,13 +64,20 @@ function ThrottleControl()
             local size = { x = 662, y = 371.25}
             AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
             LoadControl(path .. "/ui/controls.lua", "root")
-            for i = 1, 2 do
-                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 70 + i * 20, z = -10}, false, "Panel")
+
+            for i = 1, 3 do
+                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
                 SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
             end
-            for i = 3, 5 do
-                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = 10 + i * 20, z = -10}, false, "Panel")
+            SetControlText("throttle backdrop", "info" .. uid .. "3", "Show hotkeys")
+            SetControlStyle("throttle backdrop", "info" .. uid .. "3", "Fine")
+
+            for i = 4, 6 do
+                AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
             end
+            SetControlText("throttle backdrop", "info" .. uid .. "6", "Right click world to close")
+            SetControlStyle("throttle backdrop", "info" .. uid .. "6", "Fine")
+
             --AddTextButtonControl("throttle backdrop", "info" .. uid .. "6", "", ANCHOR_TOP_LEFT, {x = 600, y = 540, z = -10}, false, "Panel")
             AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
             SetButtonCallback("root", "close", deviceStructureId)
@@ -145,7 +154,7 @@ function UpdateVehicleInfo(structure, uid)
             SetControlText("throttle backdrop", "info" .. uid .. "1", "Speed: " .. details.mph .. " mph")
             SetControlText("throttle backdrop", "info" .. uid .. "2", "Top speed: " .. details.maxmph .. " mph")
         end
-        SetControlText("throttle backdrop", "info" .. uid .. "3", "Right click world to close")
+
         SetControlText("throttle backdrop", "info" .. uid .. "4", "Gear: " .. details.gear)
         SetControlText("throttle backdrop", "info" .. uid .. "5", "Power: " .. details.power)
     end
