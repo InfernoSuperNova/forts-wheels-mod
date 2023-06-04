@@ -2,6 +2,7 @@ local moveLeft_down = false --keybinds
 local moveRight_down = false
 local keybind_down_last_frame = false
 local last_selected_controllerId = -1
+local current_UI_deviceStructureId = nil
 
 function UpdateControls()
     EvalMoveKeybinds()
@@ -59,6 +60,8 @@ function ThrottleControl()
     if deviceStructureId then
         --user has a valid controller selected so we should show the UI and read throttle slider
 
+        if deviceStructureId ~= current_UI_deviceStructureId then DestroyUI(uid) end --recreate UI so button callbacks get updated to new structureid
+
         if not ControlExists("root", "ThrottleSlider") then
             CreateUI(deviceStructureId, uid)
         else
@@ -76,6 +79,8 @@ function ThrottleControl()
 end
 
 function CreateUI(deviceStructureId, uid)
+    current_UI_deviceStructureId = deviceStructureId
+
     SetControlFrame(0)
     local position = { x =200, y = 450}
     local size = { x = 662, y = 371.25}
@@ -134,6 +139,8 @@ function CreateBrakeButton(deviceStructureId)
 end
 
 function DestroyUI(uid)
+    current_UI_deviceStructureId = nil
+
     if ControlExists("root", "ThrottleSlider") then
         DeleteControl("", "close")
         DeleteControl("HUD", "throttle backdrop")
