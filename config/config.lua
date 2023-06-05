@@ -38,7 +38,10 @@ TURRET_SAVE_NAME = {"turretCannon2"}
 KEYBINDS = {
     ToggleUpdateDebug = {"left control", "left alt", "t"},
     ToggleCollisionDebug = {"left control", "left alt", "d"},
-    
+
+    MoveLeft = {"left shift", "a"},
+    MoveRight = {"left shift", "d"},
+    ToggleBrake = {"left shift", "f"}
 }
 ---@class PressedKeyBinds Keybinds that are currently being pressed.
 ---@field [callback] boolean
