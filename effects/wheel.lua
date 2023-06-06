@@ -1,3 +1,4 @@
+
 --frame time, not compatible with mods that change hz rate unfortunately
 LifeSpan = 0.05
 
@@ -25,7 +26,6 @@ Sprites =
 		},
 	},
 }
-
 Effects =
 {
 
