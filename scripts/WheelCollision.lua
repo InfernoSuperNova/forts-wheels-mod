@@ -264,7 +264,7 @@ WheelLinksColliding = {
 ]]
 
 
-function CircleBraceCollision(circleCenter, WHEEL_RADIUS, polygon, uid)
+function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
     --Centerpoint in polygon
         
         -- Check if any of the polygon's edges intersect with the circle.
@@ -276,9 +276,9 @@ function CircleBraceCollision(circleCenter, WHEEL_RADIUS, polygon, uid)
             normal = CalculateCollisionNormal(edgeStart, edgeEnd, circleCenter)
         end
 
-        local obj = FindClosestEdge(circleCenter, polygon)
-        local final = CalculateCollisionResponseVector(obj.closestDistance, edgeStart,
-            edgeEnd, WHEEL_RADIUS, normal)
+
+        local distance = ClosestDistanceOfTwoPoints(circleCenter, edgeStart, edgeEnd)
+        local final = CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius, normal)
         --BetterLog(uid)
         --if final is > 0, then set the normal, otherwise clear the normal, to ensure that it collides with the initial side`
         if final then 
