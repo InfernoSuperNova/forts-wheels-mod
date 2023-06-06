@@ -91,11 +91,12 @@ function SortTracks()
             if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team) then
                 
 
-                
-
+            
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
                 SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
+
                 PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
+
             else
                 PushedTracks[structure][trackGroup] = trackSet
             end
@@ -122,7 +123,8 @@ function DrawTracks()
             --hide tracks on phantom
         if not IsCommanderAndEnemyActive("phantom", team) then
             for trackGroup, trackSet in pairs(trackSets) do
-                DrawTrackTreads(trackSet, base, trackGroup)
+                local avgPos = AverageCoordinates(trackSet)
+                EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
                 DrawTrackSprockets(base, trackGroup)
             end
         end
@@ -134,7 +136,9 @@ function DrawTrackSprockets(base, trackGroup)
     local angle
     --trackgroup of 11 represents wheel
     if trackGroup == 11 then
+
         angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TRACK_WIDTH)
+
 
         effectPath = path .. "/effects/wheel.lua"
     else
@@ -149,64 +153,66 @@ function DrawTrackSprockets(base, trackGroup)
     end
 end
 
-function DrawTrackTreads(trackSet, base, trackGroup)
-    --exclude wheels
+function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
     if trackGroup == 11 then return end
-    --loop through segments of the tracks
-    for wheel = 1, #trackSet, 2 do
+    local trackPoints = {}
+    local remainder = avgPos.x % TRACK_LINK_DISTANCE
+    for segment = 1, #trackSet do
+        local wheel = segment / 2
         --Only if there's more than 2 points (1 wheel) in set
         if #trackSet > 2 then
-            DrawTrackTreadsFlat(trackSet, wheel, base)
+            if wheel % 1 == 0 then
+                local lineSegment = {trackSet[segment - 1], trackSet[segment]}
+                
+                local result = CalculateTrackTreadsFlat(lineSegment, remainder)
+                remainder = result.remainder % TRACK_LINK_DISTANCE
+                --place the resulting track links into a table containing all the track points
+                for _, point in pairs(result.points) do
+                    table.insert(trackPoints, point)
+                end
+            else
+                local prevIndex = (segment - 2) % #trackSet + 1 
+                local lineSegment = {trackSet[prevIndex], trackSet[segment]}
+                
+                local wheelPos = SortedTracks[base][trackGroup][math.ceil(wheel)]
+                local result = CalculateTrackTreadsRound(lineSegment, remainder, wheelPos)
+                remainder = math.abs(result.remainder) % TRACK_LINK_DISTANCE
+                --place the resulting track links into a table containing all the track points
+                for _, point in pairs(result.points) do
+                    table.insert(trackPoints, point)
+                end
+            end
         end
     end
-    for wheel = 2, #trackSet, 2 do
-        local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
-        local center = SortedTracks[base][trackGroup][index]
-        
-        DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
-
-            
-
-        
-
-    end
-end
-
-function DrawTrackTreadsRound(center, track1, track2, base)
-    local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
-    local offset_length = offset / WHEEL_RADIUS * 1.2
-
-    local arc = PointsAroundArc(center, WHEEL_RADIUS, track2, track1, TRACK_LINK_DISTANCE, offset_length)
-
-
-
-
-    for point = 1, #arc do
-        SpawnEffectEx(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
-        if arc[point + 1] then
-            local newPos = AverageCoordinates({ arc[point], arc[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center))
-        end
-    end
-end
-
-function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
-    local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
-
-    local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TRACK_LINK_DISTANCE,
-        -TrackOffsets[correspondingDevice].x % TRACK_LINK_DISTANCE)
-    --loop through points on the track
-    for point = 1, #points do
-        SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
-
-        if points[point + 1] then
-            local newPos = AverageCoordinates({ points[point], points[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, angle)
-        end
-    end
+    DrawTrackTreads(trackPoints)
 end
 
 
+function CalculateTrackTreadsFlat(lineSegment, offset)
+    local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, offset)
+    return result
+end
+
+function CalculateTrackTreadsRound(lineSegment, offset, wheelPos)
+    BetterLog(offset)
+    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, TRACK_LINK_DISTANCE - offset)
+    return result
+end
+
+
+
+function DrawTrackTreads(trackPoints)
+    for i = 1, #trackPoints - 1 do
+        local prevIndex = (i - 2) % #trackPoints + 1 
+        local angle = GetAngleVector(trackPoints[prevIndex], trackPoints[i + 1 % #trackPoints])
+        SpawnEffectEx(path .. "/effects/track.lua", trackPoints[i], angle)
+
+
+        local newPos = AverageCoordinates({trackPoints[i], trackPoints[i + 1 % #trackPoints]})
+        local newAngle = GetAngleVector(trackPoints[i], trackPoints[i + 1 % #trackPoints])
+        SpawnEffectEx(path .. "/effects/track_link.lua", newPos, newAngle)
+    end
+end
 -- Helper function to check if three points are clockwise, counterclockwise, or collinear
 function Orientation(p, q, r)
     local val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)

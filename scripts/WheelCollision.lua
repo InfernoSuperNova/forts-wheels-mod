@@ -117,9 +117,11 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         local links = RoadStructures[structure]
         for index, link in pairs(links) do
             
+
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
             displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TRACK_WIDTH, uid)
+
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
             local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
@@ -157,7 +159,7 @@ end
 
 function SendDisplacementToTracks(displacement, device)
     if not Displacement[device.id] then
-        Displacement[device.id] = displacement
+        Displacement[device.id] = DeepCopy(displacement)
     else
         --set displacement to largest among all blocks
         if math.abs(Displacement[device.id].y) < math.abs(displacement.y) then
