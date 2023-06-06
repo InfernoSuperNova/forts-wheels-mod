@@ -391,31 +391,56 @@ end
 ---@param startingOffset number The offset of the first point on the arc
 ---@return {points:{}, remainder:number} Table Table of points and the remainder
 function SubdivideArc(centerPoint, startPoint, endPoint, radius, distance, startingOffset)
+    SetControlFrame(1)
     -- This function subdivides an arc into smaller segments and returns the points along the arc
 
     local points = {} -- An array to store the points along the arc
     local startAngle = CalculateAngle(centerPoint, startPoint)
     local endAngle = CalculateAngle(centerPoint, endPoint)
 
+
+    if startAngle < 0 then
+        startAngle = startAngle + (2 * math.pi)
+        --Yes, this is supposed to be nested inside the startAngle check
+        if endAngle < 0 then
+            endAngle = endAngle + (2 * math.pi)
+        end
+    end
+
     local adjustedStartAngle = startAngle - (startingOffset / radius)
     local adjustedStartPos = CalculateCirclePoint(centerPoint, radius, adjustedStartAngle)
+    HighlightCoords({adjustedStartPos, startPoint})
     table.insert(points, adjustedStartPos) -- Insert the adjusted starting position into the points array
 
     local currentAngle = adjustedStartAngle
-    local currentDistance = 0
+    local currentDistance = math.abs(radius * (endAngle - adjustedStartAngle))
 
-    -- Loop until the current distance along the arc exceeds the radius times the absolute difference between the end angle and adjusted start angle
-    while currentDistance <= radius * math.abs(endAngle - adjustedStartAngle) do
-        currentAngle = currentAngle -
-        (distance / radius)                                                   -- Decrease the current angle by the specified distance divided by the radius
-        local point = CalculateCirclePoint(centerPoint, radius, currentAngle) -- Calculate the position on the circle based on the current angle
-        table.insert(points, point)                                           -- Insert the calculated point into the points array
-        currentDistance = currentDistance + distance                          -- Increase the current distance by the specified distance
+    BetterLog(currentDistance)
+
+
+    while currentDistance > distance do
+        currentAngle = currentAngle - (distance / radius)
+        local point = CalculateCirclePoint(centerPoint, radius, currentAngle)
+        table.insert(points, point)
+        currentDistance = currentDistance - distance
+
     end
+    -- -- Loop until the current distance along the arc exceeds the radius times the absolute difference between the end angle and adjusted start angle
+    -- while currentDistance <= radius * math.abs(endAngle - adjustedStartAngle) do
+    --     currentAngle = currentAngle -
+    --     (distance / radius)                                                   -- Decrease the current angle by the specified distance divided by the radius
+    --     local point  = CalculateCirclePoint(centerPoint, radius, currentAngle) -- Calculate the position on the circle based on the current angle
+    --     table.insert(points, point)                                           -- Insert the calculated point into the points array
+    --     currentDistance = currentDistance + distance                          -- Increase the current distance by the specified distance
+    -- end
 
-    local remainder = radius * math.abs(endAngle - currentAngle) -- Calculate the remaining arc length
-    HighlightCoords({ startPoint, endPoint, adjustedStartPos })
-    --BetterLog(remainder) -- Output the remaining arc length (presumably for debugging or logging purposes)
+    local remainder = radius * (currentAngle - endAngle) -- Calculate the remaining arc length
+    
+    local uid = startPoint.x..endPoint.x
+    local pos = {x = endPoint.x, y = endPoint.y, z = 0}
+    AddTextControl("", uid, ""..remainder, ANCHOR_TOP_LEFT, pos, true, "Normal")
+    table.insert(DebugControls, uid)
+
     return { points = points, remainder = remainder } -- Return the points array and the remaining arc length
 end
 

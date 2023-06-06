@@ -25,7 +25,6 @@ end
 function DestroyOldRoadLinks(saveName, nodeA, nodeB)
     if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         for key, link in pairs(data.roadLinks) do
-            BetterLog(link)
             if nodeA == link.nodeA and nodeB == link.nodeB then
                 table.remove(data.roadLinks, key)
             end

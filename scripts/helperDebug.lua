@@ -114,3 +114,13 @@ function DisableTerrainDebug()
     SetControlText("", "terrainStat3", "")
     SetControlText("", "terrainStat4", "")
 end
+
+DebugControls = {}
+function ClearFloatingDebugControls()
+    for k, uid in pairs(DebugControls) do
+        DeleteControl("root", uid)
+        table.remove(DebugControls, k)
+        
+    end
+
+end

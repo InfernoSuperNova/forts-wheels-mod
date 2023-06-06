@@ -83,6 +83,7 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
+    ClearFloatingDebugControls()
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
     local delta
