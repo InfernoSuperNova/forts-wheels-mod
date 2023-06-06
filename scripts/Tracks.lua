@@ -156,7 +156,7 @@ end
 function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
     if trackGroup == 11 then return end
     local trackPoints = {}
-    local remainder = -(avgPos.x % TRACK_LINK_DISTANCE)
+    local remainder = (avgPos.x % TRACK_LINK_DISTANCE)
     for segment = 1, #trackSet do
         local wheel = segment / 2
         --Only if there's more than 2 points (1 wheel) in set
@@ -165,7 +165,7 @@ function EnumerateTrackSegments(trackSet, base, trackGroup, avgPos)
                 local lineSegment = {trackSet[segment - 1], trackSet[segment]}
                 
                 local result = CalculateTrackTreadsFlat(lineSegment, remainder)
-                remainder = result.remainder % TRACK_LINK_DISTANCE
+                remainder = math.abs(result.remainder) % TRACK_LINK_DISTANCE
                 --place the resulting track links into a table containing all the track points
                 for _, point in pairs(result.points) do
                     table.insert(trackPoints, point)
@@ -189,12 +189,12 @@ end
 
 
 function CalculateTrackTreadsFlat(lineSegment, offset)
-    local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, offset)
+    local result = SubdivideLineSegment(lineSegment[1], lineSegment[2], TRACK_LINK_DISTANCE, TRACK_LINK_DISTANCE - offset)
     return result
 end
 
 function CalculateTrackTreadsRound(lineSegment, offset, wheelPos)
-    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, TRACK_LINK_DISTANCE - offset)
+    local result = SubdivideArc(wheelPos, lineSegment[1], lineSegment[2], WHEEL_RADIUS, TRACK_LINK_DISTANCE, offset)
     return result
 end
 

@@ -397,58 +397,38 @@ function SubdivideArc(centerPoint, startPoint, endPoint, radius, distance, start
     local points = {} -- An array to store the points along the arc
     local startAngle = CalculateAngle(centerPoint, startPoint)
     local endAngle = CalculateAngle(centerPoint, endPoint)
-
-
-    if startAngle < 0 then
-        startAngle = startAngle + (2 * math.pi)
-        --Yes, this is supposed to be nested inside the startAngle check
-        if endAngle < 0 then
-            endAngle = endAngle + (2 * math.pi)
-        end
-    end
-
-    local adjustedStartAngle = startAngle - (startingOffset / radius)
-    local adjustedStartPos = CalculateCirclePoint(centerPoint, radius, adjustedStartAngle)
-    HighlightCoords({adjustedStartPos, startPoint})
-    table.insert(points, adjustedStartPos) -- Insert the adjusted starting position into the points array
-
-    local currentAngle = adjustedStartAngle
-    local currentDistance = math.abs(radius * (endAngle - adjustedStartAngle))
-
-    BetterLog(currentDistance)
-
-
-    while currentDistance > distance do
-        currentAngle = currentAngle - (distance / radius)
-        local point = CalculateCirclePoint(centerPoint, radius, currentAngle)
+    local arcLengthRad = ArcLength(startAngle, endAngle)
+    local offsetStartAngle = startAngle + ArcDistToRad(startingOffset, radius)
+    local step = ArcDistToRad(distance, radius)
+    local iterations = math.ceil(arcLengthRad / step)
+    
+    for index = 1, iterations do
+        local point = CalculateCirclePoint(centerPoint, radius, offsetStartAngle + index * -step)
         table.insert(points, point)
-        currentDistance = currentDistance - distance
-
     end
-    -- -- Loop until the current distance along the arc exceeds the radius times the absolute difference between the end angle and adjusted start angle
-    -- while currentDistance <= radius * math.abs(endAngle - adjustedStartAngle) do
-    --     currentAngle = currentAngle -
-    --     (distance / radius)                                                   -- Decrease the current angle by the specified distance divided by the radius
-    --     local point  = CalculateCirclePoint(centerPoint, radius, currentAngle) -- Calculate the position on the circle based on the current angle
-    --     table.insert(points, point)                                           -- Insert the calculated point into the points array
-    --     currentDistance = currentDistance + distance                          -- Increase the current distance by the specified distance
-    -- end
 
-    local remainder = radius * (currentAngle - endAngle) -- Calculate the remaining arc length
+    local finalAngle = offsetStartAngle + iterations * -step
+    local remainder = radius * (finalAngle - endAngle) -- Calculate the remaining arc length
     
     local uid = startPoint.x..endPoint.x
     local pos = {x = endPoint.x, y = endPoint.y, z = 0}
     AddTextControl("", uid, ""..remainder, ANCHOR_TOP_LEFT, pos, true, "Normal")
     table.insert(DebugControls, uid)
-
+    BetterLog({offsetStartAngle = offsetStartAngle, startAngle = startAngle, endAngle = endAngle, arcLengthRad = arcLengthRad, step = step, iterations = iterations, remainder = remainder})
     return { points = points, remainder = remainder } -- Return the points array and the remaining arc length
 end
 
 
 
+function ArcDistToRad(distance, radius)
+    return distance/radius
+end
 
+function ArcLength(arc1, arc2)
+    local angleDifference = math.abs(arc2 - arc1)
 
-
+    return angleDifference
+end
 --- Calculates the angle between two points.
 --- @param point1 table The first point: {x:number, y:number}.
 --- @param point2 table The second point: {x:number, y:number}.
@@ -457,9 +437,16 @@ function CalculateAngle(point1, point2)
     local dx = point2.x - point1.x
     local dy = point2.y - point1.y
     local angle = math.atan2(dy, dx)
+
+    -- Adjust the angle to fall within the range [-π, π] or [-180, 180]
+    if angle < -math.pi then
+        angle = angle + 2*math.pi
+    elseif angle > math.pi then
+        angle = angle - 2*math.pi
+    end
+
     return angle
 end
-
 
 
 
