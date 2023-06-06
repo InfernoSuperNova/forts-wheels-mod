@@ -1,7 +1,7 @@
 Scale = 1
 SelectionWidth = 450.0
 SelectionHeight = 70.0
-SelectionOffset = { -18, -75.5 }
+SelectionOffset = { -0, -75.5 }
 RecessionBox =
 {
 	Size = { 500, 25 },
