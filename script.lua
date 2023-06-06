@@ -5,6 +5,7 @@ dofile(path .. "/debugMagic.lua")
 dofile("scripts/forts.lua")
 
 dofile(path .. "/config/config.lua")
+dofile(path .. "/config/wheels.lua")
 dofile(path .. "/config/commanders.lua")
 
 dofile(path .. "/scripts/weapons.lua")
