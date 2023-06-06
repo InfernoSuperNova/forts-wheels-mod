@@ -51,7 +51,12 @@ function FindClosestEdge(point, polygon)
     end
     return { closestEdge = closestEdge, closestDistance = closestDistance }
 end
+-- Find the closest distance of a reference and 2 points
 
+function ClosestDistanceOfTwoPoints(reference, point1, point2)
+    local closest = ClosestPointOnLineSegment(reference, point1, point2)
+    return Distance(reference, closest)
+end
 -- Compute the distance between a point and an edge
 function DistanceToEdge(point, edgeStart, edgeEnd)
     local closestPoint = ClosestPointOnLineSegment(point, edgeStart, edgeEnd)
