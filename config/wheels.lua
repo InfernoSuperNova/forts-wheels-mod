@@ -23,3 +23,16 @@ WHEEL_SAVE_NAMES =
     medium = {"suspension", "suspensionInverted"},
     large = {"largeSuspension", "largeSuspensionInverted"},
 }
+TRACK_SPROCKET_EFFECT_PATHS = 
+{
+    sprocket = {
+        small = "/effects/track_sprocket.lua",
+        medium = "/effects/track_sprocket.lua",
+        large = "/effects/track_sprocket_large.lua",
+    },
+    wheel = {
+        small = "/effects/wheel.lua",
+        medium = "/effects/wheel.lua",
+        large = "/effects/wheel_large.lua"
+    },
+}

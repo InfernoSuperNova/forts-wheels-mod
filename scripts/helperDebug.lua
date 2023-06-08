@@ -7,6 +7,7 @@ function HighlightCoords(coords)
 end
 
 function HighlightPolygon(coords, colour1)
+    if not colour1 then colour1 = {r = 255, g = 255, b = 255, a = 255} end
     for coord = 1, #coords do
         --SpawnCircle(coords[coord], 50, colour1, data.updateDelta)
         SpawnLine(coords[coord], coords[coord % #coords + 1], colour1, data.updateDelta)
