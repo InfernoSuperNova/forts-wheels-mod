@@ -5,7 +5,9 @@ ConstructEffect = ""
 CompleteEffect = ""
 HurtEffect = ""
 
-
+SelectionWidth = 0
+SelectionHeight = 0
+SelectionOffset = { -0, -0 }
 RecessionBox =
 {
 	Size = { 0, 0 },

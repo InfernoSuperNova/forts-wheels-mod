@@ -329,6 +329,16 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannonFlip1"] =
+		{
+			Enabled = true,
+			SaveName = "turretCannonFlip1",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
     
 })
 table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
@@ -376,6 +386,23 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannonFlip2"] =
+		{
+			Enabled = false,
+			SaveName = "turretCannonFlip2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+        ["turretCannon3"] =
+		{
+			Enabled = false,
+			SaveName = "turretCannon3",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
 })
 table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     SaveName = "turretCannonFlip2",
@@ -394,6 +421,23 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannonFlip3"] =
+		{
+			Enabled = false,
+			SaveName = "turretCannonFlip3",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+        ["turretCannonFlip1"] =
+		{
+			Enabled = false,
+			SaveName = "turretCannonFlip1",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
 })
 table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     SaveName = "turretCannonFlip3",
@@ -412,5 +456,15 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
     MaxUpAngle = 90,
     BuildOnGroundOnly = false,
     SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretCannonFlip2"] =
+		{
+			Enabled = false,
+			SaveName = "turretCannonFlip2",
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
 })
 LCAddComp({"turretCannon", "turretCannon2", "turretCannon3", "turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip3"})

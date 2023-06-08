@@ -38,6 +38,7 @@ end
 
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
     for _, device in pairs(Devices) do
+        if CheckSaveNameTable(device.saveName, TURRET_ANIM_NAMES) then continue end
         if device.team % MAX_SIDES == deviceSide then 
              if (Distance(shieldCoords, device.pos) < SHIELD_RADIUS) then 
                 local color = { r = 255, g = 94, b = 94, a = 255 }
