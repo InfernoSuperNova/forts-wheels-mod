@@ -122,14 +122,17 @@ InsertDeviceBehind("suspension", suspension2)
 
 local suspensionLarge = DeepCopy(suspension)
 if suspensionLarge then
+    suspensionLarge.MetalCost = 225
+    suspensionLarge.EnergyCost = 2000
     suspensionLarge.SaveName = "largeSuspension"
     suspensionLarge.FileName = path .. "/devices/largeSuspension.lua"
+    suspensionLarge.Prerequisite = "upgrade"
 end
 InsertDeviceBehind("suspensionInverted", suspensionLarge)
 
 
 
-local suspensionLarge2 = DeepCopy(suspension)
+local suspensionLarge2 = DeepCopy(suspensionLarge)
 if suspensionLarge2 then
     suspensionLarge2.SaveName = "largeSuspensionInverted"
     suspensionLarge2.FileName = path .. "/devices/largeSuspensionInverted.lua"
@@ -143,14 +146,17 @@ InsertDeviceBehind("largeSuspension", suspensionLarge2)
 
 local suspensionSmall = DeepCopy(suspension)
 if suspensionSmall then
+    suspensionSmall.MetalCost = 75
+    suspensionSmall.EnergyCost = 500
     suspensionSmall.SaveName = "smallSuspension"
     suspensionSmall.FileName = path .. "/devices/smallSuspension.lua"
+    suspensionSmall.Prerequisite = "upgrade"
 end
-InsertDeviceBehind("largeSuspensionInverted", suspensionSmall)
+InsertDeviceBehind("sandbags", suspensionSmall)
 
 
 
-local suspensionSmall2 = DeepCopy(suspension)
+local suspensionSmall2 = DeepCopy(suspensionSmall)
 if suspensionSmall2 then
     suspensionSmall2.SaveName = "smallSuspensionInverted"
     suspensionSmall2.FileName = path .. "/devices/smallSuspensionInverted.lua"

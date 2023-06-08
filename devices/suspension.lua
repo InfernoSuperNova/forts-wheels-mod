@@ -6,8 +6,8 @@ Scale = 1
 SelectionWidth = 25
 SelectionHeight = 25
 SelectionOffset = { 0.0, -25.5 }
-Mass = 375.0
-HitPoints = 250.0
+Mass = 150.0
+HitPoints = 150.0
 DestroyProjectile = nil
 EnergyProductionRate = 0.0
 MetalProductionRate = 0.0
@@ -34,24 +34,6 @@ Sprites =
 			Normal = { Frames = { { texture = path .. "/devices/suspension/suspension.png" }, mipmap = true, }, },
 		},
 	},
-    --[[{
-		Name = "wheel",
-		States =
-		{
-			Normal = 
-            { 
-                Frames = 
-                { 
-                    { texture = path .. "/effects/media/sprocket2.png", colour = { 1, 1, 1, 0.8 },}, 
-                    { texture = path .. "/effects/media/sprocket2.png", colour = { 1, 1, 1, 0.6 },},
-					duration = 0.5,
-					blendColour = true,
-					mipmap = true,
-                }, 
-            },
-            Idle = Normal,
-		},
-	},]]
 }
 
 Root =

@@ -75,10 +75,11 @@ function PlaceSuspensionPosInTable(device)
                 suspensionPos = {
                     x = actualPos.x + Displacement[device.id].x,
                     y = actualPos.y + Displacement[device.id].y,
-                    radius = GetWheelStats(device).radius
                 }
             end
-            
+            --bad coding practices, don't do this kids
+            suspensionPos.radius = GetWheelStats(device).radius
+            suspensionPos.saveName = device.saveName
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
 
@@ -136,20 +137,25 @@ function DrawTracks()
 end
 
 function DrawTrackSprockets(base, trackGroup)
-    local effectPath
+    local wheelType
     local angle
     --trackgroup of 11 represents wheel
     if trackGroup == 11 then
         angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TRACK_WIDTH)
 
-        effectPath = path .. "/effects/wheel.lua"
+        wheelType = "wheel"
     else
         angle = TrackOffsets[base].x
-        effectPath = path .. "/effects/track_sprocket.lua"
+        wheelType = "sprocket"
     end
 
     for device, pos in pairs(Tracks[base][trackGroup]) do
-        local vecAngle = AngleToVector(angle)
+        local effectPath = path .. GetWheelEffectPath(wheelType, pos.saveName)
+        local newAngle = angle
+        if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
+            newAngle = newAngle / 2.5
+        end
+        local vecAngle = AngleToVector(newAngle)
         local effect = SpawnEffectEx(effectPath, pos, vecAngle)
         table.insert(LocalEffects, effect)
     end
@@ -159,7 +165,7 @@ function DrawTrackTreads(trackSet, base, trackGroup)
     --exclude wheels
     if trackGroup == 11 then return end
     --loop through segments of the tracks
-    for wheel = 1, #trackSet, 2 do
+    for wheel = 2, #trackSet, 2 do
         --Only if there's more than 2 points (1 wheel) in set
         if #trackSet > 2 then
             DrawTrackTreadsFlat(trackSet, wheel, base)
@@ -168,21 +174,15 @@ function DrawTrackTreads(trackSet, base, trackGroup)
     for wheel = 2, #trackSet, 2 do
         local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
         local center = SortedTracks[base][trackGroup][index]
-        
-        DrawTrackTreadsRound(center, trackSet[(wheel - 3) % #trackSet + 1], trackSet[wheel - 1], base)
-
-            
-
-        
-
+        DrawTrackTreadsRound(center, trackSet[(wheel - 2) % #trackSet + 1], trackSet[wheel], base)
     end
 end
 
 function DrawTrackTreadsRound(center, track1, track2, base)
     local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
-    local offset_length = offset / WHEEL_RADIUS * 1.2
+    local offset_length = offset / track1.radius * 1.2
 
-    local arc = PointsAroundArc(center, WHEEL_RADIUS, track2, track1, TRACK_LINK_DISTANCE, offset_length)
+    local arc = PointsAroundArc(center, track1.radius, track2, track1, TRACK_LINK_DISTANCE, offset_length)
 
 
 
@@ -294,15 +294,16 @@ function PushOutTracks(polygon)
     local newPolygon = {}
     local count = #polygon
     for i = 1, count do
-        local j = i % count + 1
-        local k = i % count + 1
-        local perp = GetPerpendicularVectorAngle(polygon[i], polygon[j])
-        local x1 = polygon[i].x + perp.x * polygon[i].radius
-        local y1 = polygon[i].y + perp.y * polygon[i].radius
-        local x2 = polygon[j].x + perp.x * polygon[i].radius
-        local y2 = polygon[j].y + perp.y * polygon[i].radius
-        table.insert(newPolygon, { x = x1, y = y1 })
-        table.insert(newPolygon, { x = x2, y = y2 })
+        local prev = (i - 2 + count) % count + 1
+        local next = i % count + 1
+        local perpPrev = GetPerpendicularVectorAngle(polygon[prev], polygon[i])
+        local perpNext = GetPerpendicularVectorAngle(polygon[i], polygon[next])
+        local x1 = polygon[i].x + perpPrev.x * polygon[i].radius
+        local y1 = polygon[i].y + perpPrev.y * polygon[i].radius
+        local x2 = polygon[i].x + perpNext.x * polygon[i].radius
+        local y2 = polygon[i].y + perpNext.y * polygon[i].radius
+        table.insert(newPolygon, { x = x1, y = y1, radius = polygon[i].radius })
+        table.insert(newPolygon, { x = x2, y = y2, radius = polygon[i].radius })
     end
     return newPolygon
 end
@@ -311,10 +312,12 @@ end
 
 
 function TrackContextMenu(saveName)
-    if CheckSaveNameTable(saveName, WHEEL_SAVE_NAME) then
-        AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
-        for i = 1, 10 do
-            AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)
+    for k, size in pairs(WHEEL_SAVE_NAMES) do
+        if CheckSaveNameTable(saveName, size) then
+            AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
+            for i = 1, 10 do
+                AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)
+            end
         end
     end
 end
@@ -335,3 +338,6 @@ end
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group
 end
+
+
+
