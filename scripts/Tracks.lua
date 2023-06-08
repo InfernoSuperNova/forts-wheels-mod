@@ -53,7 +53,13 @@ end
 
 function PlaceSuspensionPosInTable(device)
     
-    if DeviceExists(device.id) and CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAME) and IsDeviceFullyBuilt(device.id) then
+    if DeviceExists(device.id) 
+    and 
+    (CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.small) 
+    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.medium) 
+    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large) 
+    )
+    and IsDeviceFullyBuilt(device.id) then
         if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
@@ -69,10 +75,10 @@ function PlaceSuspensionPosInTable(device)
                 suspensionPos = {
                     x = actualPos.x + Displacement[device.id].x,
                     y = actualPos.y + Displacement[device.id].y,
+                    radius = GetWheelStats(device).radius
                 }
             end
             
-            --SpawnCircle(suspensionPos, WHEEL_RADIUS, { r = 255, g = 255, b = 255, a = 255 }, 0.04)
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
 
@@ -95,7 +101,7 @@ function SortTracks()
 
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
                 SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
-                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup], WHEEL_RADIUS)
+                PushedTracks[structure][trackGroup] = PushOutTracks(SortedTracks[structure][trackGroup])
             else
                 PushedTracks[structure][trackGroup] = trackSet
             end
@@ -284,22 +290,17 @@ function LogCoordsToFile(points)
     end
 end
 
-function PushOutTracks(polygon, distance)
+function PushOutTracks(polygon)
     local newPolygon = {}
     local count = #polygon
     for i = 1, count do
         local j = i % count + 1
-        local dx = polygon[j].x - polygon[i].x
-        local dy = polygon[j].y - polygon[i].y
-        local len = math.sqrt(dx * dx + dy * dy)
-        dx = dx / len
-        dy = dy / len
-        local nx = -dy -- negate the normal vector
-        local ny = dx  -- negate the normal vector
-        local x1 = polygon[i].x + nx * distance
-        local y1 = polygon[i].y + ny * distance
-        local x2 = polygon[j].x + nx * distance
-        local y2 = polygon[j].y + ny * distance
+        local k = i % count + 1
+        local perp = GetPerpendicularVectorAngle(polygon[i], polygon[j])
+        local x1 = polygon[i].x + perp.x * polygon[i].radius
+        local y1 = polygon[i].y + perp.y * polygon[i].radius
+        local x2 = polygon[j].x + perp.x * polygon[i].radius
+        local y2 = polygon[j].y + perp.y * polygon[i].radius
         table.insert(newPolygon, { x = x1, y = y1 })
         table.insert(newPolygon, { x = x2, y = y2 })
     end
