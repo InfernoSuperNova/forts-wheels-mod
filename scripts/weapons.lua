@@ -65,55 +65,50 @@ end
 
 function FlipTurret(deviceId, direction, nodeA, nodeB, t, reloadTime, health)
     local parse = {deviceId = deviceId, direction = direction, nodeA = nodeA, nodeB = nodeB, t = t, reloadTime = reloadTime, health = health}
-    ScheduleCall(0.16, ScheduleDeviceDestruction, deviceId)
-    ScheduleCall(0.2, FlipTurret2, parse)
+    ScheduleCall(0, FlipTurret2, parse)
 end
 function FlipTurret2(parse)
-    EnableWeaponAllSides("turretCannonFlip1", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannonFlip1", parse.nodeA, parse.nodeB, parse.t)
-    EnableWeaponAllSides("turretCannonFlip1", false)
-    ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
-    ScheduleCall(0.2, FlipTurret3, parse)
+    EnableWeaponUpgradeAllSides("turretCannon2", "turretCannonFlip1", true)
+    parse.deviceId = UpgradeDevice(parse.deviceId, "turretCannonFlip1")
+    EnableWeaponUpgradeAllSides("turretCannon2", "turretCannonFlip1", false)
+    ScheduleCall(0.08, FlipTurret3, parse)
 end
 function FlipTurret3(parse)
-    EnableWeaponAllSides("turretCannonFlip2", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannonFlip2", parse.nodeA, parse.nodeB, parse.t)
-    EnableWeaponAllSides("turretCannonFlip2", false)
-    ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
-    ScheduleCall(0.2, FlipTurret4, parse)
+    EnableWeaponUpgradeAllSides("turretCannonFlip1", "turretCannonFlip2", true)
+    parse.deviceId = UpgradeDevice(parse.deviceId, "turretCannonFlip2")
+    EnableWeaponUpgradeAllSides("turretCannonFlip1", "turretCannonFlip2", false)
+    ScheduleCall(0.08, FlipTurret4, parse)
 end
 
 function FlipTurret4(parse)
-    EnableWeaponAllSides("turretCannonFlip3", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannonFlip3", parse.nodeA, parse.nodeB, parse.t)
-    EnableWeaponAllSides("turretCannonFlip3", false)
+    EnableWeaponUpgradeAllSides("turretCannonFlip2", "turretCannonFlip3", true)
+    parse.deviceId = UpgradeDevice(parse.deviceId, "turretCannonFlip3")
+    EnableWeaponUpgradeAllSides("turretCannonFlip2", "turretCannonFlip3", false)
     parse.direction = 3 - parse.direction
-    ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
-    ScheduleCall(0.2, FlipTurret5, parse)
+    ScheduleCall(0.04, ScheduleDeviceDestruction, parse.deviceId)
+    ScheduleCall(0.08, FlipTurret5, parse)
 end
 function FlipTurret5(parse)
     EnableWeaponAllSides("turretCannonFlip2", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannonFlip2", parse.nodeA, parse.nodeB, parse.t)
+    parse.deviceId = CreateDevice(parse.direction, "turretCannonFlip2", parse.nodeA, parse.nodeB, parse.t)
     EnableWeaponAllSides("turretCannonFlip2", false)
-    ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
-    ScheduleCall(0.2, FlipTurret6, parse)
+    ScheduleCall(0.08, FlipTurret6, parse)
 end
 function FlipTurret6(parse)
-    EnableWeaponAllSides("turretCannonFlip1", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannonFlip1", parse.nodeA, parse.nodeB, parse.t)
-    EnableWeaponAllSides("turretCannonFlip1", false)
-    ScheduleCall(0.16, ScheduleDeviceDestruction, newDevice)
-    ScheduleCall(0.2, FlipTurret7, parse)
+    EnableWeaponUpgradeAllSides("turretCannonFlip2", "turretCannonFlip1", true)
+    parse.deviceId = UpgradeDevice(parse.deviceId, "turretCannonFlip1")
+    EnableWeaponUpgradeAllSides("turretCannonFlip2", "turretCannonFlip1", false)
+    ScheduleCall(0.08, FlipTurret7, parse)
 end
 function FlipTurret7(parse)
-    EnableWeaponAllSides("turretCannon3", true)
-    local newDevice = CreateDevice(parse.direction, "turretCannon3", parse.nodeA, parse.nodeB, parse.t)
-    EnableWeaponAllSides("turretCannon3", false)
-    data.currentTurretDirections[newDevice] = parse.direction
-    SetWeaponReloadTime(newDevice, parse.reloadTime)
+    EnableWeaponUpgradeAllSides("turretCannonFlip1", "turretCannon3", true)
+    parse.deviceId = UpgradeDevice(parse.deviceId, "turretCannon3")
+    EnableWeaponUpgradeAllSides("turretCannonFlip1", "turretCannon3", false)
+    data.currentTurretDirections[parse.deviceId] = parse.direction
+    SetWeaponReloadTime(parse.deviceId, parse.reloadTime)
     --local currentHealth = GetDeviceHitpoints(parse.deviceId)
     local currentHealth = 2900
-    ApplyDamageToDevice(newDevice, (1 - parse.health) * currentHealth)
+    ApplyDamageToDevice(parse.deviceId, (1 - parse.health) * currentHealth)
 end
 
 function RemoveTurretDirection(id)
@@ -134,3 +129,11 @@ function EnableWeaponAllSides(saveName, enable)
         EnableWeapon(saveName, enable, side)
     end
 end
+
+
+function EnableWeaponUpgradeAllSides(device, upgrade, enable)
+    for side = 1, 2 do
+        EnableWeaponUpgrade(device, upgrade, side, enable)
+    end
+end
+

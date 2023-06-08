@@ -47,11 +47,18 @@ function CheckBoundingBoxCollisions(devices)
     local positions = {}
 
     for k, device in pairs(devices) do
-        if device.saveName == WHEEL_SAVE_NAME[1] then
-            positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT)
-        else
-            positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT)
+        for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
+            if device.saveName == names[1] then
+                positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
+            else
+                positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
+            end
         end
+        -- if device.saveName == WHEEL_SAVE_NAME[1] then
+        --     positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT[2])
+        -- else
+        --     positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT[2])
+        -- end
     end
     local collidingBlocks = {}
     local collidingStructures = {}
@@ -86,10 +93,12 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
     local returnVal = { x = 0, y = 0 }
     local displacement
     local pos
-    if device.saveName == WHEEL_SAVE_NAME[1] then
-        pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT)
-    else
-        pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT)
+    for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
+        if device.saveName == names[1] then
+            pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
+        else
+            pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
+        end
     end
     WheelPos[device.id] = pos
     --looping through blocks
