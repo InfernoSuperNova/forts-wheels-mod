@@ -70,6 +70,16 @@ function PerpendicularToVertex(point, vertex)
 end
 
 --gets a perpendicular angle as a vector
+function GetPerpendicularVector(point1, point2)
+    local dx = point2.x - point1.x
+    local dy = point2.y - point1.y
+    local len = math.sqrt(dx * dx + dy * dy)
+    dx = dx / len
+    dy = dy / len
+    return { x = dx, y = dy }
+end
+
+--gets a perpendicular angle as a vector
 function GetPerpendicularVectorAngle(point1, point2)
     local dx = point2.x - point1.x
     local dy = point2.y - point1.y
@@ -275,7 +285,7 @@ function MinimumCircularBoundary(points)
 
 end
 
-function CircleLineSegmentCollision(circleCenter, WHEEL_RADIUS, segmentStart, segmentEnd)
+function CircleLineSegmentCollision(circleCenter, radius, segmentStart, segmentEnd)
     -- Calculate the vector from the segment start to the circle center
     local segmentVector = SubtractVectors(segmentEnd, segmentStart)
     local circleVector = SubtractVectors(circleCenter, segmentStart)
@@ -298,10 +308,10 @@ function CircleLineSegmentCollision(circleCenter, WHEEL_RADIUS, segmentStart, se
     local distance = Distance(closestPoint, circleCenter)
 
     -- Check if the distance is less than or equal to the circle radius
-    if distance <= WHEEL_RADIUS then
+    if distance <= radius then
         -- Calculate the collision response vector
         local collisionResponse = ScaleVector(NormalizeVector(SubtractVectors(circleCenter, closestPoint)),
-        WHEEL_RADIUS - distance)
+        radius - distance)
         return collisionResponse
     else
         return nil

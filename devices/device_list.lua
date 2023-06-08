@@ -108,23 +108,59 @@ InsertDeviceBehind("sandbags", suspension)
 
 table.insert(Sprites, ButtonSprite("hud-suspensionInverted-icon", "HUD/HUD-suspension_inv", nil, ButtonSpriteBottom, nil, nil, path))
 table.insert(Sprites, DetailSprite("hud-detail-suspensionInverted", "suspension_inv", path))
-local suspension2 = DeepCopy(suspension)
 
+local suspension2 = DeepCopy(suspension)
 if suspension2 then
     suspension2.SaveName = "suspensionInverted"
     suspension2.FileName = path .. "/devices/suspensionInverted.lua"
     suspension2.Icon = "hud-suspensionInverted-icon"
     suspension2.Detail = "hud-detail-suspensionInverted"
 end
-
 InsertDeviceBehind("suspension", suspension2)
 
 
 
--- local barrel = FindDevice("barrel")
--- if barrel then
---     barrel.Enabled = true
--- end
+local suspensionLarge = DeepCopy(suspension)
+if suspensionLarge then
+    suspensionLarge.SaveName = "largeSuspension"
+    suspensionLarge.FileName = path .. "/devices/largeSuspension.lua"
+end
+InsertDeviceBehind("suspensionInverted", suspensionLarge)
+
+
+
+local suspensionLarge2 = DeepCopy(suspension)
+if suspensionLarge2 then
+    suspensionLarge2.SaveName = "largeSuspensionInverted"
+    suspensionLarge2.FileName = path .. "/devices/largeSuspensionInverted.lua"
+    suspensionLarge2.Icon = "hud-suspensionInverted-icon"
+    suspensionLarge2.Detail = "hud-detail-suspensionInverted"
+end
+InsertDeviceBehind("largeSuspension", suspensionLarge2)
+
+
+
+
+local suspensionSmall = DeepCopy(suspension)
+if suspensionSmall then
+    suspensionSmall.SaveName = "smallSuspension"
+    suspensionSmall.FileName = path .. "/devices/smallSuspension.lua"
+end
+InsertDeviceBehind("largeSuspensionInverted", suspensionSmall)
+
+
+
+local suspensionSmall2 = DeepCopy(suspension)
+if suspensionSmall2 then
+    suspensionSmall2.SaveName = "smallSuspensionInverted"
+    suspensionSmall2.FileName = path .. "/devices/smallSuspensionInverted.lua"
+    suspensionSmall2.Icon = "hud-suspensionInverted-icon"
+    suspensionSmall2.Detail = "hud-detail-suspensionInverted"
+end
+InsertDeviceBehind("smallSuspension", suspensionSmall2)
+
+
+
 
 --add drills
 table.insert(Sprites, ButtonSprite("hud-drills-icon", "HUD/HUD-drill", nil, ButtonSpriteBottom, nil, nil, path))

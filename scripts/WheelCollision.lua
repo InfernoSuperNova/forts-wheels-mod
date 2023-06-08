@@ -34,7 +34,10 @@ end
 function GetDeviceStructureGroups()
     local structures = {}
     for _, device in pairs(Devices) do
-        if CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAME) and IsDeviceFullyBuilt(device.id) then
+        if (CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.small) 
+        or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.medium) 
+        or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large)) 
+        and IsDeviceFullyBuilt(device.id) then
             local structureId = device.strucId
             if not structures[structureId] then structures[structureId] = {} end
             table.insert(structures[structureId], device)
@@ -47,23 +50,14 @@ function CheckBoundingBoxCollisions(devices)
     local positions = {}
 
     for k, device in pairs(devices) do
-        for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
-            if device.saveName == names[1] then
-                positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
-            else
-                positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
-            end
-        end
-        -- if device.saveName == WHEEL_SAVE_NAME[1] then
-        --     positions[k] = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHT[2])
-        -- else
-        --     positions[k] = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHT[2])
-        -- end
+
+        local wheelStats = GetWheelStats(device)
+        positions[k] = wheelStats.pos
     end
     local collidingBlocks = {}
     local collidingStructures = {}
     local collider = MinimumCircularBoundary(positions)
-    collider.r = collider.r + WHEEL_RADIUS + TRACK_WIDTH 
+    collider.r = collider.r + WHEEL_RADIUSES.large + TRACK_WIDTH 
     if ModDebug.collision == true then
         local colour1 = {r = 100, g = 255, b = 100, a = 255}
         local colour2 = {r = 0, g = 255, b = 200, a = 255}
@@ -92,21 +86,15 @@ end
 function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructures, structureId)
     local returnVal = { x = 0, y = 0 }
     local displacement
-    local pos
-    for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
-        if device.saveName == names[1] then
-            pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
-        else
-            pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
-        end
-    end
-    WheelPos[device.id] = pos
+    local wheelStats = GetWheelStats(device)
+    
+    WheelPos[device.id] = wheelStats.pos
     --looping through blocks
 
 
     
     for blockIndex, Nodes in pairs(collidingBlocks) do
-        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], pos, WHEEL_RADIUS + TRACK_WIDTH)
+        displacement = CheckCollisionsOnBlock(Terrain[blockIndex], wheelStats.pos, wheelStats.radius + TRACK_WIDTH)
 
         if displacement == nil then --incase of degenerate blocks
             displacement = Vec3(0,0)
@@ -128,7 +116,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
-            displacement = CheckCollisionsOnBrace(newLink, pos, WHEEL_RADIUS + TRACK_WIDTH, uid)
+            displacement = CheckCollisionsOnBrace(newLink, wheelStats.pos, wheelStats.radius + TRACK_WIDTH, uid)
             
             ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
             local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
@@ -316,4 +304,21 @@ function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, WHEEL_RA
         local final = ScaleVector(perpendicularVector, distanceFactor)
         return {x = final.x * normal, y = final.y * normal}
     end
+end
+
+
+
+function GetWheelStats(device)
+    local wheelStats = {}
+    for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
+        if device.saveName == names[1] then
+            wheelStats.pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
+            wheelStats.radius = WHEEL_RADIUSES[wheelType]
+        elseif device.saveName == names[2] then
+            wheelStats.pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
+            wheelStats.radius = WHEEL_RADIUSES[wheelType]
+        end
+    end
+
+    return wheelStats
 end
