@@ -28,6 +28,8 @@ dofile(path .. "/scripts/Propulsion.lua")
 dofile(path .. "/scripts/effects.lua")
 dofile(path .. "/scripts/drillScript.lua")
 
+dofile(path .. "/scripts/localization.lua")
+dofile(path .. "/strings/strings.lua")
 
 
 
@@ -47,6 +49,7 @@ function Load(GameStart)
     data.teams[2] = DiscoverTeams(2)
     InitializeScript()
     FillCoreShield()
+    LocalizeStrings()
 end
 
 function InitializeScript()
