@@ -4,4 +4,5 @@
 .sfx/Plugins/
 .sfx/.unsaved/
 .vscode/settings.json
+.VSCodeCounter/
 itemversion.lua
