@@ -88,16 +88,16 @@ function CreateUI(deviceStructureId, uid)
     LoadControl(path .. "/ui/controls.lua", "root")
 
     for i = 1, 3 do
-        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
         SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
     end
     SetControlText("throttle backdrop", "info" .. uid .. "3", "Show hotkeys")
     SetControlStyle("throttle backdrop", "info" .. uid .. "3", "Fine")
 
     for i = 4, 6 do
-        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, "Right click world to close", ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
     end
-    SetControlText("throttle backdrop", "info" .. uid .. "6", "Right click world to close")
+    SetControlText("throttle backdrop", "info" .. uid .. "6", CurrentLanguage.PromptRightClick)
     SetControlStyle("throttle backdrop", "info" .. uid .. "6", "Fine")
 
     AddTextButtonControl("throttle backdrop", "close", "x", ANCHOR_TOP_LEFT, {x = 612, y = 20, z = -10}, false, "Heading")
@@ -174,18 +174,18 @@ function UpdateVehicleInfo(structure, uid)
         --power
         details.power = math.floor(details.power / 1000)
         if details.power < 1000 then details.power = "  " .. details.power end
-        details.power = details.power .. "K"
+        if not details.power == 0 then details.power = details.power .. "K" end
         --set text
         if Metric then
-            SetControlText("throttle backdrop", "info" .. uid .. "1", "Speed: " .. details.kmhr .. " km/h")
-            SetControlText("throttle backdrop", "info" .. uid .. "2", "Top speed: " .. details.maxkmhr .. " km/h")
+            SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.kmhr .. CurrentLanguage.SpeedUnitKmph)
+            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxkmhr .. CurrentLanguage.SpeedUnitMph)
         else
-            SetControlText("throttle backdrop", "info" .. uid .. "1", "Speed: " .. details.mph .. " mph")
-            SetControlText("throttle backdrop", "info" .. uid .. "2", "Top speed: " .. details.maxmph .. " mph")
+            SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.mph .. CurrentLanguage.SpeedUnitMph)
+            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxmph .. CurrentLanguage.SpeedUnitMph)
         end
 
-        SetControlText("throttle backdrop", "info" .. uid .. "4", "Gear: " .. details.gear)
-        SetControlText("throttle backdrop", "info" .. uid .. "5", "Power: " .. details.power)
+        SetControlText("throttle backdrop", "info" .. uid .. "4", CurrentLanguage.GearText .. details.gear)
+        SetControlText("throttle backdrop", "info" .. uid .. "5", CurrentLanguage.PowerText .. details.power)
     end
 end
 
