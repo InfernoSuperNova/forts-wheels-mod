@@ -314,9 +314,9 @@ end
 function TrackContextMenu(saveName)
     for k, size in pairs(WHEEL_SAVE_NAMES) do
         if CheckSaveNameTable(saveName, size) then
-            AddContextButton("hud-context-blank", "Set suspension to wheel", 3, true, false)
+            AddContextButton("hud-context-blank", WheelGroupText, 3, true, false)
             for i = 1, 10 do
-                AddContextButton("hud-context-blank", "Set suspension to track group " .. i, 3, true, false)
+                AddContextButton("hud-context-blank", CurrentLanguage.TrackGroupText .. i, 3, true, false)
             end
         end
     end
@@ -324,11 +324,11 @@ end
 
 function TrackContextButton(name, deviceId)
     for i = 1, 10 do
-        if name == "Set suspension to track group " .. i then
+        if name == CurrentLanguage.TrackGroupText .. i then
             SendScriptEvent("UpdateTrackGroups", deviceId .. "," .. i, "", false)
         end
     end
-    if name == "Set suspension to wheel" then
+    if name == CurrentLanguage.WheelGroupText then
         SendScriptEvent("UpdateTrackGroups", deviceId .. ",11", "", false)
     end
 
