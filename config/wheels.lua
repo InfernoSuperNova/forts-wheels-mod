@@ -6,6 +6,13 @@ SPRING_CONST = 30000                                    --spring constant, the f
 DAMPENING = 3000                                        --spring dampening for wheel collisions (higher is less bouncy, lower is less stable)
 WHEEL_SAVE_NAME = {"suspension", "suspensionInverted"}  --savenames of the wheel devices
 
+WHEEL_SPRINGS = {
+    small = {springConst = 30000, dampening = 3000},
+    medium = {springConst = 30000, dampening = 3000},
+    large = {springConst = 60000, dampening = 6000},
+}
+
+
 WHEEL_SUSPENSION_HEIGHTS = {
     small = 75, 
     medium = 150, 
