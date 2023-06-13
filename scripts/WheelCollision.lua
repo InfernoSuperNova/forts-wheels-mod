@@ -118,9 +118,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
             displacement = CheckCollisionsOnBrace(newLink, wheelStats.pos, wheelStats.radius + TRACK_WIDTH, uid)
             
-            ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement)
             local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
-    
+            --velocity must be parsed to road, otherwise Dragon1008 will start flying
+            ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement, velocity)
+            
             SendDisplacementToTracks(displacement, device)
             if displacement and displacement.y ~= 0 then
                 ApplyFinalForce(device, velocity, displacement, structureId)
@@ -263,7 +264,9 @@ WheelLinksColliding = {
 
 function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
     --Centerpoint in polygon
-        
+        for i = 1, 2 do
+            if polygon[i].x == 0 and polygon[i].y == 0 then return end
+        end
         -- Check if any of the polygon's edges intersect with the circle.
         local edgeStart = polygon[1]
         local edgeEnd = polygon[2]
