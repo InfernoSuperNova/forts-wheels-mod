@@ -8,7 +8,7 @@ Root =
 {
 	Name = "TurretCannon",
 	Angle = 0,
-	Pivot = { 0.01, -0.52 },
+	Pivot = { 0.01, -0.445 },
 	PivotOffset = { 0, 0 },
 	Sprite = "turretCannon-flip2",
 	UserData = 0,
