@@ -1,7 +1,7 @@
 Scale = 1
-SelectionWidth = 450.0
-SelectionHeight = 70.0
-SelectionOffset = { -0, -75.5 }
+SelectionWidth = 350.0
+SelectionHeight = 60.0
+SelectionOffset = { -0, -60.5 }
 RecessionBox =
 {
 	Size = { 500, 25 },
@@ -150,11 +150,10 @@ Root =
 {
 	Name = "TurretCannon",
 	Angle = 0,
-	Pivot = { 0.01, -0.52 },
+	Pivot = { 0.0, -0.445 },
 	PivotOffset = { 0, 0 },
 	Sprite = "turretCannon-base",
 	UserData = 0,
-	
 	ChildrenBehind =
 	{
 		{
@@ -162,7 +161,7 @@ Root =
 			Angle = 0,
             --negative is left, positive is right, negative is up, positive is down
 
-			Pivot = { 0.062, 0.35 },
+			Pivot = { 0.042, 0.332 },
 			PivotOffset = { 0.3, 0 },
 			Sprite = "turretCannon-head",
 			UserData = 20,
@@ -207,13 +206,13 @@ Root =
 		},
         {
             Name = "Commander",
-            Pivot = {-0.1, 0.1},
+            Pivot = {-0.054, 0.18},
             Sprite = "turretCannon-commander",
             UserData = 100,
         },
         {
             Name = "Basket",
-            Pivot = {-0.01, 0.67},
+            Pivot = {0.0, 0.515},
             Sprite = "turretCannon-basket",
             UserData = 80,
         },
