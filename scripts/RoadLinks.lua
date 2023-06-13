@@ -72,11 +72,11 @@ function IndexRoadStructures(frame)
     end
 end
 
-function ApplyForceToRoadLinks(nodeA, nodeB, displacement)
+function ApplyForceToRoadLinks(nodeA, nodeB, displacement, wheelVelocity)
     if displacement then
         local velocityA = NodeVelocity(nodeA)
         local velocityB = NodeVelocity(nodeB)
-        local avgVelocity = AverageCoordinates({velocityA, velocityB})
+        local avgVelocity = AverageCoordinates({wheelVelocity, velocityA, velocityB})
         local surfaceNormal = NormalizeVector(displacement)
         if math.abs(displacement.y) > 0 then
             local DampenedForce = {
@@ -84,11 +84,29 @@ function ApplyForceToRoadLinks(nodeA, nodeB, displacement)
                 x = SpringDampenedForce(SPRING_CONST, -displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, avgVelocity.x),
                 y = SpringDampenedForce(SPRING_CONST, -displacement.y, DAMPENING * math.abs(surfaceNormal.y) * 0.2, avgVelocity.y)
             }
+            BetterLog("Road Velocity")
+            BetterLog(avgVelocity)
+            BetterLog("Wheel Velocity")
             dlc2_ApplyForce(nodeA, DampenedForce)
             dlc2_ApplyForce(nodeB, DampenedForce)
-        end
-        
+        end 
     end
-    
-
 end
+
+
+-- if data.brakes[structureId] == true then displacement.x = 0 end
+--     local surfaceNormal = NormalizeVector(displacement)
+--     local DampenedForce = {
+--         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
+--         x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, velocity.x),
+--         y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y), velocity.y)
+--     }
+--     BetterLog({"Force applied to wheel:", DampenedForce})
+--     if FinalSuspensionForces[device.id] and DampenedForce.x then
+--         FinalSuspensionForces[device.id] = {
+--             x = FinalSuspensionForces[device.id].x + DampenedForce.x,
+--             y = FinalSuspensionForces[device.id].y + DampenedForce.y
+--         }
+--     else
+--         FinalSuspensionForces[device.id] = DampenedForce
+--     end
