@@ -314,7 +314,7 @@ end
 function TrackContextMenu(saveName)
     for k, size in pairs(WHEEL_SAVE_NAMES) do
         if CheckSaveNameTable(saveName, size) then
-            AddContextButton("hud-context-blank", WheelGroupText, 3, true, false)
+            AddContextButton("hud-context-blank", CurrentLanguage.WheelGroupText, 3, true, false)
             for i = 1, 10 do
                 AddContextButton("hud-context-blank", CurrentLanguage.TrackGroupText .. i, 3, true, false)
             end
