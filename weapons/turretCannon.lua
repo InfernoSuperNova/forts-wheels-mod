@@ -218,3 +218,10 @@ Root =
         },
 	},
 }
+dofile(path .. "/scripts/BetterLog.lua")
+function RemoveUserData(table)
+	for k, v in pairs(table) do
+		if k == "UserData" then v = 0 end
+		if type(v) =="table" then RemoveUserData(v) end
+	end
+end
