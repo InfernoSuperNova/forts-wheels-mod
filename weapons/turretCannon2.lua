@@ -22,3 +22,7 @@ StructureSplashDamage = 0
 StructureSplashDamageMaxRadius = 0
 
 Sprites = {}
+RemoveUserData(Root)
+
+
+
