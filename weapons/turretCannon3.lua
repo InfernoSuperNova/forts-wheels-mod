@@ -10,3 +10,4 @@ RecessionBox =
 }
 
 Sprites = {}
+RemoveUserData(Root)
