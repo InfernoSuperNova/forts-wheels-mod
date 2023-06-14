@@ -117,6 +117,13 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
             displacement = CheckCollisionsOnBrace(newLink, wheelStats.pos, wheelStats.radius + TRACK_WIDTH, uid)
+            SendDisplacementToTracks(displacement, device)
+            if displacement == nil then --incase of degenerate blocks
+                displacement = Vec3(0,0)
+            end
+            displacement.x = displacement.x / 2
+            displacement.y = displacement.y / 2
+            AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement)
             
             local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
             --velocity must be parsed to road, otherwise Dragon1008 will start flying
