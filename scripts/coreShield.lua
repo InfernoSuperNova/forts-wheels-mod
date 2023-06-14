@@ -66,7 +66,10 @@ end
 function PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, device)
     local force = { x = direction.x * insideShieldFactor * SHIELD_FORCE,
         y = direction.y * insideShieldFactor * SHIELD_FORCE }
-    --HighlightDirectionalVector(devicePos, direction)
+        if ModDebug.forces then
+            HighlightDirectionalVector(devicePos, force, 0.001, {r = 150, g = 220, b = 255, a = 255})
+        end
+    
     dlc2_ApplyForce(device.nodeA, force)
     dlc2_ApplyForce(device.nodeB, force)
 end

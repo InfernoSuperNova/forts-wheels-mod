@@ -17,11 +17,13 @@ end
 ---Highlights a vector with a position, direction, and optional magnitude
 ---@param pos Vector2D the position
 ---@param direction Vector2D the direction (and magnitude)
-function HighlightDirectionalVector(pos, direction)
-
-    local pos2 = {x = pos.x + direction.x * 50, y = pos.y + direction.y * 50}
-    SpawnLine(pos, pos2, {r = 255, g = 255, b = 255, a = 255}, 0.04)
-    SpawnCircle(pos, Distance(pos, pos2) / 5, {r = 255, g = 255, b = 255, a = 255}, 0.04)
+---@param mag number the magnitude
+---@param col Colour the colour
+function HighlightDirectionalVector(pos, direction, mag, col)
+    col = col or {r = 255, g = 255, b= 255, a = 255}
+    local pos2 = {x = pos.x + direction.x * mag, y = pos.y + direction.y * mag, z = -10}
+    SpawnLine(pos, pos2, col, 0.04)
+    SpawnCircle(pos, Distance(pos, pos2) / 5, col, 0.04)
 end
 
 
@@ -35,6 +37,9 @@ function ToggleCollisionDebug()
 end
 function ToggleUpdateDebug()
     ModDebug.update = not ModDebug.update
+function ToggleForcesDebug()
+    ModDebug.forces = not ModDebug.forces
+    Notice("Forces debug: " .. tostring(ModDebug.forces))
 end
 function ClearDebugControls()
         DeleteControl("", "debugControl")  

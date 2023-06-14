@@ -90,8 +90,15 @@ function ApplyForceToRoadLinks(nodeA, nodeB, displacement, wheelVelocity)
             dlc2_ApplyForce(nodeA, DampenedForce)
             dlc2_ApplyForce(nodeB, DampenedForce)
         end 
-    end
-end
+            if ModDebug.forces then
+                local dir = { x = -road.displacement.x, y = -road.displacement.y }
+                local posA = NodePosition(road.nodeA)
+                local posB = NodePosition(road.nodeB)
+                local colour = { r = 255, g = 100, b = 100, a = 255 }
+                HighlightDirectionalVector(posA, dir, 3, colour)
+                HighlightDirectionalVector(posB, dir, 3, colour)
+            end
+        end
 
 
 -- if data.brakes[structureId] == true then displacement.x = 0 end
