@@ -57,8 +57,8 @@ PanDuration = 0
 FireStdDev = 0.01 -- Move to Ammo
 FireStdDevAuto = 0.012 -- Move to Ammo
 Recoil = 600000
-EnergyFireCost = 5000.0 -- Move to Ammo
-MetalFireCost = 200.0 -- Move to Ammo
+EnergyFireCost = 4000.0 -- Move to Ammo
+MetalFireCost = 150.0 -- Move to Ammo
 
 ShowFireAngle = true
 
