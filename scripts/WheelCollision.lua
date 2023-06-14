@@ -321,7 +321,6 @@ function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
 
         local distance = ClosestDistanceOfTwoPoints(circleCenter, edgeStart, edgeEnd)
         local final = CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, wheelRadius, normal)
-        --BetterLog(uid)
         --if final is > 0, then set the normal, otherwise clear the normal, to ensure that it collides with the initial side`
         if final then 
             data.wheelLinksColliding[uid] = normal
