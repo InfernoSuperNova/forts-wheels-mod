@@ -163,11 +163,19 @@ function SendDisplacementToTracks(displacement, device)
         end
     end
 end
+        if ModDebug.forces then
+            HighlightDirectionalVector(wheel.device.nodePosA, wheel.displacement, 3, {r = 100, g = 255, b = 100, a = 255})
+            HighlightDirectionalVector(wheel.device.nodePosB, wheel.displacement, 3, {r = 100, g = 255, b = 100, a = 255})
+        end
 
 function ApplyFinalForce(device, velocity, displacement, structureId)
     if data.brakes[structureId] == true then displacement.x = 0 end
     local surfaceNormal = NormalizeVector(displacement)
     local DampenedForce = {
+    if ModDebug.forces then
+        HighlightDirectionalVector(device.nodePosA, temp, 10, {r = 50, g = 100, b = 255, a = 255})
+        HighlightDirectionalVector(device.nodePosB, {x = -temp.x, y = -temp.y}, 10, {r = 50, g = 100, b = 255, a = 255})
+    end
         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
         x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, velocity.x),
         y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y), velocity.y)
