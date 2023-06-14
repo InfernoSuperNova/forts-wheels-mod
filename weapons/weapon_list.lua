@@ -293,9 +293,9 @@ table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
     Prerequisite = "munitions",
     BuildTimeComplete = 150.0,
     ScrapPeriod = 8,
-    MetalCost = 3000,
-    EnergyCost = 9001,
-    MetalRepairCost = 1000,
+    MetalCost = 1500,
+    EnergyCost = 9000,
+    MetalRepairCost = 500,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
     MaxUpAngle = StandardMaxUpAngle,
