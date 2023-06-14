@@ -34,9 +34,12 @@ function ToggleCollisionDebug()
     else
         DisableTerrainDebug()
     end
+    Notice("Collision debug: " .. tostring(ModDebug.collision))
 end
 function ToggleUpdateDebug()
     ModDebug.update = not ModDebug.update
+    Notice("Update debug: " .. tostring(ModDebug.update))
+end
 function ToggleForcesDebug()
     ModDebug.forces = not ModDebug.forces
     Notice("Forces debug: " .. tostring(ModDebug.forces))
