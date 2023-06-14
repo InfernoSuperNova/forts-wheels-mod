@@ -147,11 +147,7 @@ end
 
 function GetOffsetDevicePos(device, offset)
 
-    local NodeAPos = NodePosition(device.nodeA)
-    local NodeBPos = NodePosition(device.nodeB)
-
-
-    local offsetPos = OffsetPerpendicular(NodeAPos, NodeBPos, offset)
+    local offsetPos = OffsetPerpendicular(device.nodePosA, device.nodePosB, offset)
     local newPos = {
         x = offsetPos.x + device.pos.x,
         y = offsetPos.y + device.pos.y
