@@ -16,7 +16,9 @@ RoadStructureBoundaries = {}
 
     }
 ]]
-
+function UpdateRoads(frame)
+    ApplyRoadForces()
+end
 function CheckNewRoadLinks(saveName, nodeA, nodeB)
     if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
@@ -25,7 +27,7 @@ end
 function DestroyOldRoadLinks(saveName, nodeA, nodeB)
     if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then
         for key, link in pairs(data.roadLinks) do
-            BetterLog(link)
+
             if nodeA == link.nodeA and nodeB == link.nodeB then
                 table.remove(data.roadLinks, key)
             end
@@ -71,25 +73,54 @@ function IndexRoadStructures(frame)
         end
     end
 end
+AccumulatedRoadForces = {}
+function AccumulateForceOnRoad(nodeA, nodeB, displacement)
+    local id = nodeA .. "_" .. nodeB
+    if not displacement then return end
+    if not AccumulatedRoadForces[id] then 
+        AccumulatedRoadForces[id] = {
+            nodeA = nodeA,
+            nodeB = nodeB,
+            displacement = displacement
+        }
+    else
+        AccumulatedRoadForces[id].displacement = {
+            x = AccumulatedRoadForces[id].displacement.x + displacement.x,
+            y = AccumulatedRoadForces[id].displacement.y + displacement.y
+        }
+    end
+    
+end
 
-function ApplyForceToRoadLinks(nodeA, nodeB, displacement, wheelVelocity)
-    if displacement then
-        local velocityA = NodeVelocity(nodeA)
-        local velocityB = NodeVelocity(nodeB)
-        local avgVelocity = AverageCoordinates({wheelVelocity, velocityA, velocityB})
-        local surfaceNormal = NormalizeVector(displacement)
-        if math.abs(displacement.y) > 0 then
-            local DampenedForce = {
-                --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-                x = SpringDampenedForce(SPRING_CONST, -displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, avgVelocity.x),
-                y = SpringDampenedForce(SPRING_CONST, -displacement.y, DAMPENING * math.abs(surfaceNormal.y) * 0.2, avgVelocity.y)
-            }
-            BetterLog("Road Velocity")
-            BetterLog(avgVelocity)
-            BetterLog("Wheel Velocity")
-            dlc2_ApplyForce(nodeA, DampenedForce)
-            dlc2_ApplyForce(nodeB, DampenedForce)
-        end 
+function ApplyRoadForces()
+    for _, road in pairs(AccumulatedRoadForces) do
+        if road.displacement then
+            --Get velocity of nodes
+            local velocityA = NodeVelocity(road.nodeA)
+            local velocityB = NodeVelocity(road.nodeB)
+            --oddly enough, the velocity of the two links have to be averaged to avoid cataclysmic explosions - Perhaps this is because the nodes are linked to each other?
+            local velocity = AverageCoordinates({velocityA, velocityB})
+            local surfaceNormal = NormalizeVector(road.displacement)
+            if math.abs(road.displacement.y) > 0 then
+                -- local DampenedForce = {
+                --     nodeA = {
+                --         x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocityA.x),
+                --         y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocityA.y)
+                --     },
+                --     nodeB = {
+                --         x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocityB.x),
+                --         y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocityB.y)
+                --     },
+                --     --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
+                    
+                -- }
+                local DampenedForce = {
+                    x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
+                    y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
+                }
+                dlc2_ApplyForce(road.nodeA, DampenedForce)
+                dlc2_ApplyForce(road.nodeB, DampenedForce)
+            end 
             if ModDebug.forces then
                 local dir = { x = -road.displacement.x, y = -road.displacement.y }
                 local posA = NodePosition(road.nodeA)
@@ -100,20 +131,7 @@ function ApplyForceToRoadLinks(nodeA, nodeB, displacement, wheelVelocity)
             end
         end
 
+    end
+    AccumulatedRoadForces = {}
 
--- if data.brakes[structureId] == true then displacement.x = 0 end
---     local surfaceNormal = NormalizeVector(displacement)
---     local DampenedForce = {
---         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
---         x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, velocity.x),
---         y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y), velocity.y)
---     }
---     BetterLog({"Force applied to wheel:", DampenedForce})
---     if FinalSuspensionForces[device.id] and DampenedForce.x then
---         FinalSuspensionForces[device.id] = {
---             x = FinalSuspensionForces[device.id].x + DampenedForce.x,
---             y = FinalSuspensionForces[device.id].y + DampenedForce.y
---         }
---     else
---         FinalSuspensionForces[device.id] = DampenedForce
---     end
+end
