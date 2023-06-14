@@ -29,6 +29,7 @@ function WheelCollisionHandler()
         end
     end
     Structures = structures
+    CalculateFinalForce()
 end
 
 function GetDeviceStructureGroups()
@@ -100,10 +101,10 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             displacement = Vec3(0,0)
         end
 
-        local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
+        
         SendDisplacementToTracks(displacement, device)
         if displacement and displacement.y ~= 0 then
-            ApplyFinalForce(device, velocity, displacement, structureId)
+            StoreFinalDisplacement(device, displacement, structureId)
 
             if math.abs(returnVal.y) < math.abs(displacement.y) then
                 returnVal = { x = displacement.x, y = displacement.y }
@@ -127,7 +128,8 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             
             
             if displacement and displacement.y ~= 0 then
-                ApplyFinalForce(device, velocity, displacement, structureId)
+
+                StoreFinalDisplacement(device, displacement, structureId)
     
                 if math.abs(returnVal.y) < math.abs(displacement.y) then
                     returnVal = { x = displacement.x, y = displacement.y }
@@ -162,10 +164,28 @@ function SendDisplacementToTracks(displacement, device)
         end
     end
 end
+FinalDisplacement = {}
+function StoreFinalDisplacement(device, displacement, structureId)
+    FinalDisplacement[device.id] = {displacement = displacement, device = device, structureId = structureId}
+end
+function CalculateFinalForce()
+    for id, wheel in pairs(FinalDisplacement) do
         if ModDebug.forces then
             HighlightDirectionalVector(wheel.device.nodePosA, wheel.displacement, 3, {r = 100, g = 255, b = 100, a = 255})
             HighlightDirectionalVector(wheel.device.nodePosB, wheel.displacement, 3, {r = 100, g = 255, b = 100, a = 255})
         end
+        if data.brakes[wheel.structureId] == true then wheel.displacement.x = 0 end
+        local surfaceNormal = NormalizeVector(wheel.displacement)
+        
+        --Calculate torque that the wheel would produce on the strut from it's offset position, so that struts with only a single wheel and no other structure attached fall over
+        local torque = CalculateTorque(wheel.device)
+        local DampenedForce = DampenFinalForce(wheel.device, wheel.displacement, surfaceNormal, torque)
+
+        FinalSuspensionForces[wheel.device.id] = DampenedForce
+    end
+    FinalDisplacement = {}
+    
+end
 
 function CalculateTorque(device)
 
@@ -182,21 +202,29 @@ function CalculateTorque(device)
     
 
 end
-        --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) * 0.2, velocity.x),
-        y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y), velocity.y)
-    }
-    if FinalSuspensionForces[device.id] and DampenedForce.x then
-        FinalSuspensionForces[device.id] = {
-            x = FinalSuspensionForces[device.id].x + DampenedForce.x,
-            y = FinalSuspensionForces[device.id].y + DampenedForce.y
-        }
-    else
-        FinalSuspensionForces[device.id] = DampenedForce
-    end
-    
-end
 
+function DampenFinalForce(device, displacement, surfaceNormal, torque)
+    --likewise with RoadLinks.lua, velocity has to be averaged between the two nodes, due to the nodes being linked together
+    local velocity = AverageCoordinates({device.nodeVelA, device.nodeVelB})
+    local DampenedForceA = {
+        --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
+        x = SpringDampenedForce(SPRING_CONST, displacement.x + torque.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
+        y = SpringDampenedForce(SPRING_CONST, displacement.y + torque.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
+    }
+    local DampenedForceB = {
+        --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
+        x = SpringDampenedForce(SPRING_CONST, displacement.x - torque.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
+        y = SpringDampenedForce(SPRING_CONST, displacement.y - torque.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
+    }
+
+
+    local DampenedForce = 
+    {
+        DampenedForceA = DampenedForceA,
+        DampenedForceB = DampenedForceB
+    }
+   return DampenedForce 
+end
 
 
 function CheckCollisionsOnBlock(terrain, pos, radius)
