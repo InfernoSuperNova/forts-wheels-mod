@@ -19,8 +19,8 @@ RegisterApplyMod(EngineToDeviceDamage)
 local turretCannon = DeepCopy(FindProjectile("cannon"))
 
 turretCannon.SaveName = "turretCannon"
-turretCannon.ProjectileDamage = turretCannon.ProjectileDamage * 2
-turretCannon.ProjectileSplashDamage = 40
+turretCannon.ProjectileDamage = 1100
+turretCannon.ProjectileSplashDamage = 100
 turretCannon.ProjectileSplashDamageMaxRadius = 400
 turretCannon.ProjectileThickness = 15
 turretCannon.SpeedIndicatorFactor = 1
