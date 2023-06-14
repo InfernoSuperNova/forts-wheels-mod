@@ -210,20 +210,28 @@ function ApplyForces()
     for deviceId, force in pairs(FinalSuspensionForces) do
         if FinalPropulsionForces[deviceId] then
             --Don't ask me why I have to do it like this, just trust that I do have to
-            local newForceX = IgnoreDecimalPlaces(force.x + FinalPropulsionForces[deviceId].x, 5)
-            local newForceY = IgnoreDecimalPlaces(force.y + FinalPropulsionForces[deviceId].y, 5)
+            local newForce = {
+                nodeA = {
+                    x = force.DampenedForceA.x + FinalPropulsionForces[deviceId].x,
+                    y = force.DampenedForceA.y + FinalPropulsionForces[deviceId].y,
+                },
+                nodeB = {
+                    x = force.DampenedForceB.x + FinalPropulsionForces[deviceId].x,
+                    y = force.DampenedForceB.y + FinalPropulsionForces[deviceId].y,
+                }
+            }
             
 
-            FinalAddedForces[deviceId] = { x = newForceX, y = newForceY }
+            FinalAddedForces[deviceId] = newForce
         else
-            FinalAddedForces[deviceId] = force
+            FinalAddedForces[deviceId] = {nodeA = force.DampenedForceA, nodeB = force.DampenedForceB}
         end
     end
 
     for deviceId, force in pairs(FinalAddedForces) do
         local device = FindDeviceInMasterIndex(deviceId)
-        dlc2_ApplyForce(device.nodeA, force)
-        dlc2_ApplyForce(device.nodeB, force)
+        dlc2_ApplyForce(device.nodeA, force.nodeA)
+        dlc2_ApplyForce(device.nodeB, force.nodeB)
     end
     FinalSuspensionForces = {}
     FinalPropulsionForces = {}
