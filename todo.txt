@@ -1,21 +1,21 @@
 in no particular order
 
-Add control device
-fix jarvis wrapping
-engine devices maybe?
-gearboxes?
-optimize collision math further
-Optimize track spawning
+DONE - Add control device
+DONE - fix jarvis wrapping
+DONE - engine devices maybe?
+DONE - gearboxes?
+DONE? - optimize collision math further
+DONE - Optimize track spawning
 Add more smoke particles without them becoming unoptimized
 Some sort of implementation of simultaneous sell material
 
-Add throttle gunning protection (ramp up)
-Make phantom commander tracks invisible
+DONE - Add throttle gunning protection (ramp up)
+DONE - Make phantom commander tracks invisible
 DONE - Fix throttle slider values resetting on deselection
 DONE - fix vibration hopefully
 DONE - finish smoke effects
 DONE - add tracks to outsides of wheels
-DUCTAPE - Lock screen panning when touching the slider
+DONE - Lock screen panning when touching the slider
 DONE - Fix crash when colliding with single node blocks
 DONE? - Fix global wheel controls
 DONE - upgrade engine to weapon
