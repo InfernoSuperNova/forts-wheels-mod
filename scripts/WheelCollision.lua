@@ -125,11 +125,7 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             displacement.y = displacement.y / 2
             AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement)
             
-            local velocity = AverageCoordinates({NodeVelocity(device.nodeA), NodeVelocity(device.nodeB)})
-            --velocity must be parsed to road, otherwise Dragon1008 will start flying
-            ApplyForceToRoadLinks(link.nodeA, link.nodeB, displacement, velocity)
             
-            SendDisplacementToTracks(displacement, device)
             if displacement and displacement.y ~= 0 then
                 ApplyFinalForce(device, velocity, displacement, structureId)
     
