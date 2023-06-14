@@ -34,6 +34,7 @@ TURRET_ANIM_NAMES = {"turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip
 KEYBINDS = {
     ToggleUpdateDebug = {"left control", "left alt", "t"},
     ToggleCollisionDebug = {"left control", "left alt", "d"},
+    ToggleForcesDebug = {"left control", "left alt", "f"},
 
     MoveLeft = {"left shift", "a"},
     MoveRight = {"left shift", "d"},
@@ -85,7 +86,7 @@ AwaitingOrbitalLasers = {}
 ---@field y number
 
 ---@class Devices Table containing relevant device detail
----@field key{strucId:number, team:number, id:number, saveName:string, pos:Pos, nodeA:number, nodeB:number}
+---@field key{strucId:number, team:number, id:number, saveName:string, pos:Pos, nodeA:number, nodeB:number, nodeVelA:Pos, nodeVelB:Pos}
 Devices = {}
 Structures = {}
 
