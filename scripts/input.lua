@@ -1,5 +1,4 @@
 function OnKey(key, down)
-    --BetterLog(key)
     if down == true then
         HeldKeys[key] = true
     else
