@@ -32,6 +32,10 @@ function IndexDevices()
             local pos = GetDevicePosition(id)
             local nodeA = GetDevicePlatformA(id)
             local nodeB = GetDevicePlatformB(id)
+            local nodePosA = NodePosition(nodeA)
+            local nodePosB = NodePosition(nodeB)
+            local nodeVelA = NodeVelocity(nodeA)
+            local nodeVelB = NodeVelocity(nodeB)
             table.insert(Devices, {
                 strucId = structureId,
                 team = team,
@@ -40,6 +44,10 @@ function IndexDevices()
                 pos = pos,
                 nodeA = nodeA,
                 nodeB = nodeB,
+                nodePosA = nodePosA,
+                nodePosB = nodePosB,
+                nodeVelA = nodeVelA,
+                nodeVelB = nodeVelB,
             })
         end
     end
