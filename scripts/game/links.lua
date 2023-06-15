@@ -104,19 +104,24 @@ function IndexRoadStructures(frame)
     end
 end
 AccumulatedRoadForces = {}
-function AccumulateForceOnRoad(nodeA, nodeB, displacement)
+function AccumulateForceOnRoad(nodeA, nodeB, displacement, velocity)
     local id = nodeA .. "_" .. nodeB
     if not displacement then return end
     if not AccumulatedRoadForces[id] then 
         AccumulatedRoadForces[id] = {
             nodeA = nodeA,
             nodeB = nodeB,
-            displacement = displacement
+            displacement = displacement,
+            velocity = velocity,
         }
     else
         AccumulatedRoadForces[id].displacement = {
             x = AccumulatedRoadForces[id].displacement.x + displacement.x,
             y = AccumulatedRoadForces[id].displacement.y + displacement.y
+        }
+        AccumulatedRoadForces[id].velocity = {
+            x = AccumulatedRoadForces[id].velocity.x + velocity.x,
+            y = AccumulatedRoadForces[id].velocity.y + velocity.y
         }
     end
     
@@ -139,8 +144,8 @@ function ApplyRoadForces()
             
             if math.abs(road.displacement.y) > 0 then
                 local DampenedForce = {
-                    x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
-                    y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
+                    x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, road.velocity.x),
+                    y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, road.velocity.y)
                 }
                 dlc2_ApplyForce(road.nodeA, DampenedForce)
                 dlc2_ApplyForce(road.nodeB, DampenedForce)
