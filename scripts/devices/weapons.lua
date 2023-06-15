@@ -2,6 +2,7 @@
 
 
 function FillAwaitingOLTable(node, device)
+    -- BetterLog("e")
     -- local structure
     -- if node then
     --     structure = NodeStructureId(node)
@@ -11,7 +12,8 @@ function FillAwaitingOLTable(node, device)
     --     table.insert(AwaitingOrbitalLasers, nil)
     --     return
     -- end
-    -- table.insert(AwaitingOrbitalLasers, {structure = structure})
+    -- table.insert(AwaitingOrbitalLasers, {id = structure})
+    -- BetterLog(AwaitingOrbitalLasers)
 end
 
 function FillOLTable(saveName, weaponId)
@@ -28,9 +30,12 @@ function UpdateWeapons(frame)
     
 
     
-    -- for weapon, _ in pairs(OrbitalLasers) do
+    -- for weapon, structure in pairs(OrbitalLasers) do
+
     --     local currentPos = GetDevicePosition(weapon)
-    --     local mouse = ProcessedMousePos()
+    --     local structurePos = GetStructurePos(structure.id)
+    --     local structureRadius = GetStructureRadius(structure.id)
+    --     SpawnCircle(structurePos, structureRadius, {r = 255, g = 255, b = 255, a = 255}, 0.04)
     --     local pos = {x = mouse.x, y = currentPos.y}
     --     local speed = mouse.x - currentPos.x
     --     dlc2_SetDevicePosition(weapon, pos)
