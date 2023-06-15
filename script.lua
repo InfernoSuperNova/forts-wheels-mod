@@ -211,9 +211,35 @@ function ApplyForces()
     FinalAddedForces = {}
 end
 function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
+    --check savename matches
     if saveName == "vehicleController" then
-        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+        --destroy the device, to be replaced with weapon version so it can be control grouped
         ApplyDamageToDevice(deviceId, 1000000)
+        local structureControllerCount = 0
+        local existingControllerPositions = {}
+        --search for controllers on the same structure, and count them
+        for _, device in pairs(Devices) do
+            if CheckSaveNameTable(device.saveName, CONTROLLER_SAVE_NAME) and device.strucId == GetDeviceStructureId(deviceId) then
+                    structureControllerCount = structureControllerCount + 1
+                    existingControllerPositions[device.id] = device.pos
+            end
+        end
+        --if there are too many controllers, destroy the new one and give the player a refund
+        if structureControllerCount >= MAX_CONTROLLERS then
+            --deterministic
+            AddResources(teamId, { metal = 300, energy = 2000 }, false, Vec3(0, 0, 0))
+            --GetLocalTeamId is non deterministic, should only be used for effects
+            if GetLocalTeamId() == teamId then
+                SpawnEffect("effects/weapon_blocked.lua", GetDevicePosition(deviceId))
+                for _, device in pairs(existingControllerPositions) do
+                    SpawnEffect("effects/weapon_blocked.lua", device)
+                end
+            end
+
+            return
+        end
+        --else, continue with the creation of the controller weapon
+        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
     end
 end
 
