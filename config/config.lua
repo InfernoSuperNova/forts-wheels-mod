@@ -16,7 +16,8 @@ THROTTLE_DEADZONE = 0.02                                --portion of the throttl
 --devices
 
 ENGINE_SAVE_NAME = {"engine"}                           --savename of engine device
-CONTROLLER_SAVE_NAME = {"vehicleControllerStructure", "vehicleControllerNoStructure"}                           
+CONTROLLER_SAVE_NAME = {"vehicleControllerStructure", "vehicleControllerNoStructure"}     
+MAX_CONTROLLERS = 2                                     --maximum amount of controllers                     
                                                         --savename of the controller
 GEARBOX_SAVE_NAME = {"gearbox"}                         --savename of the transmission
 ENGINE_RUN_COST = 5                                     --upper limit to the metal per second consumption of engines
