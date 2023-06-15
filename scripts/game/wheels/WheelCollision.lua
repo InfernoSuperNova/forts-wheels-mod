@@ -122,12 +122,17 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             if displacement == nil then --incase of degenerate blocks
                 displacement = Vec3(0,0)
             end
-            AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement)
+            local velWheel = AverageCoordinates({device.nodeVelA, device.nodeVelB})
+            local velRoad = AverageCoordinates({NodeVelocity(link.nodeA), NodeVelocity(link.nodeB)})
+            local relativeVel = GetRelativeVelocity(velWheel, velRoad)
+            velWheel = {x = velWheel.x + relativeVel.x, y = velWheel.y + relativeVel.y}
+            velRoad = {x = relativeVel.x + velRoad.x, y = relativeVel.y + velRoad.y}
+            AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement, velRoad)
             
             
             if displacement and displacement.y ~= 0 then
 
-                StoreFinalDisplacement(device, displacement, structureId)
+                StoreFinalDisplacement(device, displacement, structureId, velWheel)
     
                 if math.abs(returnVal.y) < math.abs(displacement.y) then
                     returnVal = { x = displacement.x, y = displacement.y }
@@ -139,6 +144,23 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
         return returnVal
     end
     
+end
+
+function GetRelativeVelocity(velA, velB)
+    return {
+        x = velA.x - velB.x,
+        y = velA.y - velB.y
+    }
+end
+function AverageSpringDampening(nodeA, nodeB, nodeC, nodeD)
+    local vel1 = AverageCoordinates({ nodeA, nodeB })
+    local vel2 = AverageCoordinates({ nodeC, nodeD })
+    BetterLog((vel1.x - vel2.x) / 2)
+    return {
+        x = (vel1.x - vel2.x) / 2,
+        y = (vel1.y - vel2.y) / 2,
+    }
+    --return AverageCoordinates({ vel1, vel2 })
 end
 
 function GetOffsetDevicePos(device, offset)
@@ -163,8 +185,8 @@ function SendDisplacementToTracks(displacement, device)
     end
 end
 FinalDisplacement = {}
-function StoreFinalDisplacement(device, displacement, structureId)
-    FinalDisplacement[device.id] = {displacement = displacement, device = device, structureId = structureId}
+function StoreFinalDisplacement(device, displacement, structureId, velocity)
+    FinalDisplacement[device.id] = {displacement = displacement, device = device, structureId = structureId, velocity = velocity}
 end
 function CalculateFinalForce()
     for id, wheel in pairs(FinalDisplacement) do
@@ -177,7 +199,7 @@ function CalculateFinalForce()
         
         --Calculate torque that the wheel would produce on the strut from it's offset position, so that struts with only a single wheel and no other structure attached fall over
         local torque = CalculateTorque(wheel.device)
-        local DampenedForce = DampenFinalForce(wheel.device, wheel.displacement, surfaceNormal, torque)
+        local DampenedForce = DampenFinalForce(wheel.velocity, wheel.displacement, surfaceNormal, torque, wheel.device)
 
         FinalSuspensionForces[wheel.device.id] = DampenedForce
     end
@@ -201,10 +223,9 @@ function CalculateTorque(device)
 
 end
 
-function DampenFinalForce(device, displacement, surfaceNormal, torque)
-    
+function DampenFinalForce(velocity, displacement, surfaceNormal, torque, device)
+    if not velocity then velocity = AverageCoordinates({device.nodeVelA, device.nodeVelB}) end
     --likewise with RoadLinks.lua, velocity has to be averaged between the two nodes, due to the nodes being linked together
-    local velocity = AverageCoordinates({device.nodeVelA, device.nodeVelB})
     local DampenedForceA = {
         --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
         x = SpringDampenedForce(SPRING_CONST, displacement.x + torque.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
