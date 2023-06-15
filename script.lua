@@ -1,42 +1,13 @@
 --- forts script API --- --script.lua
 
 dofile(path .. "/debugMagic.lua")
-
 dofile("scripts/forts.lua")
-
-dofile(path .. "/config/config.lua")
-dofile(path .. "/config/wheels.lua")
-dofile(path .. "/config/commanders.lua")
-
-dofile(path .. "/scripts/weapons.lua")
-dofile(path .. "/scripts/editor.lua")
-dofile(path .. "/scripts/indexing.lua")
-dofile(path .. "/scripts/RoadLinks.lua")
-dofile(path .. "/scripts/input.lua")
-dofile(path .. "/scripts/coreShield.lua")
-dofile(path .. "/scripts/resources.lua")
-dofile(path .. "/scripts/CommanderDetection.lua")
-dofile(path .. "/scripts/BetterLog.lua")
-dofile(path .. "/scripts/controls.lua")
-dofile(path .. "/scripts/VectorFunctions.lua")
-dofile(path .. "/scripts/graphing.lua")
-dofile(path .. "/scripts/Tracks.lua")
-dofile(path .. "/scripts/WheelCollision.lua")
-dofile(path .. "/scripts/PID.lua")
-dofile(path .. "/scripts/helperDebug.lua")
-dofile(path .. "/scripts/Propulsion.lua")
-dofile(path .. "/scripts/effects.lua")
-dofile(path .. "/scripts/drillScript.lua")
-
-dofile(path .. "/scripts/localization.lua")
-dofile(path .. "/strings/strings.lua")
+dofile(path .. "/config/fileList.lua")
+LoadFiles()
 
 
-
---for every wheel, calculate the distance between it and every terrain block median center
---if the distance between them is less than the distance between the radius of the terrain block and the wheel added, do collision checks with terrain
---then apply force to device nodes if there's a collision, perpendicular to the hit surface
 function Load(GameStart)
+    
     if GetGameMode() == "Editor" then 
         InEditor = true 
         ModDebug.update = true
