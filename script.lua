@@ -15,9 +15,10 @@ function Load(GameStart)
     end
     data.roadLinks = {}
     GetDeviceCounts()
-    data.teams = {}
-    data.teams[1] = DiscoverTeams(1)
-    data.teams[2] = DiscoverTeams(2)
+    data.teams = {
+        DiscoverTeams(1),
+        DiscoverTeams(2)
+    }
     InitializeScript()
     FillCoreShield()
     LocalizeStrings()
