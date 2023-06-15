@@ -122,8 +122,6 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             if displacement == nil then --incase of degenerate blocks
                 displacement = Vec3(0,0)
             end
-            displacement.x = displacement.x / 2
-            displacement.y = displacement.y / 2
             AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement)
             
             
@@ -204,6 +202,7 @@ function CalculateTorque(device)
 end
 
 function DampenFinalForce(device, displacement, surfaceNormal, torque)
+    
     --likewise with RoadLinks.lua, velocity has to be averaged between the two nodes, due to the nodes being linked together
     local velocity = AverageCoordinates({device.nodeVelA, device.nodeVelB})
     local DampenedForceA = {
@@ -217,7 +216,7 @@ function DampenFinalForce(device, displacement, surfaceNormal, torque)
         y = SpringDampenedForce(SPRING_CONST, displacement.y - torque.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
     }
 
-
+    
     local DampenedForce = 
     {
         DampenedForceA = DampenedForceA,
