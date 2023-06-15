@@ -45,6 +45,36 @@ function CheckOldRoadLinks()
 
 end
 
+function IndexLinks()
+    EnumerateStructureLinks(0, -1, "DetermineLinks", true)
+    EnumerateStructureLinks(3, -1, "DetermineLinks", true)
+    for side, teams in pairs(data.teams) do
+        for index, team in pairs(teams) do
+            EnumerateStructureLinks(team, -1, "DetermineLinks", false)
+        end
+    end
+    
+
+end
+function UpdateLinks(frame)
+    
+    RoadCoords = {}
+    
+    if frame % 25 == 0 then
+        RoadStructures = {}
+        CheckOldRoadLinks()
+    end
+    IndexRoadStructures(frame)
+end
+
+function DetermineLinks(nodeA, nodeB, linkPos, saveName, deviceId)
+    --BetterLog(saveName)
+    if CheckSaveNameTable(saveName, ROAD_SAVE_NAME) then 
+        table.insert(data.roadLinks, {nodeA = nodeA, nodeB = nodeB})
+    end
+    return true
+end
+
 function IndexRoadStructures(frame)
     if frame % 25 == 0 then
         RoadStructureBoundaries = {}
@@ -101,22 +131,16 @@ function ApplyRoadForces()
             --oddly enough, the velocity of the two links have to be averaged to avoid cataclysmic explosions - Perhaps this is because the nodes are linked to each other?
             local velocity = AverageCoordinates({velocityA, velocityB})
             local surfaceNormal = NormalizeVector(road.displacement)
+
+            local displacement = {
+                x = -road.displacement.x,
+                y = -road.displacement.y
+            }
+            
             if math.abs(road.displacement.y) > 0 then
-                -- local DampenedForce = {
-                --     nodeA = {
-                --         x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocityA.x),
-                --         y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocityA.y)
-                --     },
-                --     nodeB = {
-                --         x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocityB.x),
-                --         y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocityB.y)
-                --     },
-                --     --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-                    
-                -- }
                 local DampenedForce = {
-                    x = SpringDampenedForce(SPRING_CONST, -road.displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
-                    y = SpringDampenedForce(SPRING_CONST, -road.displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
+                    x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
+                    y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
                 }
                 dlc2_ApplyForce(road.nodeA, DampenedForce)
                 dlc2_ApplyForce(road.nodeB, DampenedForce)
