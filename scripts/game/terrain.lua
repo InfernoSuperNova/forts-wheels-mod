@@ -1,26 +1,4 @@
 
-
---[[
-{
-    [structureId] = {
-        DeviceTeam = 101,
-        DeviceId = 54,
-        SaveName = "bob",
-        Position = {x, y},
-
-    }
-}
-
-]]
-
-
-
-
-
-
-
-
-
 function IndexTerrainBlocks()
     BlockStatistics.totalNodes = 0
     data.terrainCollisionBoxes = {}
