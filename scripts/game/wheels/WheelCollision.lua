@@ -122,17 +122,18 @@ function CheckAndCounteractCollisions(device, collidingBlocks, collidingStructur
             if displacement == nil then --incase of degenerate blocks
                 displacement = Vec3(0,0)
             end
-            local velWheel = AverageCoordinates({device.nodeVelA, device.nodeVelB})
-            local velRoad = AverageCoordinates({NodeVelocity(link.nodeA), NodeVelocity(link.nodeB)})
-            local relativeVel = GetRelativeVelocity(velWheel, velRoad)
-            velWheel = {x = velWheel.x + relativeVel.x, y = velWheel.y + relativeVel.y}
-            velRoad = {x = relativeVel.x + velRoad.x, y = relativeVel.y + velRoad.y}
-            AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement, velRoad)
+
+            local averageVel = AverageSpringDampening(device.nodeVelA, device.nodeVelB, NodeVelocity(link.nodeA), NodeVelocity(link.nodeB))
+            local roadVel = {
+                x = -averageVel.x,
+                y = -averageVel.y
+            }
+            AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement, roadVel)
             
             
             if displacement and displacement.y ~= 0 then
 
-                StoreFinalDisplacement(device, displacement, structureId, velWheel)
+                StoreFinalDisplacement(device, displacement, structureId, averageVel)
     
                 if math.abs(returnVal.y) < math.abs(displacement.y) then
                     returnVal = { x = displacement.x, y = displacement.y }

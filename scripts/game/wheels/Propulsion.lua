@@ -2,15 +2,6 @@
 -- propulsion.lua
 
 
--- Get list of devices grouped by structure
--- Get horizontal vector relative to device
--- Apply horizontal force based on sprite control
--- Place sprite control on base?
--- Also need to implement braking
-
--- Horizontal force applied to each wheel should be base force * engine count / wheel count
-
-
 
 function InitializePropulsion()
     data.throttles = {}
