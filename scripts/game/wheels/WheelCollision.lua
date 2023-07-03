@@ -18,6 +18,10 @@ function WheelCollisionHandler()
 
         for deviceKey, device in pairs(devices) do
             local displacement = CheckCollisionWheelOnSegment(device, collisions.simplifiedBlocks, collisions.structures, structureKey)
+            if VecMagnitude(displacement) > 0 then
+                StoreFinalDisplacement(device, displacement, structureKey)
+            end
+            
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
 
 
@@ -193,8 +197,8 @@ function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, struc
         
         SendDisplacementToTracks(displacement, device)
         if displacement and displacement.y ~= 0 then
-            StoreFinalDisplacement(device, displacement, structureId)
-
+            
+            
             if math.abs(returnVal.y) < math.abs(displacement.y) then
                 returnVal = { x = displacement.x, y = displacement.y }
             end
