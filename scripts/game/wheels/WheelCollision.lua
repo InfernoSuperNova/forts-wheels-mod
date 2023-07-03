@@ -308,8 +308,8 @@ function AverageSpringDampening(nodeA, nodeB, nodeC, nodeD)
     local vel1 = AverageCoordinates({ nodeA, nodeB })
     local vel2 = AverageCoordinates({ nodeC, nodeD })
     return {
-        x = (vel1.x - vel2.x) / 2,
-        y = (vel1.y - vel2.y) / 2,
+        x = (vel1.x - vel2.x) / 4,
+        y = (vel1.y - vel2.y) / 4,
     }
     --return AverageCoordinates({ vel1, vel2 })
 end
