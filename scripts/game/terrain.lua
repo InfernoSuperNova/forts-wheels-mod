@@ -31,6 +31,7 @@ function IndexTerrainBlock(terrainBlock)
     if ModDebug.collision == true then
         --SpawnCircle(data.terrainCollisionBoxes[terrainBlock + 1], data.terrainCollisionBoxes[terrainBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
     end
+    TerrainCorners [terrainBlock + 1] = GetFourOutermostPoints(Terrain[terrainBlock + 1])
 end
 
 function IndexNamedBlocks(BlockCount)
