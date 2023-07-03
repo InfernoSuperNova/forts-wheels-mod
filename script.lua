@@ -350,3 +350,13 @@ end
 function OnContextButtonDevice(name, deviceTeamId, deviceId, saveName)
     TrackContextButton(name, deviceId)
 end
+
+function GetHighestIndex(tbl)
+    local highest = 0
+    for k, v in pairs(tbl) do
+        if k > highest then
+            highest = k
+        end
+    end
+    return highest
+end

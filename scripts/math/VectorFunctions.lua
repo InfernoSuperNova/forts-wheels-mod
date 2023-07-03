@@ -285,6 +285,45 @@ function MinimumCircularBoundary(points)
 
 end
 
+function GetFourOutermostPoints(points)
+    local topLeft, topRight, bottomLeft, bottomRight
+    local topLeftIndex, topRightIndex, bottomLeftIndex, bottomRightIndex
+    for index, point in pairs(points) do
+        if not topLeft then
+            topLeft = point
+            topLeftIndex = index
+        elseif point.x + point.y < topLeft.x + topLeft.y then
+            topLeft = point
+            topLeftIndex = index
+        end
+
+        if not topRight then
+            topRight = point
+            topRightIndex = index
+        elseif point.x - point.y > topRight.x - topRight.y then
+            topRight = point
+            topRightIndex = index
+        end
+
+        if not bottomLeft then
+            bottomLeft = point
+            bottomLeftIndex = index
+        elseif point.x - point.y < bottomLeft.x - bottomLeft.y then
+            bottomLeft = point
+            bottomLeftIndex = index
+        end
+
+        if not bottomRight then
+            bottomRight = point
+            bottomRightIndex = index
+        elseif point.x + point.y > bottomRight.x + bottomRight.y then
+            bottomRight = point
+            bottomRightIndex = index
+        end
+    end
+    return {topLeftIndex, topRightIndex, bottomLeftIndex, bottomRightIndex}
+end
+
 function CircleLineSegmentCollision(circleCenter, radius, segmentStart, segmentEnd)
     -- Calculate the vector from the segment start to the circle center
     local segmentVector = SubtractVectors(segmentEnd, segmentStart)

@@ -1,5 +1,7 @@
 --helperDebug.lua
 --- forts script API ---
+
+
 function HighlightCoords(coords)
     for k, coord in pairs(coords) do
         SpawnCircle(coord, 50, { r = 255, g = 100, b = 100, a = 255 }, data.updateDelta)
@@ -14,6 +16,25 @@ function HighlightPolygon(coords, colour1)
     end
 end
 
+function HighlightPolygonWithDisplacement(coords, displacement, colour1)
+    local newCoords = {}
+    for index, coord in pairs(coords) do
+        if coord and coord.x then
+            newCoords[index] = {x = coord.x + displacement.x, y = coord.y + displacement.y}
+        end
+    end
+    newCoords = FlattenTable(newCoords)
+    HighlightPolygon(newCoords, colour1)
+end
+
+--I'm pretty sure this isn't what FlattenTable means. But screw you.
+function FlattenTable(tbl) 
+    local newTable = {}
+    for k, v in pairs(tbl) do
+        table.insert(newTable, v)
+    end
+    return newTable
+end
 ---Highlights a vector with a position, direction, and optional magnitude
 ---@param pos Vector2D the position
 ---@param direction Vector2D the direction (and magnitude)
