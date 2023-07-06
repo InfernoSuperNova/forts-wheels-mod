@@ -88,7 +88,10 @@ function CheckBoundingCircleCollisions(devices)
             collidingBlocks[terrainId] = true
         end
     end
-    for terrainId, terrain in pairs(Terrain) do
+    for terrainId = 1, GetHighestIndex(Terrain) do
+        local terrain = Terrain[terrainId]
+
+
         if collidingBlocks[terrainId] then
             for _, corner in pairs(TerrainCorners[terrainId]) do
                 if not collidingNodes[terrainId] then collidingNodes[terrainId] = {} end
@@ -109,7 +112,7 @@ function CheckBoundingCircleCollisions(devices)
                     collidingNodes[terrainId][segmentId % #terrain + 1] = true
                 end
             end
-            for segment = 1, #Terrain[terrainId] do
+            for segment = 1, GetHighestIndex(Terrain[terrainId]) do
                 if collidingNodes[terrainId] and collidingNodes[terrainId][segment] then
                     if not simplifiedBlocks[terrainId] then simplifiedBlocks[terrainId] = {} end
                     simplifiedBlocks[terrainId][segment] = Terrain[terrainId][segment]
@@ -119,6 +122,7 @@ function CheckBoundingCircleCollisions(devices)
         if ModDebug.collision then 
             for _, block in pairs(simplifiedBlocks) do
                 HighlightPolygonWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
+                HighlightCoordsTextWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
             end
         end
     end

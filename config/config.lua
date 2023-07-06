@@ -83,6 +83,7 @@ DeviceCounts = {}
 DrivechainDetails = {}
 OrbitalLasers = {}
 AwaitingOrbitalLasers = {}
+ScheduledDeleteControls = {}
 ---@class Pos
 ---@field x number
 ---@field y number
