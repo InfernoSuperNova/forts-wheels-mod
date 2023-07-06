@@ -185,7 +185,7 @@ function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, struc
                 y = (pointA.y + pointB.y) / 2,
                 r = segmentLength / 2
             }
-            if Distance(wheelStats.pos, segmentBC) < wheelStats.radius + segmentBC.r then
+            if Distance(wheelStats.pos, segmentBC) < wheelStats.radius + TRACK_WIDTH * 2 + segmentBC.r then
                 yes[segment] = true
                 yes[segment % #flattenedTerrain + 1] = true
             end
