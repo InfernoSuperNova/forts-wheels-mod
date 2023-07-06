@@ -10,6 +10,7 @@ function UpdateControls()
 end
 
 function OnControlActivated(name, code, doubleClick)
+    SetControlFrame(0)
     local uid = GetLocalClientIndex()
     if name == "brake" and code then
         if data.brakes[code] then
@@ -54,6 +55,7 @@ function GetControlledStructureId(controllerId)
 end
 
 function ThrottleControl()
+    SetControlFrame(0)
     local deviceStructureId = GetControlledStructureId(GetLocalSelectedDeviceId())
     local uid = GetLocalClientIndex()
     
@@ -139,6 +141,7 @@ function CreateBrakeButton(deviceStructureId)
 end
 
 function DestroyUI(uid)
+    SetControlFrame(0)
     current_UI_deviceStructureId = nil
 
     if ControlExists("root", "ThrottleSlider") then

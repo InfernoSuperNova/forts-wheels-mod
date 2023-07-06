@@ -49,6 +49,8 @@ function InitializeScript()
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
     ScheduleCall(5, AlertJoinDiscord, "")
+    SetControlFrame(1)
+    AddTextControl("", "worldBlockDebug", "", ANCHOR_TOP_LEFT, {x = 0, y = 0, z = -10}, true, "Console")
 end
 
 function AlertJoinDiscord()
@@ -65,6 +67,7 @@ function Update(frame)
     if not ModDebug.update then
         ClearDebugControls()
     end
+    UpdateFunction("ClearTerrainDebugControls", frame)
     DebugHighlightTerrain(frame)
     UpdateFunction("GetDeviceCounts", frame)
     UpdateFunction("IndexDevices", frame)
@@ -81,7 +84,7 @@ function Update(frame)
     UpdateFunction("UpdateEffects", frame)
     UpdateFunction("ApplyForces", frame)
     UpdateFunction("UpdateResources", frame)
-    --UpdateFunction("UpdateCoreShields", frame)
+    UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("CheckHeldKeys", frame)
     UpdateFunction("UpdateWeapons", frame)
     
