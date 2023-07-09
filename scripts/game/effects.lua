@@ -47,7 +47,6 @@ function SoundUpdate()
         SoundOnJoin()
     end
     --BetterLog(EffectsList)
-    --BetterLog(data.throttles)
     --engines
     for structureIndex, engine in pairs(data.currentRevs) do
         --pow engine 2 for better revs

@@ -17,8 +17,15 @@ function UpdatePropulsion()
 end
 
 
+--takes a value between -1 and 1
+function UpdateThrottlesFromMapScript(structureId, val) 
+    local normalizedVal = (val + 1) / 2
+    local min = 33
+    local max = 514
+    local xVal = normalizedVal * (max - min) + min
 
-
+    SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(xVal, 3) .. "," .. 15 .. "," .. structureId, "", false)
+end
 
 function UpdateThrottles(inx, iny, deviceStructureId)
     local pos = {x = inx, y = iny}
