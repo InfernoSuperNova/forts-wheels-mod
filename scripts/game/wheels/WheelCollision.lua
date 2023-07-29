@@ -118,11 +118,18 @@ function CheckBoundingCircleCollisions(devices)
                     simplifiedBlocks[terrainId][segment] = Terrain[terrainId][segment]
                 end
             end
+            --do a check here to make sure that the block doesn't just consist of corners
+            for index, block in pairs (simplifiedBlocks) do
+                if not BlockConsistsOfConsecutiveNumbers(block) then
+                    collidingBlocks[index] = nil
+                    simplifiedBlocks[index] = nil
+                end
+            end
         end
         if ModDebug.collision then 
             for _, block in pairs(simplifiedBlocks) do
                 HighlightPolygonWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
-                HighlightCoordsTextWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
+                --HighlightCoordsTextWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
             end
         end
     end
@@ -135,6 +142,46 @@ function CheckBoundingCircleCollisions(devices)
     end
     return {blocks = collidingBlocks, structures = collidingStructures, simplifiedBlocks = simplifiedBlocks}
 end
+
+
+
+function BlockConsistsOfConsecutiveNumbers(block)
+    --Need to determine if the block is a consecutive set of numbers, otherwise it's a false positive
+    local blockLength = GetHighestIndex(block)
+    local prevIndex = blockLength
+    local positives = 0
+    --Absolutely need 4 positives to be a valid block
+    for index = 1, blockLength do
+        --BetterLog(block)
+        if block[index] then
+            local checkpositive = false
+            if index == prevIndex + 1 then
+                BetterLog(index .. " : Positive")
+                positives = positives + 1
+                checkpositive = true
+            end
+            if prevIndex == blockLength and index == 1 then
+                BetterLog(index .. " : Positive (first)")
+                positives = positives + 1
+                checkpositive = true
+            end
+            if not checkpositive then
+                BetterLog(index .. " : Negative (comparison : " .. prevIndex .. ")")
+            end
+            prevIndex = index
+        end
+        
+    end
+    --BetterLog(positives)
+    BetterLog("Positives : " .. positives .. "\n")
+    if positives >= 4 then
+        return true
+    else
+        return false
+    end
+    
+end
+
 
 --Lowest level collision checks, checks a wheel against a line segment (could be a terrain segment or a road segment)
 function CheckCollisionWheelOnSegment(device, collidingBlocks, collidingStructures, structureId)
@@ -164,15 +211,17 @@ function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, struc
         local newTerrain = {}
         local yes = {}
         local cornerIds = {}
+        local ids = {}
         for k, v in pairs(TerrainCorners[blockIndex]) do
             cornerIds[v] = true
         end
         for segment = 1, GetHighestIndex(Nodes) do
-            table.insert(flattenedTerrain, Nodes[segment])
-            if cornerIds[segment] then 
-
-                
-                yes[#flattenedTerrain] = true 
+            if Nodes[segment] then
+                table.insert(flattenedTerrain, Nodes[segment])
+                table.insert(ids, segment)
+                if cornerIds[segment] then
+                    yes[#flattenedTerrain] = true
+                end
             end
         end
         for segment = 1, #flattenedTerrain do
@@ -190,6 +239,10 @@ function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, struc
                 yes[segment % #flattenedTerrain + 1] = true
             end
         end
+        if not BlockConsistsOfConsecutiveNumbers(ids) then
+            continue
+        end
+        --Put a check here to ensure that the block collision is made up of a run of consecutive numbers, otherwise it's a false positive
 
         for id, pos in pairs(flattenedTerrain) do
             if yes[id] then
