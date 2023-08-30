@@ -240,7 +240,8 @@ function EvalMoveKeybinds()
     if new_throttle then
         new_throttle = Clamp(new_throttle, 33, 514)
         
-        if ControlExists("ThrottleSlider", "SliderBar") then
+        SetControlFrame(0)
+        if ControlExists("root", "ThrottleSlider") then
             SetControlRelativePos("ThrottleSlider", "SliderBar", {x = new_throttle, y = 15})
         else
             SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(new_throttle, 3) .. "," .. 15 .. "," .. deviceStructureId, "", false)
