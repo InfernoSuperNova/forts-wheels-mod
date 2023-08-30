@@ -1,9 +1,5 @@
 function OnKey(key, down)
-    if down == true then
-        HeldKeys[key] = true
-    else
-        HeldKeys[key] = nil
-    end
+    HeldKeys[key] = down or nil
 
     CheckHeldKeys()
 end
@@ -17,7 +13,7 @@ function CheckHeldKeys()
                 break
             end
         end
-        
+
         if held then 
             if not PressedKeyBinds[callback] then
                 PressedKeyBinds[callback] = true
