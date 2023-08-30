@@ -4,9 +4,9 @@ function OnKey(key, down)
     else
         HeldKeys[key] = nil
     end
+
+    CheckHeldKeys()
 end
-
-
 
 function CheckHeldKeys()
     for callback, bind in pairs(KEYBINDS) do
@@ -17,6 +17,7 @@ function CheckHeldKeys()
                 break
             end
         end
+        
         if held then 
             if not PressedKeyBinds[callback] then
                 PressedKeyBinds[callback] = true
