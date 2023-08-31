@@ -37,9 +37,9 @@ KEYBINDS = {
     ToggleCollisionDebug = {"left control", "left alt", "d"},
     ToggleForcesDebug = {"left control", "left alt", "f"},
 
-    MoveLeft = {"left shift", "a"},
-    MoveRight = {"left shift", "d"},
-    ToggleBrake = {"left shift", "f"}
+    MoveLeft = {"left control", "a"},
+    MoveRight = {"left control", "d"},
+    ToggleBrake = {"left control", "f"}
 }
 ---@class PressedKeyBinds Keybinds that are currently being pressed.
 ---@field [callback] boolean
