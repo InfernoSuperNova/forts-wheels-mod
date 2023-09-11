@@ -22,7 +22,6 @@ function Load(GameStart)
     InitializeScript()
     FillCoreShield()
     LocalizeStrings()
-    OnLoad_Controls()
 end
 
 function InitializeScript()
