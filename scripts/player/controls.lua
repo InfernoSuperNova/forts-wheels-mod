@@ -9,6 +9,29 @@ function UpdateControls()
     ThrottleControl()
 end
 
+function OnLoad_Controls()
+    SetControlFrame(0)
+
+    local scale = 0.225 
+    
+    local size = ScaleVector(Vec3(254, 70), scale)
+    local pos =  {x = 864 - size.x, y = 487 - size.y} --take bottom right corner where it should be and sub size
+    
+    local par = "indicator-box"
+    AddSpriteControl("HUDPanel", par, "hud-indicator-box", ANCHOR_TOP_LEFT, size, pos, false)
+
+    local size = ScaleVector(Vec3(56, 45), scale)
+    local pos =  ScaleVector(Vec3(34, 12), scale)
+    AddSpriteControl(par, "indicator-left", "hud-indicator-arrow", ANCHOR_TOP_LEFT, size, pos, false)
+    RotateSpriteControl(par, "indicator-left", 2)
+
+    pos.x = pos.x + 65 * scale
+    AddSpriteControl(par, "indicator-brake", "hud-indicator-brake", ANCHOR_TOP_LEFT, size, pos, false)
+
+    pos.x = pos.x + 65 * scale
+    AddSpriteControl(par, "indicator-right", "hud-indicator-arrow", ANCHOR_TOP_LEFT, size, pos, false)
+end
+
 function OnControlActivated(name, code, doubleClick)
     SetControlFrame(0)
     local uid = GetLocalClientIndex()
