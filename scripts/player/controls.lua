@@ -9,29 +9,6 @@ function UpdateControls()
     ThrottleControl()
 end
 
-function OnLoad_Controls()
-    SetControlFrame(0)
-
-    local scale = 0.225 
-    
-    local size = ScaleVector(Vec3(254, 70), scale)
-    local pos =  {x = 864 - size.x, y = 487 - size.y} --take bottom right corner where it should be and sub size
-    
-    local par = "indicator-box"
-    AddSpriteControl("HUDPanel", par, "hud-indicator-box", ANCHOR_TOP_LEFT, size, pos, false)
-
-    local size = ScaleVector(Vec3(56, 45), scale)
-    local pos =  ScaleVector(Vec3(34, 12), scale)
-    AddSpriteControl(par, "indicator-left", "hud-indicator-arrow", ANCHOR_TOP_LEFT, size, pos, false)
-    RotateSpriteControl(par, "indicator-left", 2)
-
-    pos.x = pos.x + 65 * scale
-    AddSpriteControl(par, "indicator-brake", "hud-indicator-brake", ANCHOR_TOP_LEFT, size, pos, false)
-
-    pos.x = pos.x + 65 * scale
-    AddSpriteControl(par, "indicator-right", "hud-indicator-arrow", ANCHOR_TOP_LEFT, size, pos, false)
-end
-
 function OnControlActivated(name, code, doubleClick)
     SetControlFrame(0)
     local uid = GetLocalClientIndex()
@@ -81,9 +58,9 @@ function ThrottleControl()
     local deviceStructureId = GetControlledStructureId(GetLocalSelectedDeviceId())
     local uid = GetLocalClientIndex()
     
+    SetControlFrame(0)
     if deviceStructureId then
         --user has a valid controller selected so we should show the UI and read throttle slider
-        SetControlFrame(0)
 
         if deviceStructureId ~= current_UI_deviceStructureId then DestroyUI(uid) end --recreate UI so button callbacks get updated to new structureid
 
@@ -98,8 +75,24 @@ function ThrottleControl()
         end
 
         UpdateVehicleInfo(deviceStructureId, uid)
+
+        DestroySmallUI()
     else
-        DestroyUI(uid)
+        if ControlExists("HUD", "throttle backdrop") then
+            DestroyUI(uid)
+            CreateSmallUI()
+
+        elseif ControlExists("HUDPanel", "smallui-box") then
+            if not IsValidController(last_selected_controllerId) then
+                DestroySmallUI()
+
+            else
+                local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
+                if not deviceStructureId or data.brakes[deviceStructureId] == nil then
+                    DestroySmallUI()
+                end
+            end
+        end
     end
 end
 
@@ -211,6 +204,64 @@ function UpdateVehicleInfo(structure, uid)
     end
 end
 
+function CreateSmallUI()
+    SetControlFrame(0)
+
+    local scale = 0.225 
+    
+    local size = ScaleVector(Vec3(254, 70), scale)
+    local pos =  {x = 864 - size.x, y = 487 - size.y} --take bottom right corner of where it should be and sub size
+    
+    local par = "smallui-box"
+    AddSpriteControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, size, pos, false)
+
+    local size = ScaleVector(Vec3(56, 45), scale)
+    local pos =  ScaleVector(Vec3(34, 12), scale)
+    AddSpriteControl(par, "smallui-left", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
+    RotateSpriteControl(par, "smallui-left", 2)
+
+    pos.x = pos.x + 65 * scale
+    AddSpriteControl(par, "smallui-brake", "hud-smallui-brake", ANCHOR_TOP_LEFT, size, pos, false)
+
+    pos.x = pos.x + 65 * scale
+    AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
+
+    UpdateSmallUI()
+end
+
+function DestroySmallUI()
+    SetControlFrame(0)
+    if ControlExists("HUDPanel", "smallui-box") then
+        DeleteControl("HUDPanel", "smallui-box")
+    end
+end
+
+function UpdateSmallUI()
+    if not ControlExists("HUDPanel", "smallui-box") then return end
+
+    if not IsValidController(last_selected_controllerId) then
+        DestroySmallUI()
+        return
+    end
+
+    local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
+    if not deviceStructureId or data.brakes[deviceStructureId] == nil then
+        DestroySmallUI()
+        return
+    end
+
+    if moveLeft_down and moveRight_down then
+        ShowControl("smallui-box", "smallui-left", false)
+        ShowControl("smallui-box", "smallui-right", false)
+
+    else
+        ShowControl("smallui-box", "smallui-left", moveLeft_down)
+        ShowControl("smallui-box", "smallui-right", moveRight_down)
+    end
+
+    ShowControl("smallui-box", "smallui-brake", data.brakes[deviceStructureId])
+end
+
 --returns the selected, or as a fallback the last selected controllerId
 function GetMostRecentController()
     local controller = GetLocalSelectedDeviceId()
@@ -271,18 +322,22 @@ end
 -------Keybind callbacks
 function MoveLeft()
     moveLeft_down = true
+    UpdateSmallUI()
 end
 
 function MoveLeft_Up()
     moveLeft_down = false
+    UpdateSmallUI()
 end
 
 function MoveRight()
     moveRight_down = true
+    UpdateSmallUI()
 end
 
 function MoveRight_Up()
     moveRight_down = false
+    UpdateSmallUI()
 end
 
 function ToggleBrake()

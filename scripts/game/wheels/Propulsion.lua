@@ -37,7 +37,7 @@ function UpdateBrakes(state, structure)
     else
         data.brakes[structure] = false
     end
-    
+    UpdateSmallUI()
 end
 function LoopStructures()
     for structureKey, devices in pairs(Structures) do
