@@ -302,3 +302,41 @@ function ToggleBrake()
         end
     end
 end
+
+--[[
+ --call like e.g. Log_UI_Tree("", "HUD", "")
+ --might get stuck in inf loops sometimes
+
+function Log_UI_Tree(parent, name, ind)
+    local r = function(a)
+        a = string.format("%.2f", a)
+
+        while a:sub(-1) == "0" do
+            a = a:sub(1, -2)
+
+            if a:sub(-1) == "." then return a:sub(1, -2) end
+        end
+
+        return a
+    end
+    local pv = function(vec)
+        return r(vec.x) .. ", " .. r(vec.y) .. ", " .. r(vec.z)
+    end
+
+    local pos = GetControlRelativePos(parent, name)
+    local siz = GetControlSize(parent, name)
+
+    local text = ind .. name .. " (relpos=" .. pv(pos) .. ") (size=" .. pv(siz) .. ")"
+    
+    local cc = GetChildCount(name)
+    if cc > 0 then
+        text = text .. " (" .. tostring(cc) .. " childs):"
+    end
+
+    Log(text)
+    
+    for i = 0, cc - 1 do
+        dbgelems(name, GetChildName(name, i), ind .. "    ")
+    end
+end
+]]
