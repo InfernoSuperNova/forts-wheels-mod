@@ -55,12 +55,12 @@ function GetControlledStructureId(controllerId)
 end
 
 function ThrottleControl()
-    SetControlFrame(0)
     local deviceStructureId = GetControlledStructureId(GetLocalSelectedDeviceId())
     local uid = GetLocalClientIndex()
     
     if deviceStructureId then
         --user has a valid controller selected so we should show the UI and read throttle slider
+        SetControlFrame(0)
 
         if deviceStructureId ~= current_UI_deviceStructureId then DestroyUI(uid) end --recreate UI so button callbacks get updated to new structureid
 
@@ -87,7 +87,7 @@ function CreateUI(deviceStructureId, uid)
     local position = { x =200, y = 450}
     local size = { x = 662, y = 371.25}
     AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
-    LoadControl(path .. "/ui/controls.lua", "root")
+    LoadControl(path .. "/ui/throttleSlider.lua", "HUD")
 
     for i = 1, 3 do
         AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
@@ -124,7 +124,7 @@ function CreateUI(deviceStructureId, uid)
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddButtonControl("", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
+    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
@@ -144,14 +144,10 @@ function DestroyUI(uid)
     SetControlFrame(0)
     current_UI_deviceStructureId = nil
 
-    if ControlExists("root", "ThrottleSlider") then
-        DeleteControl("", "close")
+    if ControlExists("HUD", "throttle backdrop") then
         DeleteControl("HUD", "throttle backdrop")
-        DeleteControl("root", "ThrottleSlider")
-        DeleteControl("root", "brake")
-        for i = 1, 6 do
-            DeleteControl("root", "info" .. uid .. i)
-        end
+        DeleteControl("HUD", "GXWheelThrottle")
+        DeleteControl("HUD", "brake")
     end
 end
 
