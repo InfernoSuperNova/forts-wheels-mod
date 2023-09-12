@@ -259,7 +259,7 @@ function UpdateSmallUI()
 
     if smallui_move then
         smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
-        SetControlAbsolutePos("HUDPanel", "smallui-box", smallui_pos)
+        SetControlRelativePos("HUDPanel", "smallui-box", smallui_pos)
         ShowControl("HUDItems", "smallui-tooltip", false)
     else
         ShowControl("HUDItems", "smallui-tooltip", IsMouseInside(smallui_pos, smallui_size))
