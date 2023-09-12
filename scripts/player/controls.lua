@@ -1,5 +1,6 @@
 local moveLeft_down = false --keybinds
 local moveRight_down = false
+local control_down = false
 local keybind_down_last_frame = false
 local last_selected_controllerId = -1
 local current_UI_deviceStructureId = nil
@@ -39,7 +40,16 @@ function OnControlActivated(name, code, doubleClick)
     elseif name == "close" then
         Deselect()
     elseif name == "smallui-box" then
-        smallui_move = doubleClick
+
+        if smallui_move then
+            smallui_move = false
+
+        elseif doubleClick then
+            smallui_move = true
+
+        elseif control_down then
+            FocusCamOnController()
+        end
     end
 end
 
@@ -220,13 +230,16 @@ function CreateSmallUI()
     pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
 
-    AddTextControl("HUDItems", "smallui-tooltip", "Double Click to move", ANCHOR_TOP_LEFT, {x=-30,y=-29.3}, false, "ListToolTips")
+    AddTextControl("HUDItems", "smallui-tooltip-1", "Double Click to move", ANCHOR_TOP_LEFT, {x=-30,y=-41.3}, false, "ListToolTips")
+    AddTextControl("HUDItems", "smallui-tooltip-2", "Control Click to focus camera", ANCHOR_TOP_LEFT, {x=-30,y=-29.3}, false, "ListToolTips")
 end
 
 function DestroySmallUI()
     SetControlFrame(0)
     if ControlExists("HUDPanel", "smallui-box") then
         DeleteControl("HUDPanel", "smallui-box")
+        DeleteControl("HUDItems", "smallui-tooltip-1")
+        DeleteControl("HUDItems", "smallui-tooltip-2")
     end
 end
 
@@ -241,6 +254,18 @@ function IsMouseInside(pos, size)
     then return true
     else return false
     end
+end
+
+function FocusCamOnController()
+    local controller = GetMostRecentController()
+    if not controller then return end
+
+    local strucId = GetControlledStructureId(controller)
+    if not strucId then return end
+
+    SetNamedScreenByHeight("landcruisers", GetDevicePosition(controller), math.max(2000, GetStructureRadius(strucId) * 1.5))
+    RestoreScreen("landcruisers", 1.5, 0.5, true)
+    DeleteNamedScreen("landcruisers")
 end
 
 function UpdateSmallUI()
@@ -260,9 +285,12 @@ function UpdateSmallUI()
     if smallui_move then
         smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
         SetControlRelativePos("HUDPanel", "smallui-box", smallui_pos)
-        ShowControl("HUDItems", "smallui-tooltip", false)
+
+        ShowControl("HUDItems", "smallui-tooltip-1", false)
+        ShowControl("HUDItems", "smallui-tooltip-2", false)
     else
-        ShowControl("HUDItems", "smallui-tooltip", IsMouseInside(smallui_pos, smallui_size))
+        ShowControl("HUDItems", "smallui-tooltip-1", IsMouseInside(smallui_pos, smallui_size))
+        ShowControl("HUDItems", "smallui-tooltip-2", IsMouseInside(smallui_pos, smallui_size))
     end
 
     if data.throttles[deviceStructureId].x < 273.5 then
@@ -375,6 +403,14 @@ end
 
 function LmbDebug()
     smallui_move = false
+end
+
+function CtrlDebug()
+    control_down = true
+end
+
+function CtrlDebug_Up()
+    control_down = false
 end
 
 --[[
