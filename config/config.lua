@@ -38,6 +38,7 @@ KEYBINDS = {
     ToggleForcesDebug = {"left control", "left alt", "f"},
 
     LmbDebug = {"mouse left"}, --not really debug but hides it
+    CtrlDebug = {"left control"},
 
     MoveLeft = {"left control", "a"},
     MoveRight = {"left control", "d"},
