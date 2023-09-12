@@ -219,12 +219,27 @@ function CreateSmallUI()
 
     pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
+
+    AddTextControl("HUDItems", "smallui-tooltip", "Double Click to move", ANCHOR_TOP_LEFT, {x=-30,y=-29.3}, false, "ListToolTips")
 end
 
 function DestroySmallUI()
     SetControlFrame(0)
     if ControlExists("HUDPanel", "smallui-box") then
         DeleteControl("HUDPanel", "smallui-box")
+    end
+end
+
+function IsMouseInside(pos, size)
+    local m = GetMousePos()
+
+    if      m.x >= pos.x 
+        and m.x <  pos.x + size.x
+
+        and m.y >= pos.y
+        and m.y <  pos.y + size.y
+    then return true
+    else return false
     end
 end
 
@@ -245,6 +260,9 @@ function UpdateSmallUI()
     if smallui_move then
         smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
         SetControlAbsolutePos("HUDPanel", "smallui-box", smallui_pos)
+        ShowControl("HUDItems", "smallui-tooltip", false)
+    else
+        ShowControl("HUDItems", "smallui-tooltip", IsMouseInside(smallui_pos, smallui_size))
     end
 
     if data.throttles[deviceStructureId].x < 273.5 then
@@ -382,7 +400,7 @@ function Log_UI_Tree(parent, name, ind)
     local pos = GetControlRelativePos(parent, name)
     local siz = GetControlSize(parent, name)
 
-    local text = ind .. name .. " (relpos=" .. pv(pos) .. ") (size=" .. pv(siz) .. ")"
+    local text = ind .. "'" .. name .. "' (relpos=" .. pv(pos) .. ") (size=" .. pv(siz) .. ")"
     
     local cc = GetChildCount(name)
     if cc > 0 then
@@ -392,7 +410,7 @@ function Log_UI_Tree(parent, name, ind)
     Log(text)
     
     for i = 0, cc - 1 do
-        dbgelems(name, GetChildName(name, i), ind .. "    ")
+        Log_UI_Tree(name, GetChildName(name, i), ind .. "    ")
     end
 end
 ]]
