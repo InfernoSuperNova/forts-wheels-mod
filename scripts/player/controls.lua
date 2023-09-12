@@ -3,9 +3,13 @@ local moveRight_down = false
 local keybind_down_last_frame = false
 local last_selected_controllerId = -1
 local current_UI_deviceStructureId = nil
-local smallui_move = false
+
+local smallui_move  = false
 local smallui_min_x = 200
 local smallui_max_x = 810
+local smallui_scale = 0.225
+local smallui_size  = {x = 254 * smallui_scale, y = 70 * smallui_scale}
+local smallui_pos   = {x = 864 - smallui_size.x, y = 487 - smallui_size.y} --take bottom right corner of where it should be and sub size
 
 function UpdateControls()
     EvalMoveKeybinds()
@@ -22,9 +26,8 @@ function UpdateControls()
             end
         end
         if smallui_move then
-            local pos = GetControlAbsolutePos("HUDPanel", "smallui-box")
-            pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
-            SetControlAbsolutePos("HUDPanel", "smallui-box", pos)
+            smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
+            SetControlAbsolutePos("HUDPanel", "smallui-box", smallui_pos)
         end
     end
 end
@@ -217,24 +220,19 @@ end
 
 function CreateSmallUI()
     SetControlFrame(0)
-
-    local scale = 0.225 
-    
-    local size = ScaleVector(Vec3(254, 70), scale)
-    local pos =  {x = 864 - size.x, y = 487 - size.y} --take bottom right corner of where it should be and sub size
     
     local par = "smallui-box"
-    AddButtonControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, size, pos, "panel")
+    AddButtonControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, smallui_size, smallui_pos, "panel")
 
-    local size = ScaleVector(Vec3(56, 45), scale)
-    local pos =  ScaleVector(Vec3(34, 12), scale)
+    local size = ScaleVector(Vec3(56, 45), smallui_scale)
+    local pos =  ScaleVector(Vec3(34, 12), smallui_scale)
     AddSpriteControl(par, "smallui-left", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
     RotateSpriteControl(par, "smallui-left", 2)
 
-    pos.x = pos.x + 65 * scale
+    pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-brake", "hud-smallui-brake", ANCHOR_TOP_LEFT, size, pos, false)
 
-    pos.x = pos.x + 65 * scale
+    pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
 
     UpdateSmallUI()
