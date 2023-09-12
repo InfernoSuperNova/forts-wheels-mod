@@ -14,22 +14,7 @@ local smallui_pos   = {x = 864 - smallui_size.x, y = 487 - smallui_size.y} --tak
 function UpdateControls()
     EvalMoveKeybinds()
     ThrottleControl()
-
-    if ControlExists("HUDPanel", "smallui-box") then
-        if not IsValidController(last_selected_controllerId) then
-            DestroySmallUI()
-
-        else
-            local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
-            if not deviceStructureId or data.brakes[deviceStructureId] == nil then
-                DestroySmallUI()
-            end
-        end
-        if smallui_move then
-            smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
-            SetControlAbsolutePos("HUDPanel", "smallui-box", smallui_pos)
-        end
-    end
+    UpdateSmallUI()
 end
 
 function OnControlActivated(name, code, doubleClick)
@@ -234,8 +219,6 @@ function CreateSmallUI()
 
     pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
-
-    UpdateSmallUI()
 end
 
 function DestroySmallUI()
@@ -254,18 +237,27 @@ function UpdateSmallUI()
     end
 
     local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
-    if not deviceStructureId or data.brakes[deviceStructureId] == nil then
+    if not deviceStructureId or data.brakes[deviceStructureId] == nil or not data.throttles[deviceStructureId] then
         DestroySmallUI()
         return
     end
 
-    if moveLeft_down and moveRight_down then
-        ShowControl("smallui-box", "smallui-left", false)
+    if smallui_move then
+        smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
+        SetControlAbsolutePos("HUDPanel", "smallui-box", smallui_pos)
+    end
+
+    if data.throttles[deviceStructureId].x < 273.5 then
+        ShowControl("smallui-box", "smallui-left", true)
         ShowControl("smallui-box", "smallui-right", false)
 
+    elseif data.throttles[deviceStructureId].x > 273.5 then
+        ShowControl("smallui-box", "smallui-left", false)
+        ShowControl("smallui-box", "smallui-right", true)
+
     else
-        ShowControl("smallui-box", "smallui-left", moveLeft_down)
-        ShowControl("smallui-box", "smallui-right", moveRight_down)
+        ShowControl("smallui-box", "smallui-left", false)
+        ShowControl("smallui-box", "smallui-right", false)
     end
 
     ShowControl("smallui-box", "smallui-brake", data.brakes[deviceStructureId])
@@ -331,22 +323,18 @@ end
 -------Keybind callbacks
 function MoveLeft()
     moveLeft_down = true
-    UpdateSmallUI()
 end
 
 function MoveLeft_Up()
     moveLeft_down = false
-    UpdateSmallUI()
 end
 
 function MoveRight()
     moveRight_down = true
-    UpdateSmallUI()
 end
 
 function MoveRight_Up()
     moveRight_down = false
-    UpdateSmallUI()
 end
 
 function ToggleBrake()
