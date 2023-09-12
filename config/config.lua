@@ -37,6 +37,8 @@ KEYBINDS = {
     ToggleCollisionDebug = {"left control", "left alt", "d"},
     ToggleForcesDebug = {"left control", "left alt", "f"},
 
+    LmbDebug = {"mouse left"}, --not really debug but hides it
+
     MoveLeft = {"left control", "a"},
     MoveRight = {"left control", "d"},
     ToggleBrake = {"left control", "f"}
