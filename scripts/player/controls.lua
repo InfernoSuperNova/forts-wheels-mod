@@ -3,10 +3,30 @@ local moveRight_down = false
 local keybind_down_last_frame = false
 local last_selected_controllerId = -1
 local current_UI_deviceStructureId = nil
+local smallui_move = false
+local smallui_min_x = 200
+local smallui_max_x = 810
 
 function UpdateControls()
     EvalMoveKeybinds()
     ThrottleControl()
+
+    if ControlExists("HUDPanel", "smallui-box") then
+        if not IsValidController(last_selected_controllerId) then
+            DestroySmallUI()
+
+        else
+            local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
+            if not deviceStructureId or data.brakes[deviceStructureId] == nil then
+                DestroySmallUI()
+            end
+        end
+        if smallui_move then
+            local pos = GetControlAbsolutePos("HUDPanel", "smallui-box")
+            pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
+            SetControlAbsolutePos("HUDPanel", "smallui-box", pos)
+        end
+    end
 end
 
 function OnControlActivated(name, code, doubleClick)
@@ -30,6 +50,8 @@ function OnControlActivated(name, code, doubleClick)
         PrintKeybinds()
     elseif name == "close" then
         Deselect()
+    elseif name == "smallui-box" then
+        smallui_move = doubleClick
     end
 end
 
@@ -81,17 +103,6 @@ function ThrottleControl()
         if ControlExists("HUD", "throttle backdrop") then
             DestroyUI(uid)
             CreateSmallUI()
-
-        elseif ControlExists("HUDPanel", "smallui-box") then
-            if not IsValidController(last_selected_controllerId) then
-                DestroySmallUI()
-
-            else
-                local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
-                if not deviceStructureId or data.brakes[deviceStructureId] == nil then
-                    DestroySmallUI()
-                end
-            end
         end
     end
 end
@@ -213,7 +224,7 @@ function CreateSmallUI()
     local pos =  {x = 864 - size.x, y = 487 - size.y} --take bottom right corner of where it should be and sub size
     
     local par = "smallui-box"
-    AddSpriteControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, size, pos, false)
+    AddButtonControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, size, pos, "panel")
 
     local size = ScaleVector(Vec3(56, 45), scale)
     local pos =  ScaleVector(Vec3(34, 12), scale)
@@ -356,6 +367,10 @@ function ToggleBrake()
             end
         end
     end
+end
+
+function LmbDebug()
+    smallui_move = false
 end
 
 --[[
