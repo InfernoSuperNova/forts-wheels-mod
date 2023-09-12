@@ -7,10 +7,10 @@ local current_UI_deviceStructureId = nil
 
 local smallui_move  = false
 local smallui_min_x = 200
-local smallui_max_x = 810
+local smallui_max_x
 local smallui_scale = 0.225
-local smallui_size  = {x = 254 * smallui_scale, y = 70 * smallui_scale}
-local smallui_pos   = {x = 864 - smallui_size.x, y = 487 - smallui_size.y} --take bottom right corner of where it should be and sub size
+local smallui_size
+local smallui_pos   = {}
 
 function UpdateControls()
     EvalMoveKeybinds()
@@ -215,7 +215,11 @@ end
 
 function CreateSmallUI()
     SetControlFrame(0)
-    
+
+    smallui_size  = {x = 254 * smallui_scale, y = 70 * smallui_scale}
+    smallui_max_x = 867 - smallui_size.x
+    smallui_pos   = {x = math.min(smallui_pos.x or smallui_max_x, smallui_max_x), y = 487 - smallui_size.y} --take bottom right corner of where it should be and sub size
+
     local par = "smallui-box"
     AddButtonControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, smallui_size, smallui_pos, "panel")
 
@@ -230,8 +234,9 @@ function CreateSmallUI()
     pos.x = pos.x + 65 * smallui_scale
     AddSpriteControl(par, "smallui-right", "hud-smallui-arrow", ANCHOR_TOP_LEFT, size, pos, false)
 
-    AddTextControl("HUDItems", "smallui-tooltip-1", "Double Click to move", ANCHOR_TOP_LEFT, {x=-30,y=-41.3}, false, "ListToolTips")
-    AddTextControl("HUDItems", "smallui-tooltip-2", "Control Click to focus camera", ANCHOR_TOP_LEFT, {x=-30,y=-29.3}, false, "ListToolTips")
+    AddTextControl("HUDItems", "smallui-tooltip-1", "Double Click to move", ANCHOR_TOP_LEFT, {x=-30,y=-53.3}, false, "ListToolTips")
+    AddTextControl("HUDItems", "smallui-tooltip-2", "Control-RMB to change size", ANCHOR_TOP_LEFT, {x=-30,y=-41.3}, false, "ListToolTips")
+    AddTextControl("HUDItems", "smallui-tooltip-3", "Control-LMB to focus camera", ANCHOR_TOP_LEFT, {x=-30,y=-29.3}, false, "ListToolTips")
 end
 
 function DestroySmallUI()
@@ -240,6 +245,7 @@ function DestroySmallUI()
         DeleteControl("HUDPanel", "smallui-box")
         DeleteControl("HUDItems", "smallui-tooltip-1")
         DeleteControl("HUDItems", "smallui-tooltip-2")
+        DeleteControl("HUDItems", "smallui-tooltip-3")
     end
 end
 
@@ -288,9 +294,11 @@ function UpdateSmallUI()
 
         ShowControl("HUDItems", "smallui-tooltip-1", false)
         ShowControl("HUDItems", "smallui-tooltip-2", false)
+        ShowControl("HUDItems", "smallui-tooltip-3", false)
     else
         ShowControl("HUDItems", "smallui-tooltip-1", IsMouseInside(smallui_pos, smallui_size))
         ShowControl("HUDItems", "smallui-tooltip-2", IsMouseInside(smallui_pos, smallui_size))
+        ShowControl("HUDItems", "smallui-tooltip-3", IsMouseInside(smallui_pos, smallui_size))
     end
 
     if data.throttles[deviceStructureId].x < 273.5 then
@@ -411,6 +419,16 @@ end
 
 function CtrlDebug_Up()
     control_down = false
+end
+
+function ScaleUI()
+    if not ControlExists("HUDPanel", "smallui-box") then return end
+    if IsMouseInside(smallui_pos, smallui_size) then
+        smallui_scale = smallui_scale + 0.1
+        if smallui_scale > 1 then smallui_scale = 0.125 end
+        DestroySmallUI()
+        CreateSmallUI()
+    end
 end
 
 --[[

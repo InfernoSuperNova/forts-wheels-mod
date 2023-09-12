@@ -42,7 +42,8 @@ KEYBINDS = {
 
     MoveLeft = {"left control", "a"},
     MoveRight = {"left control", "d"},
-    ToggleBrake = {"left control", "f"}
+    ToggleBrake = {"left control", "f"},
+    ScaleUI = {"left control", "mouse right"}
 }
 ---@class PressedKeyBinds Keybinds that are currently being pressed.
 ---@field [callback] boolean
