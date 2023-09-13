@@ -36,7 +36,7 @@ function OnControlActivated(name, code, doubleClick)
             Metric = true
         end
     elseif name == "info" .. uid .. "3" then
-        PrintKeybinds()
+        PrintKeybinds(false, {"MoveLeft", "MoveRight", "ToggleBrake"})
     elseif name == "close" then
         Deselect()
     elseif name == "smallui-box" then
@@ -409,15 +409,15 @@ function ToggleBrake()
     end
 end
 
-function LmbDebug()
+function MouseLeft()
     smallui_move = false
 end
 
-function CtrlDebug()
+function CtrlLeft()
     control_down = true
 end
 
-function CtrlDebug_Up()
+function CtrlLeft_Up()
     control_down = false
 end
 
