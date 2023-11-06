@@ -68,6 +68,7 @@ function GetWheelBoundingCircle(devices)
         local colour1 = {r = 100, g = 255, b = 100, a = 255}
         local colour2 = {r = 0, g = 255, b = 200, a = 255}
         local colour3 = {r = 100, g = 200, b = 255, a = 255}
+        collider.z = -100
         SpawnCircle(collider, collider.r, colour2, 0.04)
         HighlightPolygon(collider.square, colour1)
         HighlightPolygon(positions, colour3)
