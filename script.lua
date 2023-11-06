@@ -61,7 +61,6 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
-    BetterLog(gcinfo())
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
     
