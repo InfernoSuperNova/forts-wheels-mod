@@ -14,6 +14,8 @@ function HighlightPolygon(coords, colour1)
     local newCoords = FlattenTable(coords)
     for coord = 1, GetHighestIndex(newCoords) do
         --SpawnCircle(coords[coord], 50, colour1, data.updateDelta)
+        newCoords[coord].z = -100
+        newCoords[coord % #newCoords + 1].z = -100
         SpawnLine(newCoords[coord], newCoords[coord % #newCoords + 1], colour1, data.updateDelta)
     end
 end
