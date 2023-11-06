@@ -51,7 +51,7 @@ function InitializeScript()
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
     ScheduleCall(5, AlertJoinDiscord, "")
     SetControlFrame(1)
-    AddTextControl("", "worldBlockDebug", "", ANCHOR_TOP_LEFT, {x = 0, y = 0, z = -10}, true, "Console")
+    AddTextControl("", "worldBlockDebug", "", ANCHOR_TOP_LEFT, {x = 0, y = 0, z = -100}, true, "Console")
 end
 
 function AlertJoinDiscord()
