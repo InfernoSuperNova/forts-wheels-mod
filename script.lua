@@ -287,7 +287,7 @@ end
 function SplitLines(str)
     local lines = {} -- Table to store the lines
     local index = 1  -- Index to track the current line
-    for line in _G.str:gmatch("[^\r\n]+") do
+    for line in str:gmatch("[^\r\n]+") do
         lines[index] = line
         index = index + 1
     end
