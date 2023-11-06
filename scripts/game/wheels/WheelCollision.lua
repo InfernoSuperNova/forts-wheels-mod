@@ -258,7 +258,9 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
     local displacement = prevDisplacement
 
     for structure, _ in pairs(collidingStructures) do
-
+        if structure == structureId then
+            continue
+        end
         local roadCollider = RoadStructureBoundaries[structure]
         if Distance(roadCollider, wheelStats.pos) > roadCollider.r + wheelStats.radius then
             continue
@@ -266,7 +268,6 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
 
         local links = RoadStructures[structure]
         for index, link in pairs(links) do
-            
             local newLink = {RoadCoords[structure][index * 2 - 1], RoadCoords[structure][index * 2]}
             local uid = device.id .. "_" .. index * 2 - 1 .. "_" .. index * 2
             --First do a check to see if the wheel collider is within the road segment's bounding circle
@@ -357,7 +358,14 @@ function CalculateFinalForce()
         local surfaceNormal = NormalizeVector(wheel.displacement)
         
         --Calculate torque that the wheel would produce on the strut from it's offset position, so that struts with only a single wheel and no other structure attached fall over
-        local torque = CalculateTorque(wheel.device)
+        
+        local torque
+        if Gravity == 0 then
+            torque = CalculateTorqueSpherical(wheel.device, surfaceNormal)
+        else
+            torque = CalculateTorque(wheel.device)
+        end
+        
         local DampenedForce = DampenFinalForce(wheel.velocity, wheel.displacement, surfaceNormal, torque, wheel.device)
 
         FinalSuspensionForces[wheel.device.id] = DampenedForce
@@ -380,6 +388,19 @@ function CalculateTorque(device)
     return temp
     
 
+end
+
+function CalculateTorqueSpherical(device, surfacePerpVector)
+    local surfaceVector = PerpendicularVector(surfacePerpVector)
+    local strutVector = NormalizeVector({x = device.nodePosA.x - device.nodePosB.x, y = device.nodePosA.y - device.nodePosB.y})
+    local force = CrossProduct(strutVector, surfaceVector) * TORQUE_MUL
+    local torqueForceVector = PerpendicularVector(strutVector)
+    local temp = {x = torqueForceVector.x * force, y = torqueForceVector.y * force}
+    if ModDebug.forces then
+        HighlightDirectionalVector(device.nodePosA, temp, 10, {r = 50, g = 100, b = 255, a = 255})
+        HighlightDirectionalVector(device.nodePosB, {x = -temp.x, y = -temp.y}, 10, {r = 50, g = 100, b = 255, a = 255})
+    end
+    return temp
 end
 
 function DampenFinalForce(velocity, displacement, surfaceNormal, torque, device)

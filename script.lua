@@ -22,6 +22,7 @@ function Load(GameStart)
     InitializeScript()
     FillCoreShield()
     LocalizeStrings()
+    Gravity = GetConstant("Physics.Gravity")
 end
 
 function InitializeScript()
@@ -60,9 +61,10 @@ function AlertJoinDiscord()
 end
 
 function Update(frame)
+    BetterLog(gcinfo())
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
-    local delta
+    
     DebugLog("---------Start of update---------")
     if not ModDebug.update then
         ClearDebugControls()
@@ -89,9 +91,12 @@ function Update(frame)
     
     JustJoined = false
     DebugLog("---------End of update---------")
-    delta = (GetRealTime() - startUpdateTime) * 1000
-    DebugLog("Update took " .. string.format("%.2f", delta) .. "ms")
-    UpdateFunction("DebugUpdate", frame)
+    local delta = (GetRealTime() - startUpdateTime) * 1000
+    if ModDebug.update then
+        DebugLog("Update took " .. string.format("%.2f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        UpdateFunction("DebugUpdate", frame)
+    end
+    
 end
 
 function UpdateFunction(callback, frame)
@@ -99,7 +104,7 @@ function UpdateFunction(callback, frame)
         local prevTime = GetRealTime()
         _G[callback](frame)
         local delta = (GetRealTime() - prevTime) * 1000
-        DebugLog(callback .. " took " .. string.format("%.2f", delta) .. "ms")
+        DebugLog(callback .. " took " .. string.format("%.2f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
     else
         _G[callback](frame)
     end
@@ -283,7 +288,7 @@ end
 function SplitLines(str)
     local lines = {} -- Table to store the lines
     local index = 1  -- Index to track the current line
-    for line in str:gmatch("[^\r\n]+") do
+    for line in _G.str:gmatch("[^\r\n]+") do
         lines[index] = line
         index = index + 1
     end
