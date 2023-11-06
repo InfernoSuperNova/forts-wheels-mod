@@ -97,6 +97,7 @@ function IndexRoadStructures(frame)
             local colour1 = { r = 255, g = 100, b = 100, a = 255 }
             local colour2 = { r = 255, g = 150, b = 100, a = 255 }
             local colour3 = { r = 255, g = 0, b = 0, a = 255 }
+            boundary.z = -100
             SpawnCircle(boundary, boundary.r, colour2, 0.04)
             HighlightPolygon(boundary.square, colour1)
             HighlightPolygon(RoadCoords[structure], colour3)
