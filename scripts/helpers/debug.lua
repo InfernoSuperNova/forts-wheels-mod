@@ -104,6 +104,7 @@ function DebugUpdate()
         AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
     end
 
+    
     local lines = SplitLines(DebugText)
     for i = 1, #lines do
         local text = lines[i]
