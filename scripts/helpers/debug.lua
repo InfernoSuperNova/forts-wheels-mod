@@ -56,8 +56,10 @@ end
 ---@param col Colour the colour
 function HighlightDirectionalVector(pos, direction, mag, col)
     col = col or {r = 255, g = 255, b= 255, a = 255}
-    local pos2 = {x = pos.x + direction.x * mag, y = pos.y + direction.y * mag, z = -10}
+    local pos2 = {x = pos.x + direction.x * mag, y = pos.y + direction.y * mag, z = -100}
+    pos.z = -100
     SpawnLine(pos, pos2, col, 0.04)
+
     SpawnCircle(pos, Distance(pos, pos2) / 5, col, 0.04)
 end
 
