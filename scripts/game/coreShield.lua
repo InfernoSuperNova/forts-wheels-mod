@@ -43,6 +43,7 @@ function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
              if (Distance(shieldCoords, device.pos) < SHIELD_RADIUS) then 
                 local color = { r = 255, g = 94, b = 94, a = 255 }
                 if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
+                shieldCoords.z = -100
                 SpawnCircle(shieldCoords, SHIELD_RADIUS, color, 0.04)
                 EvaluatePositionInShield(device, shieldCoords)
             end
