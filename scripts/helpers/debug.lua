@@ -95,6 +95,10 @@ function DebugLog(string)
 end
 function DebugUpdate()
     SetControlFrame(0)
+
+    local mpos = GetMousePos()
+    DebugLog(string.format("Mouse: %.2f, %.2f", mpos.x, mpos.y))
+
     DebugLog("Press Ctrl + Alt + T to hide")
     if not ControlExists("root", "debugControl") then
         AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
