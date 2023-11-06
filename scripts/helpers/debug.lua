@@ -29,13 +29,13 @@ function HighlightPolygonWithDisplacement(coords, displacement, colour1)
 end
 
 function HighlightCoordsTextWithDisplacement(coords, displacement, colour1)
-    SetControlFrame(1)
-    for index, pos in pairs(coords) do 
-        local name = "blockDebug" .. index
-        local newPos = {x = pos.x + displacement.x, y = pos.y + displacement.y, z = -10}
-        AddTextControl("worldBlockDebug", name, index .. "", ANCHOR_TOP_LEFT, newPos, true, "Result")
-        table.insert(ScheduledDeleteControls, name)
-    end
+    -- SetControlFrame(1)
+    -- for index, pos in pairs(coords) do 
+    --     local name = "blockDebug" .. index
+    --     local newPos = {x = pos.x + displacement.x, y = pos.y + displacement.y, z = -10}
+    --     AddTextControl("worldBlockDebug", name, index .. "", ANCHOR_TOP_LEFT, newPos, true, "Result")
+    --     table.insert(ScheduledDeleteControls, name)
+    -- end
 end
 
 --I'm pretty sure this isn't what FlattenTable means. But screw you.
