@@ -85,7 +85,6 @@ function Update(frame)
     UpdateFunction("ApplyForces", frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
-    UpdateFunction("CheckHeldKeys", frame)
     UpdateFunction("UpdateWeapons", frame)
     
     JustJoined = false
