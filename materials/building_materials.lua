@@ -38,6 +38,7 @@ local road = DeepCopy(FindMaterial("armour"))
 if road then
     road.SaveName = "RoadLink"
     road.Sprite = "road"
+	road.Enabled = false
     --road.MaxAngle = 20
 
 
