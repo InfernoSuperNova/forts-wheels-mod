@@ -8,9 +8,9 @@ TORQUE_MUL = 3
 WHEEL_SAVE_NAME = {"suspension", "suspensionInverted"}  --savenames of the wheel devices
 
 WHEEL_SPRINGS = {
-    small = {springConst = 30000, dampening = 3000},
-    medium = {springConst = 30000, dampening = 3000},
-    large = {springConst = 60000, dampening = 6000},
+    small = {springConst = 15000, dampening = 10000},
+    medium = {springConst = 15000, dampening = 10000},
+    large = {springConst = 30000, dampening = 20000},
 }
 
 

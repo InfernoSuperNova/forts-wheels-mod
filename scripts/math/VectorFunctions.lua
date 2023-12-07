@@ -42,7 +42,11 @@ function FindClosestEdge(point, polygon)
     local closestDistance = 10e11
     for i = 1, #polygon do
         local j = i % #polygon + 1
+        if j < i then continue end
         local edgeStart, edgeEnd = polygon[i], polygon[j]
+        
+        edgeStart.z = -100
+        edgeEnd.z = -100
         local closestPoint = ClosestPointOnLineSegment(point, edgeStart, edgeEnd)
         local distance = Distance(point, closestPoint)
         if distance < closestDistance then
@@ -392,3 +396,5 @@ function CalculateCollisionNormal(lineA, lineB, point)
 
     return sign
 end
+
+

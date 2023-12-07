@@ -131,11 +131,7 @@ end
 function ApplyRoadForces()
     for _, road in pairs(AccumulatedRoadForces) do
         if road.displacement then
-            --Get velocity of nodes
-            local velocityA = NodeVelocity(road.nodeA)
-            local velocityB = NodeVelocity(road.nodeB)
             --oddly enough, the velocity of the two links have to be averaged to avoid cataclysmic explosions - Perhaps this is because the nodes are linked to each other?
-            local velocity = AverageCoordinates({velocityA, velocityB})
             local surfaceNormal = NormalizeVector(road.displacement)
 
             local displacement = {
@@ -143,11 +139,14 @@ function ApplyRoadForces()
                 y = -road.displacement.y
             }
             
+            --0 check or everything explodes
             if math.abs(road.displacement.y) > 0 then
-                local DampenedForce = {
-                    x = SpringDampenedForce(SPRING_CONST, displacement.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, road.velocity.x),
-                    y = SpringDampenedForce(SPRING_CONST, displacement.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, road.velocity.y)
-                }
+
+                displacement = Vec3(displacement.x, displacement.y)
+                local roadVelocity = Vec3(road.velocity.x, road.velocity.y)
+                surfaceNormal = Vec3(surfaceNormal.x, surfaceNormal.y)
+
+                local DampenedForce = DirectionalDampening(SPRING_CONST, displacement, DAMPENING, roadVelocity, surfaceNormal)
                 dlc2_ApplyForce(road.nodeA, DampenedForce)
                 dlc2_ApplyForce(road.nodeB, DampenedForce)
             end 
@@ -165,3 +164,5 @@ function ApplyRoadForces()
     AccumulatedRoadForces = {}
 
 end
+
+

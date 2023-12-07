@@ -98,7 +98,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
         local gearFactor = 2 ^ (gear - 1)
         applicableGears[gear] = {
             
-            propulsionFactor = propulsionFactor / gearFactor,
+            propulsionFactor = propulsionFactor / (gearFactor ^ 0.5),
             maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.95/wheelCount/wheelCount^0.01,
             gear = gear
             
