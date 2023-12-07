@@ -14,9 +14,11 @@ function GetWheelStats(device)
         if device.saveName == names[1] then
             wheelStats.pos = GetOffsetDevicePos(device, WHEEL_SUSPENSION_HEIGHTS[wheelType])
             wheelStats.radius = WHEEL_RADIUSES[wheelType]
+            wheelStats.inverted = false
         elseif device.saveName == names[2] then
             wheelStats.pos = GetOffsetDevicePos(device, -WHEEL_SUSPENSION_HEIGHTS[wheelType])
             wheelStats.radius = WHEEL_RADIUSES[wheelType]
+            wheelStats.inverted = true
         end
     end
 

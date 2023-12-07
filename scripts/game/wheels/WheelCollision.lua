@@ -17,7 +17,7 @@ function WheelCollisionHandler()
         local collisions = CheckBoundingCircleCollisions(devices)
 
         for deviceKey, device in pairs(devices) do
-            local displacement = CheckCollisionWheelOnSegment(device, collisions.simplifiedBlocks, collisions.structures, structureKey)
+            local displacement = CheckCollisionWheelOnSegment(device, collisions.simplifiedBlocks, collisions.blockSegmentsToDo, collisions.structures, structureKey)
             if VecMagnitude(displacement) > 0 then
                 StoreFinalDisplacement(device, displacement, structureKey)
             end
@@ -80,25 +80,28 @@ end
 function CheckBoundingCircleCollisions(devices)
     local wheelBC = GetWheelBoundingCircle(devices)
     local collidingBlocks = {}
-    local collidingNodes = {}
     local simplifiedBlocks = {}
+    local blockSegmentsToDo = {}
     local collidingStructures = {}
     --Check collisions with terrain, set the collidingBlocks table key with the terrain id to true if colliding
     for terrainId, terrainBC in pairs(data.terrainCollisionBoxes) do
-        if Distance(wheelBC, terrainBC) < wheelBC.r + terrainBC.r + 50 then
+        if IsWithinDistance(wheelBC, terrainBC, wheelBC.r + terrainBC.r + 50) then
             collidingBlocks[terrainId] = true
         end
     end
     for terrainId = 1, GetHighestIndex(Terrain) do
         local terrain = Terrain[terrainId]
 
-
+        local doSegments = {}
+        local newSpecialBlock = {}
+        --Looping through all colliding blocks...
         if collidingBlocks[terrainId] then
-            for _, corner in pairs(TerrainCorners[terrainId]) do
-                if not collidingNodes[terrainId] then collidingNodes[terrainId] = {} end
-                collidingNodes[terrainId][corner] = true
-            end
-            for segmentId = 1, #terrain do
+            -- for _, corner in pairs(TerrainCorners[terrainId]) do
+            --     if not collidingNodes[terrainId] then collidingNodes[terrainId] = {} end
+            --     collidingNodes[terrainId][corner] = true
+            -- end
+            --looping through all segments in the block
+            for segmentId = 1   , #terrain do
                 local pointA = terrain[segmentId]
                 local pointB = terrain[segmentId % #terrain + 1]
                 local segmentLength = Distance(pointA, pointB)
@@ -107,19 +110,20 @@ function CheckBoundingCircleCollisions(devices)
                     y = (pointA.y + pointB.y) / 2,
                     r = segmentLength / 2
                 }
-                if Distance(wheelBC, segmentBC) < wheelBC.r + segmentBC.r then
-                    if not collidingNodes[terrainId] then collidingNodes[terrainId] = {} end
-                    collidingNodes[terrainId][segmentId] = true
-                    collidingNodes[terrainId][segmentId % #terrain + 1] = true
+                if IsWithinDistance(wheelBC, segmentBC, wheelBC.r + segmentBC.r) then
+                    doSegments[(segmentId - 2) % #terrain + 1] = true
+                    doSegments[segmentId] = true
+                    doSegments[segmentId % #terrain + 1] = true
+                    doSegments[(segmentId + 2 - 1) % #terrain + 1] = true
+
+                    --check if the block contains the prev node
                 end
             end
-            for segment = 1, GetHighestIndex(Terrain[terrainId]) do
-                if collidingNodes[terrainId] and collidingNodes[terrainId][segment] then
-                    if not simplifiedBlocks[terrainId] then simplifiedBlocks[terrainId] = {} end
-                    simplifiedBlocks[terrainId][segment] = Terrain[terrainId][segment]
-                end
-            end
+            table.insert(simplifiedBlocks, terrain)
+            table.insert(blockSegmentsToDo, doSegments)
         end
+
+        --simplify 
         if ModDebug.collision then 
             for _, block in pairs(simplifiedBlocks) do
                 HighlightPolygonWithDisplacement(block, {x = 0, y = -2500}, {r = 255, g = 255, b = 255, a = 255})
@@ -130,21 +134,22 @@ function CheckBoundingCircleCollisions(devices)
     
     --Check collisions with structures, set the collidingStructures table key with the structure id to true if colliding
     for structureId, roadBC in pairs(RoadStructureBoundaries) do
-        if Distance(wheelBC, roadBC) < wheelBC.r + roadBC.r + 50 then
+        if IsWithinDistance(wheelBC, roadBC, wheelBC.r + roadBC.r + 50) then
+            
             collidingStructures[structureId] = true
         end
     end
-    return {blocks = collidingBlocks, structures = collidingStructures, simplifiedBlocks = simplifiedBlocks}
+    return {blocks = collidingBlocks, structures = collidingStructures, simplifiedBlocks = simplifiedBlocks, blockSegmentsToDo = blockSegmentsToDo}
 end
 
 --Lowest level collision checks, checks a wheel against a line segment (could be a terrain segment or a road segment)
-function CheckCollisionWheelOnSegment(device, collidingBlocks, collidingStructures, structureId)
+function CheckCollisionWheelOnSegment(device, collidingBlocks, blockSegmentsToDo, collidingStructures, structureId)
     local returnVal = { x = 0, y = 0 }
     local wheelStats = GetWheelStats(device)
     
     WheelPos[device.id] = wheelStats.pos
     --looping through blocks
-    returnVal = CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, structureId, returnVal)
+    returnVal = CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, blockSegmentsToDo, structureId, returnVal)
     returnVal = CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, returnVal, structureId)
     
     if returnVal then
@@ -154,45 +159,39 @@ function CheckCollisionWheelOnSegment(device, collidingBlocks, collidingStructur
 end
 
 --Checks a wheel against a terrain block
-function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, structureId, prevDisplacement)
+function CheckCollisionWheelOnTerrain(device, wheelStats, collidingBlocks, blockSegmentsToDo, structureId, prevDisplacement)
     --Assign returnVal to prevDisplacement for the first iteration
     local returnVal = prevDisplacement
     local displacement
     for blockIndex, Nodes in pairs(collidingBlocks) do
-        
+
+
+        local toDo = blockSegmentsToDo[blockIndex]
         --resolve a list of segments to check collisions on
-        local flattenedTerrain = {}
         local newTerrain = {}
         local yes = {}
-        local cornerIds = {}
-        for k, v in pairs(TerrainCorners[blockIndex]) do
-            cornerIds[v] = true
-        end
-        for segment = 1, GetHighestIndex(Nodes) do
-            table.insert(flattenedTerrain, Nodes[segment])
-            if cornerIds[segment] then 
-
-                
-                yes[#flattenedTerrain] = true 
-            end
-        end
-        for segment = 1, #flattenedTerrain do
-
-            local pointA = flattenedTerrain[segment]
-            local pointB = flattenedTerrain[segment % #flattenedTerrain + 1 ]
+        for segment = 1, #Nodes do
+            if not toDo[segment] then continue end
+            if segment > segment % #Nodes + 1 then continue end
+            local pointA = Nodes[segment]
+            local pointB = Nodes[segment % #Nodes + 1 ]
+            pointA.z = -100
+            pointB.z = -100
             local segmentLength = Distance(pointA, pointB)
             local segmentBC = {
                 x = (pointA.x + pointB.x) / 2,
                 y = (pointA.y + pointB.y) / 2,
                 r = segmentLength / 2
             }
-            if Distance(wheelStats.pos, segmentBC) < wheelStats.radius + TRACK_WIDTH * 2 + segmentBC.r then
+            if IsWithinDistance(wheelStats.pos, segmentBC, wheelStats.radius + TRACK_WIDTH * 2 + segmentBC.r) then
+                yes[(segment - 2) % #Nodes + 1] = true
                 yes[segment] = true
-                yes[segment % #flattenedTerrain + 1] = true
+                yes[segment % #Nodes + 1] = true
+                yes[(segment + 2 - 1) % #Nodes + 1] = true
             end
         end
 
-        for id, pos in pairs(flattenedTerrain) do
+        for id, pos in pairs(Nodes) do
             if yes[id] then
                 table.insert(newTerrain, pos)
             end
@@ -231,24 +230,24 @@ end
 -- Check if a circle is colliding with a polygon.
 function CirclePolygonCollision(circleCenter, WHEEL_RADIUS, polygon)
 
-    
     --Centerpoint in polygon
-    if PointInsidePolygon(circleCenter, polygon) then
-        local obj = FindClosestEdge(circleCenter, polygon)
-        local final = CalculateCollisionResponseVector(-obj.closestDistance, obj.closestEdge.edgeStart,
-            obj.closestEdge.edgeEnd,
-            WHEEL_RADIUS)
-        if final then return final end
-        --Centerpoint out of polygon
-    else
-        -- Check if any of the polygon's edges intersect with the circle.
-        local obj = FindClosestEdge(circleCenter, polygon)
-        local final = CalculateCollisionResponseVector(obj.closestDistance, obj.closestEdge.edgeStart,
-            obj.closestEdge.edgeEnd,
-            WHEEL_RADIUS)
-        if final then return final end
+    local obj = FindClosestEdge(circleCenter, polygon)
+    local edge = SubtractVectors(obj.closestEdge.edgeEnd, obj.closestEdge.edgeStart)
+    obj.closestEdge.edgeStart.z = -100
+    obj.closestEdge.edgeEnd.z = -100
+    if ModDebug.collision then
+        SpawnCircle(AverageCoordinates({obj.closestEdge.edgeStart, circleCenter}), Distance(circleCenter, obj.closestEdge.edgeStart) / 2, {r = 255, g = 0, b = 0, a = 255}, 0.04)
+        SpawnCircle(AverageCoordinates({obj.closestEdge.edgeEnd, circleCenter}), Distance(circleCenter, obj.closestEdge.edgeEnd) / 2, {r = 0, g = 255, b = 0, a = 255}, 0.04)
     end
-
+    
+    local edgeToWheelA = SubtractVectors(circleCenter, obj.closestEdge.edgeEnd)
+    local edgeToWheelB = SubtractVectors(circleCenter, obj.closestEdge.edgeStart)
+    local sideOfEdge = CrossProduct(edge, edgeToWheelA) + CrossProduct(edge, edgeToWheelB)
+    local final = CalculateCollisionResponseVector(obj.closestDistance * -math.sign(sideOfEdge), obj.closestEdge.edgeStart,
+        obj.closestEdge.edgeEnd,
+        WHEEL_RADIUS)
+    if final then return final end
+    --Centerpoint out of polygon
     -- If there is no collision, return nil.
     return nil
 end
@@ -259,13 +258,10 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
     local displacement = prevDisplacement
 
     for structure, _ in pairs(collidingStructures) do
-        if structure == structureId then
+        local roadCollider = RoadStructureBoundaries[structure]
+        if not IsWithinDistance(roadCollider, wheelStats.pos, roadCollider.r + wheelStats.radius) then
             continue
         end
-        local roadCollider = RoadStructureBoundaries[structure]
-        if Distance(roadCollider, wheelStats.pos) > roadCollider.r + wheelStats.radius then
-            continue
-        end 
 
         local links = RoadStructures[structure]
         for index, link in pairs(links) do
@@ -278,7 +274,7 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
                 y = (newLink[1].y + newLink[2].y) / 2,
                 r = roadLength / 2
             }
-            if Distance(wheelStats.pos, roadBC) > wheelStats.radius + roadBC.r then
+            if not IsWithinDistance(roadBC, wheelStats.pos, roadBC.r + wheelStats.radius) then
                 continue
             end
             displacement = CheckCollisionsOnBrace(newLink, wheelStats.pos, wheelStats.radius + TRACK_WIDTH, uid)
@@ -288,10 +284,8 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
             end
 
             local averageVel = AverageSpringDampening(device.nodeVelA, device.nodeVelB, NodeVelocity(link.nodeA), NodeVelocity(link.nodeB))
-            local roadVel = {
-                x = -averageVel.x,
-                y = -averageVel.y
-            }
+            local roadVel = AverageCoordinates({-device.nodeVelA, -device.nodeVelB})
+
             AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement, roadVel)
             
             
@@ -407,16 +401,13 @@ end
 function DampenFinalForce(velocity, displacement, surfaceNormal, torque, device)
     if not velocity then velocity = AverageCoordinates({device.nodeVelA, device.nodeVelB}) end
     --likewise with RoadLinks.lua, velocity has to be averaged between the two nodes, due to the nodes being linked together
-    local DampenedForceA = {
-        --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(SPRING_CONST, displacement.x + torque.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
-        y = SpringDampenedForce(SPRING_CONST, displacement.y + torque.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
-    }
-    local DampenedForceB = {
-        --x = SpringDampenedForce(springConst, displacement.x, dampening, velocity.x),
-        x = SpringDampenedForce(SPRING_CONST, displacement.x - torque.x, DAMPENING * math.abs(surfaceNormal.x) ^ 4, velocity.x),
-        y = SpringDampenedForce(SPRING_CONST, displacement.y - torque.y, DAMPENING * math.abs(surfaceNormal.y) ^ 4, velocity.y)
-    }
+    displacement = Vec3(displacement.x, displacement.y)
+    torque = Vec3(torque.x, torque.y)
+    velocity = Vec3(velocity.x, velocity.y)
+    surfaceNormal = Vec3(surfaceNormal.x, surfaceNormal.y)
+
+    local DampenedForceA = DirectionalDampening(SPRING_CONST, displacement + torque, DAMPENING, velocity, surfaceNormal)
+    local DampenedForceB = DirectionalDampening(SPRING_CONST, displacement - torque, DAMPENING, velocity, surfaceNormal)
 
     
     local DampenedForce = 
@@ -428,7 +419,12 @@ function DampenFinalForce(velocity, displacement, surfaceNormal, torque, device)
 end
 
 
-
+function DirectionalDampening(springConst, displacement, dampening, velocity, surfacePerpVector)
+    local velocityPerpToSurface = Dot(velocity, surfacePerpVector)
+    local force = springConst * displacement - dampening * velocityPerpToSurface * surfacePerpVector
+    
+    return force
+end
 
 
 
@@ -478,7 +474,6 @@ function CircleBraceCollision(circleCenter, wheelRadius, polygon, uid)
         -- Check if any of the polygon's edges intersect with the circle.
         local edgeStart = polygon[1]
         local edgeEnd = polygon[2]
-        --grab the normal for that wheel and brace from the table if it exists, else make a new one
         local normal = data.wheelLinksColliding[uid]
         if not normal then
             normal = CalculateCollisionNormal(edgeStart, edgeEnd, circleCenter)
@@ -511,10 +506,36 @@ function CalculateCollisionResponseVector(distance, edgeStart, edgeEnd, WHEEL_RA
 
         -- Scale the perpendicular vector based on the overlap between the circle and the edge
         local distanceFactor = (WHEEL_RADIUS - distance) / WHEEL_RADIUS
+        if math.abs(distance) > WHEEL_RADIUS then distanceFactor = 0 end
         local final = ScaleVector(perpendicularVector, distanceFactor)
         return {x = final.x * normal, y = final.y * normal}
     end
 end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--A cool helper function I sotle from landcroozers 2
+function IsWithinDistance(vector1, vector2, distance)
+    local dx = vector1.x - vector2.x
+    local dy = vector1.y - vector2.y
+    local distanceSquared = dx * dx + dy * dy
+    local givenDistanceSquared = distance * distance
+
+    return distanceSquared <= givenDistanceSquared
+end
 

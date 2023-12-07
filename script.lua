@@ -8,6 +8,11 @@ LoadFiles()
 
 function Load(GameStart)
     
+
+    if not type(dlc2_ApplyForce) == "function" then
+        BetterLog("Error: Landcruisers will not function without High Seas. Please get someone who owns High Seas to host the game, or buy it yourself.")
+        BetterLog(RGBAtoHex(100, 200, 100, 255, false) .. "This is because applyforce is not available in the base game, and is required for the suspension system.")
+    end
     if GetGameMode() == "Editor" then 
         InEditor = true 
         ModDebug.update = true

@@ -202,7 +202,7 @@ function UpdateVehicleInfo(structure, uid)
         --set text
         if Metric then
             SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.kmhr .. CurrentLanguage.SpeedUnitKmph)
-            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxkmhr .. CurrentLanguage.SpeedUnitMph)
+            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxkmhr .. CurrentLanguage.SpeedUnitKmph)
         else
             SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.mph .. CurrentLanguage.SpeedUnitMph)
             SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxmph .. CurrentLanguage.SpeedUnitMph)

@@ -13,6 +13,7 @@ function HighlightPolygon(coords, colour1)
     if not colour1 then colour1 = {r = 255, g = 255, b = 255, a = 255} end
     local newCoords = FlattenTable(coords)
     for coord = 1, GetHighestIndex(newCoords) do
+        if coord > coord % #newCoords + 1 then continue end
         --SpawnCircle(coords[coord], 50, colour1, data.updateDelta)
         newCoords[coord].z = -100
         newCoords[coord % #newCoords + 1].z = -100
