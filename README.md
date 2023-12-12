@@ -1,5 +1,5 @@
 # forts-wheels-mod
-Forts wheels mod
+The Landcruisers mod for Forts
 
 A mod for forts that adds tank tracks and wheels into the game.
 
