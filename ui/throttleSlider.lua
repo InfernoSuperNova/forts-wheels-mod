@@ -32,8 +32,8 @@ Root =
                                 Texture = "slider-arrow-left",
                                 Control =
                                 {
-                                    Position = { 15, 9, },
-                                    Size = { 24, 24, },
+                                    Position = { 7.5, 9, },
+                                    Size = { 12, 12, },
                                     Anchor = 3,
                                 },
                             },
@@ -47,8 +47,8 @@ Root =
                                 Texture = "slider-arrow-right",
                                 Control =
                                 {
-                                    Position = { 132, 9, },
-                                    Size = { 24, 24, },
+                                    Position = { 66, 9, },
+                                    Size = { 12, 12, },
                                     Anchor = 2,
                                 },
                             },
@@ -63,7 +63,7 @@ Root =
                                 Control =
                                 {
                                     Position = { 15, 9, },
-                                    Size = { 117, 24, },
+                                    Size = { 58.5, 24, },
                                     Anchor = 2,
                                 },
                             },
