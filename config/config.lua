@@ -2,6 +2,7 @@ ModDebug = {
     collision = false,
     update = false,
 }
+ReducedVisuals = false
 DebugText = ""
 
 --config values
@@ -21,7 +22,7 @@ MAX_CONTROLLERS = 2                                     --maximum amount of cont
                                                         --savename of the controller
 GEARBOX_SAVE_NAME = {"gearbox"}                         --savename of the transmission
 ENGINE_RUN_COST = 5                                     --upper limit to the metal per second consumption of engines
-TRACK_LINK_DISTANCE = 40                                --distance between track links (visual)
+TRACK_LINK_DISTANCE = 50                                --distance between track links (visual)
 --Core shields
 SHIELD_RADIUS = 1800                                    --radius of the base protecting shield
 SHIELD_DAMAGE = 2                                       --damage of the core shield at center (* 25 per sec)
@@ -30,12 +31,14 @@ SHIELD_FORCE = 2500000                                  --pushback force of the 
 ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road material
 --Turrets
 TURRET_SAVE_NAME = {"turretCannon2"}
-TURRET_ANIM_NAMES = {"turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip3"} 
+TURRET_ANIM_NAMES = {["turretCannonFlip1"] = true, ["turretCannonFlip2"] = true, ["turretCannonFlip3"] = true} 
 --binds
 KEYBINDS = {
     ToggleUpdateDebug = {"left control", "left alt", "t"},
     ToggleCollisionDebug = {"left control", "left alt", "d"},
     ToggleForcesDebug = {"left control", "left alt", "f"},
+    ToggleReducedVisuals = {"left control", "left alt", "v"},
+    ShowWheelSelectionScreen = {"left control", "left alt", "c"},
 
     MouseLeft = {"mouse left"},
     CtrlLeft = {"left control"},
@@ -73,8 +76,8 @@ TracksId = {}
 FinalSuspensionForces = {}
 FinalPropulsionForces = {}
 FinalAddedForces = {}
-Motors = {}
-Gearboxes = {}
+data.motors = {}
+data.gearboxes = {}
 TrackOffsets = {}
 Tracks = {}
 SortedTracks = {}
@@ -95,7 +98,7 @@ ScheduledDeleteControls = {}
 
 ---@class Devices Table containing relevant device detail
 ---@field key{strucId:number, team:number, id:number, saveName:string, pos:Pos, nodeA:number, nodeB:number, nodeVelA:Pos, nodeVelB:Pos}
-Devices = {}
+data.devices = {}
 Structures = {}
 
 
