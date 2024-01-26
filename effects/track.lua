@@ -12,7 +12,7 @@ Sprites =
 			{
 				Frames =
 				{
-					{ texture = path .. "/effects/media/track2.png" },
+					{ texture = path .. "/effects/media/track.png" },
 					
 
 					duration = 0.04,
@@ -38,7 +38,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "track",
 		Additive = false,
-		TimeToLive = 0.04,
+		TimeToLive = 0.08,
 		Angle = 0,
 		InitialSize = 1.0,
 		ExpansionRate = 0,

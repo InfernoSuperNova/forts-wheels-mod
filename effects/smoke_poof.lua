@@ -1,6 +1,6 @@
 --  age (in seconds) at which the explosion actor deletes itself
 --  make sure this exceedes the age of all effects
-LifeSpan = 4.0
+LifeSpan = 20
 
 Effects =
 {
@@ -27,7 +27,7 @@ Effects =
 				Angle = 0,
 				RadialOffsetMin = 0,
 				RadialOffsetMax = 20,
-				ScaleMean = 2,
+				ScaleMean = 5,
 				ScaleStdDev = 0.5,
 				SpeedStretch = 0,
 				SpeedMean = 100,	
@@ -42,6 +42,7 @@ Effects =
 				AlphaKeys = { 0.4, 0.5 },
 				ScaleKeys = { 0.1, 1 },
 			},
+
 		},
 	},
 }
