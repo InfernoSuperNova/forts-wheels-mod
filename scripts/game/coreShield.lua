@@ -32,15 +32,14 @@ function UpdateCoreShields()
                 EnumerateDevicesInShieldRadius(coords, deviceSide, side)
             end
         end
-        
     end
 end
 
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
-    for _, device in pairs(Devices) do
-        if CheckSaveNameTable(device.saveName, TURRET_ANIM_NAMES) then continue end
-        if device.team % MAX_SIDES == deviceSide then 
-             if (Distance(shieldCoords, device.pos) < SHIELD_RADIUS) then 
+    for _, device in pairs(data.devices) do
+        if TURRET_ANIM_NAMES[device.saveName] then continue end
+        if device.team % MAX_SIDES == deviceSide then
+            if IsWithinDistance(device.pos, shieldCoords, SHIELD_RADIUS) then
                 local color = { r = 255, g = 94, b = 94, a = 255 }
                 if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
                 shieldCoords.z = -100
@@ -65,12 +64,14 @@ function DamageDevicesInShield(insideShieldFactor, deviceId)
 end
 
 function PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, device)
-    local force = { x = direction.x * insideShieldFactor * SHIELD_FORCE,
-        y = direction.y * insideShieldFactor * SHIELD_FORCE }
-        if ModDebug.forces then
-            HighlightDirectionalVector(devicePos, force, 0.001, {r = 150, g = 220, b = 255, a = 255})
-        end
-    
+    local force = {
+        x = direction.x * insideShieldFactor * SHIELD_FORCE,
+        y = direction.y * insideShieldFactor * SHIELD_FORCE
+    }
+    if ModDebug.forces then
+        HighlightDirectionalVector(devicePos, force, 0.001, { r = 150, g = 220, b = 255, a = 255 })
+    end
+
     dlc2_ApplyForce(device.nodeA, force)
     dlc2_ApplyForce(device.nodeB, force)
 end
