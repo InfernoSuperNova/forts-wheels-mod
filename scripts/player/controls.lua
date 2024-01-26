@@ -133,23 +133,35 @@ function CreateUI(deviceStructureId, uid)
     CreateBrakeButton(deviceStructureId)
 
     --initialize throttle
-    local pos = {x = 273.5, y = 15}
+    local posThrottle = {x = 273.5, y = 15}
+    local posBrake = {x = 123, y = 15}
     --if the structure doesn't already have a throttle, create it
     if not data.throttles[deviceStructureId] then
         if ControlExists("root", "ThrottleSlider") then
-            SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+            SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(posThrottle.x, 3) .. "," .. posThrottle.y .. "," .. deviceStructureId, "", false)
         end
-        SetControlRelativePos("ThrottleSlider", "SliderBar", pos)
+        SetControlRelativePos("ThrottleSlider", "SliderBar", posThrottle)
+        SetControlRelativePos("BrakeSlider", "SliderBar", posBrake)
+    end
+    if not data.brakeSliders[deviceStructureId] then
+        if ControlExists("root", "BrakeSlider") then
+            SendScriptEvent("UpdateBrakeSliders", IgnoreDecimalPlaces(posBrake.x, 3) .. "," .. posBrake.y .. "," .. deviceStructureId, "", false)
+        end
+        SetControlRelativePos("BrakeSlider", "SliderBar", posBrake)
     end
     
     --set the device slider to whatever the throttle is in the structure throttles table
     if data.throttles[deviceStructureId] then
         SetControlRelativePos("ThrottleSlider", "SliderBar", data.throttles[deviceStructureId])
     end
+
+    if data.brakeSliders[deviceStructureId] then
+        SetControlRelativePos("BrakeSlider", "SliderBar", data.brakeSliders[deviceStructureId])
+    end
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 550}, "Normal")
+    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 538}, "Normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
