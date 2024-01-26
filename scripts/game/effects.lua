@@ -1,4 +1,5 @@
-VelocityToSpawnSmoke = 200
+VelocityToSpawnSmokePuff = 100
+VelocityToSpawnSmokeCloud = 1000
 function UpdateEffects(frame)
     WheelSmoke(frame)
     SoundUpdate()
@@ -11,8 +12,9 @@ function InitializeEffects()
         ["wheel"] = {},
 	}
 end
-
+WheelSmokeEffects = {}
 function WheelSmoke(frame)
+    if ReducedVisuals then return end
     --spawns smoke particles where tires touch ground
     for structure, wheels in pairs(TracksId) do
         for deviceId, pos in pairs(wheels) do
@@ -23,18 +25,24 @@ function WheelSmoke(frame)
             local nodeA = GetDevicePlatformA(deviceId)
             local nodeB = GetDevicePlatformB(deviceId)
             local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
-            local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), 75)
-            local finalOffset
-
-            if GetDeviceType(deviceId) == WHEEL_SAVE_NAME[1] then
-                finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
-            else
-                finalOffset = {x = pos.x + -offset.x, y = pos.y + -offset.y}
-            end
-            if wheelIsTouchingGround then
+            local saveName = GetDeviceType(deviceId)
+            local offsetNum = EFFECT_DISPLACEMENT_KEYS[saveName]
+            local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), offsetNum)
+            local finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
+            if math.abs(wheelIsTouchingGround.x + wheelIsTouchingGround.y) > 0 then
                 local velocityMag = VecMagnitude(velocity)
-                if velocityMag and velocityMag > VelocityToSpawnSmoke and frame % 5 == 0 then
-                    SpawnEffect(path .. "/effects/smoke_poof.lua", finalOffset)
+
+                --we want spawnfrequency to be a lower number as the velocity gets higher
+                local spawnFrequency = math.floor(5000 / velocityMag)
+                --BetterLog(spawnFrequency)
+                if frame % spawnFrequency == 0 then
+
+                    if velocityMag and velocityMag > VelocityToSpawnSmokePuff then
+                        SpawnEffect(path .. "/effects/smoke_poof.lua", finalOffset)
+                    end
+                    if velocityMag and velocityMag > VelocityToSpawnSmokeCloud then
+                        SpawnEffect(path .. "/effects/smoke_cloud.lua", finalOffset)
+                    end
                 end
             end
         end
@@ -52,23 +60,12 @@ function SoundUpdate()
         --pow engine 2 for better revs
         local throttle = math.abs(NormalizeThrottleVal(structureIndex))
         local rpm = ((math.max(engine * 6500, 500) * 3) + math.max(throttle * 6000, 500)) / 4
-        local needEngine = true
         for engine, effect in pairs(EffectsList.engine) do
-            --BetterLog(GetDeviceStructureId(tonumber(engine)))
-            --BetterLog(structureIndex)
-            --BetterLog(engine .. "=" .. tostring(GetDeviceStructureId(tonumber(engine))))
-            --BetterLog(structureIndex)
-            --BetterLog(throttle)
-            --BetterLog(rpm)
             if GetDeviceStructureId(tonumber(engine)) == structureIndex then
-                if needEngine then
-                    if throttle < 0.1 or data.brakes[structureIndex] then rpm = 500 end
-                    SetAudioParameter(effect, "rpm", rpm)
-                    SetAudioParameter(effect, "load", throttle)
-                    needEngine = false
-                else
-                    SetAudioParameter(effect, "rpm", -100)
-                end
+                if throttle < 0.1 or data.brakes[structureIndex] then rpm = 500 end
+
+                SetAudioParameter(effect, "rpm", rpm)
+                SetAudioParameter(effect, "load", throttle)
                 SetEffectPosition(effect, GetDevicePosition(tonumber(engine)))
             end
         end
@@ -94,10 +91,10 @@ function SoundUpdate()
 end
 function SoundAdd(saveName, deviceId)
     --attaches an effect to a new device that tracks sound
-
     --engine
     if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
         local id = SpawnEffect(path .. "/effects/engine_loop.lua", GetDevicePosition(deviceId))
+        SetAudioParameter(id, "rpm", 100)
         EffectsList.engine[tostring(deviceId)] = id
     --wheel
     --[[
@@ -108,7 +105,6 @@ function SoundAdd(saveName, deviceId)
 end
 function SoundRemove(saveName, deviceId)
     --removes an effect when a device that tracks sound is removed
-
     --engine
     if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
         if EffectsList.engine[tostring(deviceId)] then
