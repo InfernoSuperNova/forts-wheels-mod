@@ -20,7 +20,7 @@ local turretCannon = DeepCopy(FindProjectile("cannon"))
 
 turretCannon.SaveName = "turretCannon"
 turretCannon.ProjectileDamage = 1100
-turretCannon.ProjectileSplashDamage = 100
+turretCannon.ProjectileSplashDamage = 70
 turretCannon.ProjectileSplashDamageMaxRadius = 400
 turretCannon.ProjectileThickness = 15
 turretCannon.SpeedIndicatorFactor = 1
