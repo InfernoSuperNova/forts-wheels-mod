@@ -2,7 +2,8 @@ FileList = {
     ["config"] = {
         "commanders", --.lua
         "config",
-        "wheels"
+        "wheels",
+        "premiumIds",
     },
 
     ["scripts"] = {
@@ -23,6 +24,7 @@ FileList = {
             "links",
             "resources",
             "terrain",
+            "premiumWheels",
         },
         ["helpers"] = {
             "BetterLog",
