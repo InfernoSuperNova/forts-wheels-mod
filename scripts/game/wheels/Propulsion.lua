@@ -5,6 +5,7 @@
 
 function InitializePropulsion()
     data.throttles = {}
+    data.brakeSliders = {}
     data.brakes = {}
     data.currentRevs = {}
     data.previousThrottleMags = {}
@@ -31,6 +32,11 @@ function UpdateThrottles(inx, iny, deviceStructureId)
     local pos = {x = inx, y = iny}
     data.throttles[deviceStructureId] = pos
 end
+
+function UpdateBrakeSliders(inx, iny, deviceStructureId)
+    local pos = {x = inx, y = iny}
+    data.brakeSliders[deviceStructureId] = pos
+end
 function UpdateBrakes(state, structure)
     if state == 1 then
         data.brakes[structure] = true
@@ -48,9 +54,9 @@ function LoopStructures()
             end
             wheelCount = wheelCount + 1
         end
-        local motorCount = Motors[structureKey] or 0
+        local motorCount = data.motors[structureKey] or 0
         --Gearboxes[structureKey] + 1 doesn't work if it's nil
-        local gearboxCount = Gearboxes[structureKey] or 0
+        local gearboxCount = data.gearboxes[structureKey] or 0
         gearboxCount = gearboxCount + 1
         --max power input per wheels is 1 motor per 2 wheels
         
@@ -82,6 +88,12 @@ function NormalizeThrottleVal(structure)
     return (data.throttles[structure].x - min) / ((max - min) / 2) - 1
 end
 
+function NormalizeBrakeVal(structure)
+    if not data.brakeSliders[structure] then return 0 end
+    local min = 19
+    local max = 226
+    return (data.brakeSliders[structure].x - min) / ((max - min) / 2) / 2
+end
 
 
 
@@ -142,7 +154,8 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
 
                 local signX = math.sign(velocity.x)
                 local brakeVelocity = velocity.x * 0.01
-                brakeVelocity = Clamp(brakeVelocity, -1, 1)
+                local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3
+                brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
                 FinalPropulsionForces[device.id] = {x = -brakeVelocity * brakeFactor, y = 0}
             end
         end
