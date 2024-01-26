@@ -46,7 +46,7 @@ function FillTracks()
 
 --insert new entries
     --get the count of devices on a side
-    for _, device in pairs(Devices) do
+    for _, device in pairs(data.devices) do
         PlaceSuspensionPosInTable(device)
     end
 end
@@ -58,8 +58,10 @@ function PlaceSuspensionPosInTable(device)
     (CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.small) 
     or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.medium) 
     or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large) 
+    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.extraLarge)
     )
     and IsDeviceFullyBuilt(device.id) then
+        
         if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
@@ -82,13 +84,15 @@ function PlaceSuspensionPosInTable(device)
             suspensionPos.saveName = device.saveName
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
-
+            suspensionPos.deviceId = device.id
+            suspensionPos.teamId = device.team
             table.insert(Tracks[structureId][trackGroup], suspensionPos)
         end
     end
 end
 
 function SortTracks()
+    if ReducedVisuals then PushedTracks = Tracks return end
     for structure, trackSets in pairs(Tracks) do
         local team = GetStructureTeam(structure)
         if not PushedTracks[structure] then PushedTracks[structure] = {} end
@@ -129,7 +133,8 @@ function DrawTracks()
             --hide tracks on phantom
         if not IsCommanderAndEnemyActive("phantom", team) then
             for trackGroup, trackSet in pairs(trackSets) do
-                DrawTrackTreads(trackSet, base, trackGroup)
+                local teamId = Tracks[base][trackGroup][1].teamId
+                DrawTrackTreads(trackSet, base, trackGroup, teamId)
                 DrawTrackSprockets(base, trackGroup)
             end
         end
@@ -139,75 +144,96 @@ end
 function DrawTrackSprockets(base, trackGroup)
     local wheelType
     local angle
-    --trackgroup of 11 represents wheel
-    if trackGroup == 11 then
-        angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TRACK_WIDTH)
 
-        wheelType = "wheel"
-    else
-        angle = TrackOffsets[base].x
-        wheelType = "sprocket"
-    end
+    if not ReducedVisuals then
+        --trackgroup of 11 represents wheel
+        if trackGroup == 11 then
+            angle = (TrackOffsets[base].x / WHEEL_RADIUS) * (WHEEL_RADIUS - TRACK_WIDTH)
 
-    for device, pos in pairs(Tracks[base][trackGroup]) do
-        local effectPath = path .. GetWheelEffectPath(wheelType, pos.saveName)
-        local newAngle = angle
-        if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
-            newAngle = newAngle / 2.5
+            wheelType = "wheel"
+        else
+            angle = TrackOffsets[base].x
+            wheelType = "sprocket"
         end
-        local vecAngle = AngleToVector(newAngle)
-        local effect = SpawnEffectEx(effectPath, pos, vecAngle)
-        table.insert(LocalEffects, effect)
+
+        for device, pos in pairs(Tracks[base][trackGroup]) do
+            local effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["small"]
+            local newAngle = angle
+            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
+                effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["large"]
+                newAngle = newAngle / 2.5
+            end
+            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.extraLarge) then
+                effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["extraLarge"]
+                newAngle = newAngle / 5
+            end
+            local vecAngle = AngleToVector(newAngle)
+            local effect = SpawnEffectEx(effectPath, pos, vecAngle)
+            table.insert(LocalEffects, effect)
+        end
+    else
+        for device, pos in pairs(Tracks[base][trackGroup]) do
+            local radius = 75
+            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then radius = 150 end
+            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.extraLarge) then radius = 250 end
+            SpawnCircle(pos, radius, { r = 255, g = 255, b = 255, a = 255 }, 0.06)
+        end
     end
 end
 
-function DrawTrackTreads(trackSet, base, trackGroup)
+function DrawTrackTreads(trackSet, base, trackGroup, teamId)
+    if ReducedVisuals then return end
     --exclude wheels
     if trackGroup == 11 then return end
     --loop through segments of the tracks
     for wheel = 2, #trackSet, 2 do
         --Only if there's more than 2 points (1 wheel) in set
         if #trackSet > 2 then
-            DrawTrackTreadsFlat(trackSet, wheel, base)
+            DrawTrackTreadsFlat(trackSet, wheel, base, teamId)
         end
     end
     for wheel = 2, #trackSet, 2 do
         local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
         local center = SortedTracks[base][trackGroup][index]
-        DrawTrackTreadsRound(center, trackSet[(wheel - 2) % #trackSet + 1], trackSet[wheel], base)
+        DrawTrackTreadsRound(center, trackSet[(wheel - 2) % #trackSet + 1], trackSet[wheel], base, teamId)
     end
 end
 
-function DrawTrackTreadsRound(center, track1, track2, base)
+function DrawTrackTreadsRound(center, track1, track2, base, teamId)
     local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
     local offset_length = offset / track1.radius * 1.2
 
+    
     local arc = PointsAroundArc(center, track1.radius, track2, track1, TRACK_LINK_DISTANCE, offset_length)
 
-
+    local trackEffect = data.teamWheelTypes[teamId]["track"]
+    local trackLinkEffect = data.teamWheelTypes[teamId]["trackLink"]
 
 
     for point = 1, #arc do
-        SpawnEffectEx(path .. "/effects/track.lua", arc[point], GetPerpendicularVectorAngle(arc[point], center))
+        SpawnEffectEx(path .. trackEffect, arc[point], GetPerpendicularVectorAngle(arc[point], center))
         if arc[point + 1] then
             local newPos = AverageCoordinates({ arc[point], arc[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, GetPerpendicularVectorAngle(newPos, center))
+            SpawnEffectEx(path .. trackLinkEffect, newPos, GetPerpendicularVectorAngle(newPos, center))
         end
     end
 end
 
-function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice)
+function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice, teamId)
     local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
 
     local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TRACK_LINK_DISTANCE,
         -TrackOffsets[correspondingDevice].x % TRACK_LINK_DISTANCE)
     --loop through points on the track
+
+    local trackEffect = data.teamWheelTypes[teamId]["track"]
+    local trackLinkEffect = data.teamWheelTypes[teamId]["trackLink"]
     for point = 1, #points do
-        SpawnEffectEx(path .. "/effects/track.lua", points[point], angle)
+        SpawnEffectEx(path .. trackEffect, points[point], angle)
 
         if points[point + 1] then
             local newPos = AverageCoordinates({ points[point], points[point + 1] })
-            SpawnEffectEx(path .. "/effects/track_link.lua", newPos, angle)
+            SpawnEffectEx(path .. trackLinkEffect, newPos, angle)
         end
     end
 end
