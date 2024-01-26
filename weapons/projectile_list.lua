@@ -9,7 +9,8 @@ EngineToDeviceDamage = function()
             multiplier = 1 / ((ProjectileTable.WeaponDamageBonus + ProjectileTable.ProjectileDamage) / ProjectileTable.ProjectileDamage)
          end
          if not ProjectileTable.DamageMultiplier then ProjectileTable.DamageMultiplier = {} end
-         table.insert(ProjectileTable.DamageMultiplier,{ SaveName = "engine_wep", Direct = multiplier, })
+         table.insert(ProjectileTable.DamageMultiplier,{ SaveName = "vehicleControllerNoStructure", Direct = multiplier, })
+         table.insert(ProjectileTable.DamageMultiplier,{ SaveName = "vehicleControllerStructure", Direct = multiplier, })
       end
    end
 end
