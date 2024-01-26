@@ -7,8 +7,6 @@ LoadFiles()
 
 
 function Load(GameStart)
-    
-
     if not type(dlc2_ApplyForce) == "function" then
         BetterLog("Error: Landcruisers will not function without High Seas. Please get someone who owns High Seas to host the game, or buy it yourself.")
         BetterLog(RGBAtoHex(100, 200, 100, 255, false) .. "This is because applyforce is not available in the base game, and is required for the suspension system.")
@@ -47,6 +45,7 @@ function InitializeScript()
     InitializeDrill()
     InitializeCoreShield()
     InitializeEffects()
+    IndexDevices()
     LoadWeapons()
     data.previousVals = {}
     data.wheelsTouchingGround = {}
@@ -54,15 +53,28 @@ function InitializeScript()
     -- local circle = MinimumBoundingCircle(terrain)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
     -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
+
+    InitializePremiumIds()
+    LoadWheelTypes()
+    ScheduleCall(1, LoadPremiumWheels, "")
     ScheduleCall(5, AlertJoinDiscord, "")
+    ScheduleCall(5, AlertReducedVisuals, "")
+    
     SetControlFrame(1)
     AddTextControl("", "worldBlockDebug", "", ANCHOR_TOP_LEFT, {x = 0, y = 0, z = -100}, true, "Console")
 end
 
 function AlertJoinDiscord()
     Log(RGBAtoHex(82, 139, 255, 255, false) ..
-    "For reporting bugs, making suggestions, and finding other players, join the Wheel Mod discord!")
-    Log(RGBAtoHex(82, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
+    "For reporting bugs, making suggestions, and finding other players, join the Official Landcruisers discord!")
+    Log(RGBAtoHex(200, 139, 255, 255, false) .. "discord.gg/q676KyczFt")
+end
+
+function AlertReducedVisuals()
+    Notice(RGBAtoHex(150, 200, 50, 255, false) ..
+    "Press Ctrl + Alt + V to toggle reduced visuals")
+
+
 end
 
 function Update(frame)
@@ -76,7 +88,7 @@ function Update(frame)
     UpdateFunction("ClearTerrainDebugControls", frame)
     DebugHighlightTerrain(frame)
     UpdateFunction("GetDeviceCounts", frame)
-    UpdateFunction("IndexDevices", frame)
+    --UpdateFunction("IndexDevices", frame)
     UpdateFunction("UpdateDevices", frame)
     UpdateFunction("IndexMovingBlocks", frame)
     UpdateFunction("UpdateLinks", frame)
@@ -86,6 +98,7 @@ function Update(frame)
     UpdateFunction("UpdatePropulsion", frame)
     --UpdateFunction("UpdateTracks", frame)
     UpdateFunction("TrueUpdateTracks", frame)
+    UpdateFunction("UpdateTracks", frame)
     UpdateFunction("UpdateDrill", frame)
     UpdateFunction("UpdateEffects", frame)
     UpdateFunction("ApplyForces", frame)
@@ -114,8 +127,8 @@ function UpdateFunction(callback, frame)
     end
 end
 
-function CheckSaveNameTable(input, table)
-    for k, v in pairs(table) do
+function CheckSaveNameTable(input, t)
+    for k, v in ipairs(t) do
         if input == v then return true end
     end
     return false
@@ -132,7 +145,7 @@ end
 
 function OnDraw(frame)
     if not IsPaused() then
-        UpdateTracks()
+        
     end
     
     if InEditor then
@@ -145,6 +158,7 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
     DrillPlaceEffect(saveName, deviceId)
     SoundAdd(saveName, deviceId)
     CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
+    IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
@@ -160,14 +174,23 @@ function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     DrillRemove(saveName, deviceId)
     RemoveCoreShield(deviceId)
     RemoveTurretDirection(deviceId)
+    HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
 end
 
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     SoundRemove(saveName, deviceId)
     DrillRemove(saveName, deviceId)
     RemoveTurretDirection(deviceId)
+    HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
 end
 
+function OnNodeBroken(nodeId, nodeIdNew)
+    HandleBrokenNode(nodeId, nodeIdNew)
+end
+
+function OnDeviceTeamUpdated(oldTeamId, newTeamId, deviceId, saveName)
+    UpdateDeviceTeam(oldTeamId, newTeamId, deviceId, saveName)
+end
 
 function OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
     CheckNewRoadLinks(saveName, nodeA, nodeB)
@@ -229,8 +252,8 @@ function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
         local structureControllerCount = 0
         local existingControllerPositions = {}
         --search for controllers on the same structure, and count them
-        for _, device in pairs(Devices) do
-            if CheckSaveNameTable(device.saveName, CONTROLLER_SAVE_NAME) and device.strucId == GetDeviceStructureId(deviceId) then
+        for _, device in pairs(data.devices) do
+            if CheckSaveNameTable(device.saveName, CONTROLLER_SAVE_NAME) and device.strucId == GetDeviceStructureId(deviceId) and device.teamId == teamId then
                     structureControllerCount = structureControllerCount + 1
                     existingControllerPositions[device.id] = device.pos
             end
@@ -250,7 +273,7 @@ function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
             return
         end
         --else, continue with the creation of the controller weapon
-        ScheduleCall(0, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
+        ScheduleCall(0.08, CreateControllerWeapon, teamId, deviceId, saveName, nodeA, nodeB, t, GetDeviceTeamId(deviceId))
     end
 end
 
