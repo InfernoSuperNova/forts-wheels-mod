@@ -78,9 +78,15 @@ function ToggleUpdateDebug()
     ModDebug.update = not ModDebug.update
     Notice("Update debug: " .. tostring(ModDebug.update))
 end
+
 function ToggleForcesDebug()
     ModDebug.forces = not ModDebug.forces
     Notice("Forces debug: " .. tostring(ModDebug.forces))
+end
+
+function ToggleReducedVisuals()
+    ReducedVisuals = not ReducedVisuals
+    Notice("Reduced visuals: " .. tostring(ReducedVisuals))
 end
 function ClearDebugControls()
     SetControlFrame(0)
