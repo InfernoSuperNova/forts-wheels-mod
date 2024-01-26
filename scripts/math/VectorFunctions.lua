@@ -73,6 +73,14 @@ function PerpendicularToVertex(point, vertex)
     return NormalizeVector({ x = -vector.y, y = vector.x })
 end
 
+function Vec3Lerp(vec1, vec2, t)
+    return Vec3(
+        vec1.x + (vec2.x - vec1.x) * t,
+        vec1.y + (vec2.y - vec1.y) * t,
+        vec1.z + (vec2.z - vec1.z) * t
+    )
+end
+
 --gets a perpendicular angle as a vector
 function GetPerpendicularVector(point1, point2)
     local dx = point2.x - point1.x
