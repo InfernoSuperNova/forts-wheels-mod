@@ -19,6 +19,7 @@ function UpdateControls()
 end
 
 function OnControlActivated(name, code, doubleClick)
+
     SetControlFrame(0)
     local uid = GetLocalClientIndex()
     if name == "brake" and code then
@@ -50,6 +51,10 @@ function OnControlActivated(name, code, doubleClick)
         elseif control_down then
             FocusCamOnController()
         end
+
+    elseif string.sub(name, 1, 16) == "button_cosmetic_" then
+        
+        GetCosmeticWheelChoice(LocallyAvailableTypes[code])
     end
 end
 
@@ -87,10 +92,14 @@ function ThrottleControl()
         if not ControlExists("root", "ThrottleSlider") then
             CreateUI(deviceStructureId, uid)
         else
-            local pos = GetControlRelativePos("ThrottleSlider", "SliderBar")
+            local throttlePos = GetControlRelativePos("ThrottleSlider", "SliderBar")
             --send the pos to the throttles table
             if ControlExists("root", "ThrottleSlider") then
-                SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(pos.x, 3) .. "," .. pos.y .. "," .. deviceStructureId, "", false)
+                SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(throttlePos.x, 3) .. "," .. throttlePos.y .. "," .. deviceStructureId, "", false)
+            end
+            local brakePos = GetControlRelativePos("BrakeSlider", "SliderBar")
+            if ControlExists("root", "BrakeSlider") then
+                SendScriptEvent("UpdateBrakeSliders", IgnoreDecimalPlaces(brakePos.x, 3) .. "," .. brakePos.y .. "," .. deviceStructureId, "", false)
             end
         end
 
@@ -113,6 +122,7 @@ function CreateUI(deviceStructureId, uid)
     local size = { x = 662, y = 371.25}
     AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
     LoadControl(path .. "/ui/throttleSlider.lua", "HUD")
+    LoadControl(path .. "/ui/brakeSlider.lua", "HUD")
 
     for i = 1, 3 do
         AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
@@ -184,6 +194,7 @@ function DestroyUI(uid)
     if ControlExists("HUD", "throttle backdrop") then
         DeleteControl("HUD", "throttle backdrop")
         DeleteControl("HUD", "GXWheelThrottle")
+        DeleteControl("HUD", "GXWheelBrake")
         DeleteControl("HUD", "brake")
     end
 end
