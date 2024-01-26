@@ -18,7 +18,7 @@ function WheelCollisionHandler()
 
         for deviceKey, device in pairs(devices) do
             local displacement = CheckCollisionWheelOnSegment(device, collisions.simplifiedBlocks, collisions.blockSegmentsToDo, collisions.structures, structureKey)
-            if VecMagnitude(displacement) > 0 then
+            if math.pow(displacement.x, 2) + math.pow(displacement.y, 2) > 0 then
                 StoreFinalDisplacement(device, displacement, structureKey)
             end
             
@@ -37,10 +37,11 @@ end
 --Gets a table of structures, each structure being a "group" of wheel devices
 function GetDeviceStructureGroups()
     local structures = {}
-    for _, device in pairs(Devices) do
+    for _, device in pairs(data.devices) do
         if (CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.small) 
         or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.medium) 
-        or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large)) 
+        or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large)
+        or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.extraLarge))
         and IsDeviceFullyBuilt(device.id) then
             local structureId = device.strucId
             if not structures[structureId] then structures[structureId] = {} end
@@ -62,7 +63,7 @@ function GetWheelBoundingCircle(devices)
     end
     --Get the minimum circular boundary, and add necessary padding
     local collider = MinimumCircularBoundary(positions)
-    collider.r = collider.r + WHEEL_RADIUSES.large + TRACK_WIDTH 
+    collider.r = collider.r + WHEEL_RADIUSES.extraLarge + TRACK_WIDTH 
     --debug stuff
     if ModDebug.collision == true then
         local colour1 = {r = 100, g = 255, b = 100, a = 255}
@@ -284,8 +285,12 @@ function CheckCollisionWheelOnRoad(collidingStructures, wheelStats, device, prev
             end
 
             local averageVel = AverageSpringDampening(device.nodeVelA, device.nodeVelB, NodeVelocity(link.nodeA), NodeVelocity(link.nodeB))
-            local roadVel = AverageCoordinates({-device.nodeVelA, -device.nodeVelB})
-
+            local roadVel = AverageCoordinates({device.nodeVelA, device.nodeVelB})
+            roadVel = Vec3(roadVel.x, roadVel.y)
+            -- if wheelStats.inverted then
+            --     roadVel.x = -roadVel.x
+            -- end
+            roadVel.y = -roadVel.y
             AccumulateForceOnRoad(link.nodeA, link.nodeB, displacement, roadVel)
             
             
@@ -406,9 +411,9 @@ function DampenFinalForce(velocity, displacement, surfaceNormal, torque, device)
     velocity = Vec3(velocity.x, velocity.y)
     surfaceNormal = Vec3(surfaceNormal.x, surfaceNormal.y)
 
-    local DampenedForceA = DirectionalDampening(SPRING_CONST, displacement + torque, DAMPENING, velocity, surfaceNormal)
-    local DampenedForceB = DirectionalDampening(SPRING_CONST, displacement - torque, DAMPENING, velocity, surfaceNormal)
-
+    local springValues = WHEEL_SPRINGS[device.saveName]
+    local DampenedForceA = DirectionalDampening(springValues.springConst, displacement, springValues.dampening, velocity, surfaceNormal)
+    local DampenedForceB = DirectionalDampening(springValues.springConst, displacement, springValues.dampening, velocity, surfaceNormal)
     
     local DampenedForce = 
     {
