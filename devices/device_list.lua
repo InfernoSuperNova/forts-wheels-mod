@@ -167,6 +167,26 @@ InsertDeviceBehind("smallSuspension", suspensionSmall2)
 
 
 
+local suspensionExtraLarge = DeepCopy(suspensionLarge)
+if suspensionExtraLarge then
+    suspensionExtraLarge.MetalCost = 700
+    suspensionExtraLarge.EnergyCost = 8000
+    suspensionExtraLarge.SaveName = "extraLargeSuspension"
+    suspensionExtraLarge.FileName = path .. "/devices/extraLargeSuspension.lua"
+    suspensionExtraLarge.Prerequisite = "upgrade"
+end
+InsertDeviceBehind("largeSuspensionInverted", suspensionExtraLarge)
+
+local suspensionExtraLarge2 = DeepCopy(suspensionExtraLarge)
+if suspensionExtraLarge2 then
+    suspensionExtraLarge2.SaveName = "extraLargeSuspensionInverted"
+    suspensionExtraLarge2.FileName = path .. "/devices/extraLargeSuspensionInverted.lua"
+    suspensionExtraLarge2.Icon = "hud-suspensionInverted-icon"
+    suspensionExtraLarge2.Detail = "hud-detail-suspensionInverted"
+end
+
+InsertDeviceBehind("extraLargeSuspension", suspensionExtraLarge2)
+
 
 --add drills
 table.insert(Sprites, ButtonSprite("hud-drills-icon", "HUD/HUD-drill", nil, ButtonSpriteBottom, nil, nil, path))
