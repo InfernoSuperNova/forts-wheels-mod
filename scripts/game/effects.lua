@@ -21,7 +21,7 @@ function WheelSmoke(frame)
             local deviceKey = GetDeviceKeyFromId(structure, deviceId)
             if not deviceKey then continue end
             local wheelIsTouchingGround = data.wheelsTouchingGround[structure][deviceKey]
-
+            if not wheelIsTouchingGround then continue end
             local nodeA = GetDevicePlatformA(deviceId)
             local nodeB = GetDevicePlatformB(deviceId)
             local velocity = AverageCoordinates({NodeVelocity(nodeA), NodeVelocity(nodeB)})
