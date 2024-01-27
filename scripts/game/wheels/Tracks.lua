@@ -4,13 +4,18 @@ function InitializeTracks()
 end
 
 function UpdateTracks(frame)
-    -- DebugLog("---------Start of UpdateTracks---------")
-    -- UpdateFunction("ClearEffects", frame)
-    -- UpdateFunction("FillTracks", frame)
-    -- UpdateFunction("SortTracks", frame)
-    -- UpdateFunction("GetTrackSetPositions", frame)
-    -- UpdateFunction("DrawTracks", frame)
-    -- DebugLog("---------End of UpdateTracks---------\n")
+
+    -- local lineSegment = {Vec3(-30000, -2500), Vec3(-2700, -4250)}
+
+    -- local subdivsion = SubdivideLineSegment(lineSegment[1], lineSegment[2], 100, frame)
+
+    -- SpawnCircle(lineSegment[1], 100, Red(), 0.04)
+    -- SpawnCircle(lineSegment[2], 100, Red(), 0.04)
+    -- for i = 1, #subdivsion do
+    --     SpawnCircle(subdivsion[i], 50, Blue(), 0.04)
+    -- end
+
+    -- BetterLog(100 - subdivsion.remainder)
 
     ClearEffects()
     FillTracks()
@@ -55,10 +60,7 @@ function PlaceSuspensionPosInTable(device)
     
     if DeviceExists(device.id) 
     and 
-    (CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.small) 
-    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.medium) 
-    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.large) 
-    or CheckSaveNameTable(device.saveName, WHEEL_SAVE_NAMES.extraLarge)
+    (IsWheelDevice(device.saveName)
     )
     and IsDeviceFullyBuilt(device.id) then
         
@@ -185,57 +187,25 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
     if ReducedVisuals then return end
     --exclude wheels
     if trackGroup == 11 then return end
-    --loop through segments of the tracks
-    for wheel = 2, #trackSet, 2 do
-        --Only if there's more than 2 points (1 wheel) in set
-        if #trackSet > 2 then
-            DrawTrackTreadsFlat(trackSet, wheel, base, teamId)
-        end
-    end
-    for wheel = 2, #trackSet, 2 do
-        local index = (wheel / 2 - 1) % #SortedTracks[base][trackGroup] + 1
-        local center = SortedTracks[base][trackGroup][index]
-        DrawTrackTreadsRound(center, trackSet[(wheel - 2) % #trackSet + 1], trackSet[wheel], base, teamId)
-    end
-end
-
-function DrawTrackTreadsRound(center, track1, track2, base, teamId)
-    local offset = TrackOffsets[base].x % TRACK_LINK_DISTANCE
-    local offset_length = offset / track1.radius * 1.2
-
     
-    local arc = PointsAroundArc(center, track1.radius, track2, track1, TRACK_LINK_DISTANCE, offset_length)
 
-    local trackEffect = data.teamWheelTypes[teamId]["track"]
-    local trackLinkEffect = data.teamWheelTypes[teamId]["trackLink"]
-
-
-    for point = 1, #arc do
-        SpawnEffectEx(path .. trackEffect, arc[point], GetPerpendicularVectorAngle(arc[point], center))
-        if arc[point + 1] then
-            local newPos = AverageCoordinates({ arc[point], arc[point + 1] })
-            SpawnEffectEx(path .. trackLinkEffect, newPos, GetPerpendicularVectorAngle(newPos, center))
-        end
+    BetterLog(trackSet)
+    local points = {}
+    local previousRemainder = -TrackOffsets[base].x % TRACK_LINK_DISTANCE or 0
+    for wheel = 1, #trackSet, 1 do
+        local remainder = previousRemainder
+        SpawnCircle(trackSet[wheel], 50, { r = 255, g = 0, b = 0, a = 255 }, 0.06)
     end
+
+
 end
 
-function DrawTrackTreadsFlat(trackSet, wheel, correspondingDevice, teamId)
-    local angle = GetAngleVector(trackSet[wheel], trackSet[wheel % #trackSet + 1])
+function GetTrackTreadsRound(center, track1, track2, teamId, offset)
 
-    local points = SubdivideLineSegment(trackSet[wheel], trackSet[wheel % #trackSet + 1], TRACK_LINK_DISTANCE,
-        -TrackOffsets[correspondingDevice].x % TRACK_LINK_DISTANCE)
-    --loop through points on the track
+end
 
-    local trackEffect = data.teamWheelTypes[teamId]["track"]
-    local trackLinkEffect = data.teamWheelTypes[teamId]["trackLink"]
-    for point = 1, #points do
-        SpawnEffectEx(path .. trackEffect, points[point], angle)
+function GetTrackTreadsFlat(trackSet, wheel, teamId, offset)
 
-        if points[point + 1] then
-            local newPos = AverageCoordinates({ points[point], points[point + 1] })
-            SpawnEffectEx(path .. trackLinkEffect, newPos, angle)
-        end
-    end
 end
 
 

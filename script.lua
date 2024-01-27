@@ -96,12 +96,11 @@ function Update(frame)
     UpdateFunction("UpdateRoads", frame)
     UpdateFunction("UpdateControls", frame)
     UpdateFunction("UpdatePropulsion", frame)
-    --UpdateFunction("UpdateTracks", frame)
     UpdateFunction("TrueUpdateTracks", frame)
     UpdateFunction("UpdateTracks", frame)
     UpdateFunction("UpdateDrill", frame)
     UpdateFunction("UpdateEffects", frame)
-    UpdateFunction("ApplyForces", frame)
+    UpdateFunction("UpdateForceManager", frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("UpdateWeapons", frame)
@@ -134,6 +133,17 @@ function CheckSaveNameTable(input, t)
     return false
 end
 
+function IsWheelDevice(saveName)
+    for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
+
+        for _, name in ipairs(names) do
+            if saveName == name then
+                return true
+            end
+        end
+    end
+    return false
+end
 function OnRestart()
     InitializeScript()
 end
@@ -213,37 +223,6 @@ function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
 end
 
 
-function ApplyForces()
-    for deviceId, force in pairs(FinalSuspensionForces) do
-        if FinalPropulsionForces[deviceId] then
-            --Don't ask me why I have to do it like this, just trust that I do have to
-            local newForce = {
-                nodeA = {
-                    x = force.DampenedForceA.x + FinalPropulsionForces[deviceId].x,
-                    y = force.DampenedForceA.y + FinalPropulsionForces[deviceId].y,
-                },
-                nodeB = {
-                    x = force.DampenedForceB.x + FinalPropulsionForces[deviceId].x,
-                    y = force.DampenedForceB.y + FinalPropulsionForces[deviceId].y,
-                }
-            }
-            
-
-            FinalAddedForces[deviceId] = newForce
-        else
-            FinalAddedForces[deviceId] = {nodeA = force.DampenedForceA, nodeB = force.DampenedForceB}
-        end
-    end
-
-    for deviceId, force in pairs(FinalAddedForces) do
-        local device = FindDeviceInMasterIndex(deviceId)
-        dlc2_ApplyForce(device.nodeA, force.nodeA)
-        dlc2_ApplyForce(device.nodeB, force.nodeB)
-    end
-    FinalSuspensionForces = {}
-    FinalPropulsionForces = {}
-    FinalAddedForces = {}
-end
 function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     --check savename matches
     if saveName == "vehicleController" then

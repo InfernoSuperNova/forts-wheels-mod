@@ -41,6 +41,7 @@ FileList = {
             "input",
             "localization",
         },
+        "forceManager",
     },
 
     ["strings"] = {
