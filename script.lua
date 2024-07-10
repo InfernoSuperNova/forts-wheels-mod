@@ -26,6 +26,7 @@ function Load(GameStart)
     FillCoreShield()
     LocalizeStrings()
     Gravity = GetConstant("Physics.Gravity")
+    Fps = GetConstant("Physics.FramesRate")
 end
 
 function InitializeScript()
@@ -162,6 +163,18 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 end
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
+    --add weapon velocity to projectile
+    if projectileNodeIdFrom == 0 and IsGroundDevice(weaponId) == false then
+        --platform node velocity
+        local velocityA = NodeVelocity(GetDevicePlatformA(weaponId))
+        local velocityB = NodeVelocity(GetDevicePlatformB(weaponId))
+        local velocityAB = Vec3((velocityA.x + velocityB.x) / 2, (velocityA.y + velocityB.y) / 2)
+        --calculate force
+        local mass = GetProjectileParamFloat(GetNodeProjectileSaveName(projectileNodeId), teamId, "ProjectileMass", 1)
+        local force = Vec3((mass * velocityAB.x) / (1/Fps), (mass * velocityAB.y) / (1/Fps))
+        --apply force
+        dlc2_ApplyForce(projectileNodeId, force)
+    end
 end
 
 
