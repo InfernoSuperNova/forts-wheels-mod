@@ -27,6 +27,7 @@ function Load(GameStart)
     LocalizeStrings()
     Gravity = GetConstant("Physics.Gravity")
     Fps = GetConstant("Physics.FramesRate")
+    ScreenMaxY = GetMaxScreenY()
 end
 
 function InitializeScript()
@@ -406,4 +407,16 @@ function GetHighestIndex(tbl)
         end
     end
     return highest
+end
+
+function GetMaxScreenY()
+	--Gets monitor aspect ratio. used for hud and camera stuff.
+	local maxY = 600
+	for i = 1889, 150, -1 do
+		if IsPointVisible(ScreenToWorld(Vec3(1066, i)), "") then
+			maxY = i
+			break
+		end
+	end
+	return maxY
 end
