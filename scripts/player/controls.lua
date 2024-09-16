@@ -118,12 +118,14 @@ function CreateUI(deviceStructureId, uid)
     current_UI_deviceStructureId = deviceStructureId
 
     SetControlFrame(0)
-    local position = { x =200, y = 450}
+    local position = { x =200, y = ScreenMaxY - 150}
     local size = { x = 662, y = 371.25}
     AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
     LoadControl(path .. "/ui/throttleSlider.lua", "HUD")
     LoadControl(path .. "/ui/brakeSlider.lua", "HUD")
-
+	SetControlRelativePos("GXWheelThrottle", "ThrottleSlider", Vec3(250, ScreenMaxY - 120))
+	SetControlRelativePos("GXWheelBrake", "BrakeSlider", Vec3(400, ScreenMaxY - 45))
+	
     for i = 1, 3 do
         AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
         SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
@@ -171,7 +173,7 @@ function CreateUI(deviceStructureId, uid)
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = 538}, "Normal")
+    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = ScreenMaxY - 62}, "Normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
@@ -241,7 +243,7 @@ function CreateSmallUI()
 
     smallui_size  = {x = 254 * smallui_scale, y = 70 * smallui_scale}
     smallui_max_x = 867 - smallui_size.x
-    smallui_pos   = {x = math.min(smallui_pos.x or smallui_max_x, smallui_max_x), y = 487 - smallui_size.y} --take bottom right corner of where it should be and sub size
+    smallui_pos   = {x = math.min(smallui_pos.x or smallui_max_x, smallui_max_x), y = (ScreenMaxY - 113) - smallui_size.y} --take bottom right corner of where it should be and sub size
 
     local par = "smallui-box"
     AddButtonControl("HUDPanel", par, "hud-smallui-box", ANCHOR_TOP_LEFT, smallui_size, smallui_pos, "panel")
