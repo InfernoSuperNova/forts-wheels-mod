@@ -59,7 +59,7 @@ function CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     if upgradedId == 0 then return end
     if not CheckSaveNameTable(saveName, TURRET_SAVE_NAME) then return end
     local direction = teamId %MAX_SIDES
-    local reloadTime = GetWeaponReloadTime(upgradedId)
+    local reloadTime = GetWeaponReloadTime(deviceId)
     local health = GetDeviceHealth(deviceId)
     if data.currentTurretDirections[upgradedId] then
         direction = data.currentTurretDirections[upgradedId]

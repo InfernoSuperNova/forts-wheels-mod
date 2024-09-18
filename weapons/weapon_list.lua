@@ -307,6 +307,7 @@ table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
 		{
 			Enabled = true,
 			SaveName = "turretCannon2",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -335,6 +336,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = true,
 			SaveName = "turretCannonFlip1",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -364,6 +366,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = true,
 			SaveName = "turretCannon2",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -392,6 +395,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = false,
 			SaveName = "turretCannonFlip2",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -399,6 +403,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = false,
 			SaveName = "turretCannon3",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -427,6 +432,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = false,
 			SaveName = "turretCannonFlip3",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -434,6 +440,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = false,
 			SaveName = "turretCannonFlip1",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
@@ -462,6 +469,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 		{
 			Enabled = false,
 			SaveName = "turretCannonFlip2",
+			TransferReloadProgress = true,
 			MetalCost = 0,
 			EnergyCost = 0,
 		},
