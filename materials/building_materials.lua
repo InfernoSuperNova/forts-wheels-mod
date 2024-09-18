@@ -180,7 +180,7 @@ if structuralAluminiumBackground then
 	structuralAluminiumBackground.MaxCompression = 0.5
 	structuralAluminiumBackground.MaxExpansion = 1.5
 	structuralAluminiumBackground.Mass = 0.15
-
+	structuralAluminiumBackground.RecessionTargetSaveName = "StructuralAluminiumBackground"
 	structuralAluminiumBackground.HitPoints = 100
 	structuralAluminiumBackground.ForegroundTargetSaveName = "StructuralAluminium"
 	table.insert(Materials, structuralAluminiumBackground)
