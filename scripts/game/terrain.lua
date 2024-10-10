@@ -1,7 +1,6 @@
 
 function IndexTerrainBlocks()
     BlockStatistics.totalNodes = 0
-    data.terrainCollisionBoxes = {}
     local terrainBlockCount = GetBlockCount()
     BlockStatistics.totalBlocks = terrainBlockCount
 
@@ -28,10 +27,6 @@ function IndexTerrainBlock(terrainBlock)
     for currentVertex = 0, vertexCount - 1 do
         --adds to table for maths
         Terrain[terrainBlock + 1][currentVertex + 1] = GetBlockVertexPos(terrainBlock, currentVertex)
-    end
-    data.terrainCollisionBoxes[terrainBlock + 1] = MinimumCircularBoundary(Terrain[terrainBlock + 1])
-    if ModDebug.collision == true then
-        --SpawnCircle(data.terrainCollisionBoxes[terrainBlock + 1], data.terrainCollisionBoxes[terrainBlock + 1].r, {r = 255, g = 255, b = 255, a = 255}, 0.04)
     end
     TerrainCorners [terrainBlock + 1] = GetFourOutermostPoints(Terrain[terrainBlock + 1])
 end

@@ -7,16 +7,24 @@
 --Master wheel collision handling function. 
 function WheelCollisionHandler()
     Displacement = {}
-    data.wheelsTouchingGround = {}
+    WheelsTouchingGround = {}
+    WheelForces = {}
     local structures = GetDeviceStructureGroups()
 
     --section off into structures
     for structureKey, devices in pairs(structures) do
         for deviceKey, device in pairs(devices) do
-            if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
+            if not WheelsTouchingGround[structureKey] then WheelsTouchingGround[structureKey] = {} WheelForces[structureKey] = {} end
             local wheelStats = GetWheelStats(device)
             local wheelRadius = wheelStats.radius + TRACK_WIDTH
-            local snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND) -- | SNAP_LINKS)
+            local snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND, -1, -1, "")
+
+            if SpecialTerrain.ignored[snapResult.BlockIndex] or snapResult.BlockVertexIndex == -1 then
+                --unfortunately, this means that only background terrain can be ignored
+                snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND_FORE, -1, -1, "")
+            end
+
+
             if snapResult.Position.x == wheelStats.pos.x and snapResult.Position.y == wheelStats.pos.y then
                 WheelPos[device.id] = wheelStats.pos
                 continue
@@ -24,7 +32,11 @@ function WheelCollisionHandler()
             local normal = NormalizeVector(snapResult.Position - wheelStats.pos)
             normal.x = math.abs(normal.x) * math.sign(snapResult.Normal.x)
             normal.y = math.abs(normal.y) * math.sign(snapResult.Normal.y)
-
+            if data.brakes[structureKey] then
+                normal.x = 0
+                normal.y = -1
+                snapResult.Position.x = wheelStats.pos.x
+            end
 
             if ModDebug.collision then
                 SpawnCircle(snapResult.Position, 25, Blue(), 0.04)
@@ -42,7 +54,8 @@ function WheelCollisionHandler()
             local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, AverageCoordinates({device.nodeVelA, device.nodeVelB}), normal)
             ApplyForce(device.nodeA, force)
             ApplyForce(device.nodeB, force)
-            data.wheelsTouchingGround[structureKey][deviceKey] = displacement
+            WheelsTouchingGround[structureKey][deviceKey] = displacement
+            WheelForces[structureKey][deviceKey] = force
         end
     end
     Structures = structures
@@ -51,7 +64,7 @@ end
 function GetDeviceStructureGroups()
     local structures = {}
     for _, device in pairs(data.devices) do
-        if IsWheelDevice(device.saveName) and IsDeviceFullyBuilt(device.id) then
+        if WHEEL_SAVE_NAMES_RAW[device.saveName] and IsDeviceFullyBuilt(device.id) then
             local structureId = device.strucId
             if not structures[structureId] then structures[structureId] = {} end
             table.insert(structures[structureId], device)

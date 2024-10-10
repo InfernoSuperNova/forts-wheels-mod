@@ -86,3 +86,20 @@ function BetterLog(v)
         Log(tostring(v))
     end
 end
+
+function ShallowLogTable(t)
+    if type(t) == "table" then
+        Log("{")
+        for k, v in pairs(t) do
+            if type(v) == "table" then
+                Log("\t" .. tostring(k) .. " = table,")
+            else
+                Log("\t" .. tostring(k) .. " = " .. tostring(v) .. ",")
+            end
+        end
+        Log("}")
+    else
+        BetterLog(t)
+    end
+
+end

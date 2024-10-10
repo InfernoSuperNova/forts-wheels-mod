@@ -11,10 +11,10 @@ function InitializeCommanders()
 end
 
 
-function IsCommanderAndEnemyActive(commanderString, team)
+function IsCommanderAndEnemyActive(commanderString, team, localSide)
     if team == -1 then return false end
     local commander = Commander[commanderString]
-    local localSideId = GetLocalTeamId() - MAX_SIDES
+    local localSideId = localSide
     local enemySideId = 3 - localSideId
-    if IsCommanderActive(enemySideId) and data.Commanders[enemySideId] == commander and team - MAX_SIDES == enemySideId then return true else return false end
+    if IsCommanderActive(enemySideId) and data.Commanders[enemySideId] == commander and team % MAX_SIDES == enemySideId then return true else return false end
 end
