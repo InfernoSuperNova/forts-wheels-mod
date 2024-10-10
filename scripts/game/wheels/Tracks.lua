@@ -39,6 +39,7 @@ function FillTracks()
     for _, device in pairs(data.devices) do
         PlaceSuspensionPosInTable(device)
     end
+    BetterLog(Tracks)
 end
 
 function PlaceSuspensionPosInTable(device)
@@ -48,7 +49,7 @@ function PlaceSuspensionPosInTable(device)
     (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
-        
+        BetterLog(device)
         if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
