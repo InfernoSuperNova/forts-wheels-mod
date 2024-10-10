@@ -59,7 +59,16 @@ WHEEL_SAVE_NAMES =
     large = {"largeSuspension", "largeSuspensionInverted"},
     extraLarge = {"extraLargeSuspension", "extraLargeSuspensionInverted"},
 }
-WHEEL_SAVE_NAMES_RAW = {}
+WHEEL_SAVE_NAMES_RAW = {
+    ["smallSuspension"] = true,
+    ["smallSuspensionInverted"] = true,
+    ["suspension"] = true,
+    ["suspensionInverted"] = true,
+    ["largeSuspension"] = true,
+    ["largeSuspensionInverted"] = true,
+    ["extraLargeSuspension"] = true,
+    ["extraLargeSuspensionInverted"] = true,
+}
 TRACK_SPROCKET_EFFECT_PATHS = 
 {
     sprocket = {
