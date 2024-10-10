@@ -29,14 +29,14 @@ WHEEL_POWER_INPUT_RATIOS = {
     extraLargeSuspensionInverted = 4,
 }
 WHEEL_BRAKE_FACTORS = {
-    smallSuspension = 120000,   
-    smallSuspensionInverted = 120000,
-    suspension = 120000,
-    suspensionInverted = 120000,
-    largeSuspension = 240000,
-    largeSuspensionInverted = 240000,
-    extraLargeSuspension = 480000,
-    extraLargeSuspensionInverted = 480000,
+    smallSuspension = 240000,   
+    smallSuspensionInverted = 240000,
+    suspension = 240000,
+    suspensionInverted = 240000,
+    largeSuspension = 480000,
+    largeSuspensionInverted = 480000,
+    extraLargeSuspension = 960000,
+    extraLargeSuspensionInverted = 960000,
 }
 
 WHEEL_SUSPENSION_HEIGHTS = {

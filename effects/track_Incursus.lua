@@ -1,5 +1,5 @@
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 10e11
+LifeSpan = 0.05
 
 Sprites =
 {
@@ -15,7 +15,7 @@ Sprites =
 					{ texture = path .. "/effects/wheels/Incursus/track.png" },
 					
 
-					duration = 0.04,
+					duration = 0.05,
 					blendColour = false,
 					blendCoordinates = false,
 				},
@@ -38,7 +38,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "track_Incursus",
 		Additive = false,
-		TimeToLive = 10e11,
+		TimeToLive = 0.05,
 		Angle = 0,
 		InitialSize = 1.0,
 		ExpansionRate = 0,

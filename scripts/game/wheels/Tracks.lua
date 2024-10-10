@@ -3,9 +3,10 @@ function InitializeTracks()
     data.trackGroups = {}
 end
 function UntrackDevice(deviceId)
-    BetterLog(deviceId .. "deleted")
-    CancelEffect(WheelSpriteIds[deviceId])
-    WheelSpriteIds[deviceId] = nil
+    if (WheelSpriteIds[deviceId]) then
+        CancelEffect(WheelSpriteIds[deviceId])
+        WheelSpriteIds[deviceId] = nil
+    end
     data.trackGroups[deviceId] = nil
 end
 function UpdateTracks(frame)
@@ -14,6 +15,20 @@ function UpdateTracks(frame)
     FillTracks()
     SortTracks(localSide)
     GetTrackSetPositions()
+end
+
+
+function RefreshWheels(teamId) 
+    for k, v in pairs(data.devices) do
+        if v.team == teamId then
+            BetterLog(v)
+            if WheelSpriteIds[v.id] then
+                CancelEffect(WheelSpriteIds[v.id])
+                WheelSpriteIds[v.id] = nil
+            end
+            
+        end
+    end
 end
 
 --clears any wheel sprites on the screen
@@ -132,7 +147,7 @@ function DrawTracks(localSide, t)
         if not IsCommanderAndEnemyActive("phantom", team, localSide) then
             for trackGroup, trackSet in pairs(trackSets) do
                 local teamId = Tracks[base][trackGroup][1].teamId
-                --DrawTrackTreads(trackSet, base, trackGroup, teamId)
+                DrawTrackTreads(trackSet, base, trackGroup, teamId)
                 DrawTrackSprockets(base, trackGroup, t)
             end
         end
@@ -206,7 +221,7 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
         local remainder = TRACK_LINK_DISTANCE - arc.remainder
         local segmentNormal = PerpendicularVector(SubtractVectors(segment.posA, segment.posB))
         local gravity= Vec3(0, 1)
-        local bowing = -0.1 * Dot(segmentNormal, gravity)
+        local bowing = -0.01 * Dot(segmentNormal, gravity)
         local straightPoints = SubdivideLineSegmentWithBowing(segment.posA, segment.posB, TRACK_LINK_DISTANCE, remainder, bowing)
         previousRemainder = straightPoints.remainder
         for i = 1, #arc.points do
@@ -397,8 +412,10 @@ end
 
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group
-    CancelEffect(WheelSpriteIds[deviceId])
-    WheelSpriteIds[deviceId] = nil
+    if (WheelSpriteIds[deviceId]) then
+        CancelEffect(WheelSpriteIds[deviceId])
+        WheelSpriteIds[deviceId] = nil
+    end
 end
 
 
