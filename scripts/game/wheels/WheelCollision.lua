@@ -16,7 +16,7 @@ function WheelCollisionHandler()
             if not data.wheelsTouchingGround[structureKey] then data.wheelsTouchingGround[structureKey] = {} end
             local wheelStats = GetWheelStats(device)
             local wheelRadius = wheelStats.radius + TRACK_WIDTH
-            local snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND) -- | SNAP_LINKS)
+            local snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND, -1, -1, "") -- | SNAP_LINKS)
             if snapResult.Position.x == wheelStats.pos.x and snapResult.Position.y == wheelStats.pos.y then
                 WheelPos[device.id] = wheelStats.pos
                 continue
