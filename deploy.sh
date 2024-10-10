@@ -30,4 +30,8 @@ wine "$LuaPlusCPath" -o "$NewFolder/scripts/game/premiumWheels.lua" "$NewFolder/
 python3 "$stringfuscatorPath" "$NewFolder/config/premiumIds.lua" "$NewFolder/config/premiumIds.lua"
 wine "$LuaPlusCPath" -o "$NewFolder/config/premiumIds.lua" "$NewFolder/config/premiumIds.lua"
 
+# Remove this deploy.sh script from the new folder
+rm "$NewFolder/deploy.sh"
+rm "$NewFolder/copy.bat"
+
 echo "Compilation complete."

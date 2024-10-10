@@ -311,7 +311,7 @@ function ShareCosmeticWheel(wheelType, teamId)
         data.teamWheelTypes[teamId] = WheelTable[wheelType]
     end
     --ShowControl("HUD", "cosmeticWheelContainer", false)
-    
+    RefreshWheels(teamId)
 end
 
 function ShowWheelSelectionScreen()
