@@ -4,7 +4,13 @@ function GetDeviceCounts()
         DeviceCounts[side] = GetDeviceCountSide(side)
     end
 end
+
+data.previousDevicePositions = {}
 function IndexDevices()
+    for _, device in pairs(data.devices) do
+        data.previousDevicePositions[device.id] = device.pos
+    end
+
     data.devices = {}
     for side = 0, 2 do
         local count = DeviceCounts[side]
@@ -20,14 +26,16 @@ function IndexDevices()
             local nodePosB = NodePosition(nodeB)
             local nodeVelA = NodeVelocity(nodeA)
             local nodeVelB = NodeVelocity(nodeB)
+            local isGroundDevice =  IsGroundDevice(id)
             local platformPos = GetDeviceLinkPosition(id)
             local needUpdateVelocity = false
-            if IsWheelDevice(SaveName) then
+            if WHEEL_SAVE_NAMES_RAW[SaveName] then
                 needUpdateVelocity = true
             end
             table.insert(data.devices, {
                 strucId = structureId,
                 team = team,
+                side = team % MAX_SIDES,
                 id = id,
                 saveName = SaveName,
                 pos = pos,
@@ -37,6 +45,7 @@ function IndexDevices()
                 nodePosB = nodePosB,
                 nodeVelA = nodeVelA,
                 nodeVelB = nodeVelB,
+                isGroundDevice = isGroundDevice,
                 platformPos = platformPos,
                 needUpdateVelocity = needUpdateVelocity,
             })
@@ -45,6 +54,7 @@ function IndexDevices()
 
     EnumerateCarDevices()
 end
+
 
 function EnumerateCarDevices()
     data.motors = {}
@@ -66,6 +76,7 @@ function EnumerateCarDevices()
             end
         end
     end
+    --remove data.motors and data.gearbox entries for non existant structures
 
 end
 
@@ -74,14 +85,16 @@ function IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     local nodePosB = NodePosition(nodeB)
     local nodeVelA = NodeVelocity(nodeA)
     local nodeVelB = NodeVelocity(nodeB)
+    local isGroundDevice =  IsGroundDevice(deviceId)
     local structureId = GetDeviceStructureId(deviceId)
     local needUpdateVelocity = false
-    if IsWheelDevice(saveName) then
+    if WHEEL_SAVE_NAMES_RAW[saveName] then
         needUpdateVelocity = true
     end
     table.insert(data.devices, {
         strucId = structureId,
         team = teamId,
+        side = teamId % MAX_SIDES,
         id = deviceId,
         saveName = saveName,
         pos = Vec3Lerp(nodePosA, nodePosB, t),
@@ -91,6 +104,7 @@ function IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
         nodePosB = nodePosB,
         nodeVelA = nodeVelA,
         nodeVelB = nodeVelB,
+        isGroundDevice = isGroundDevice,
         platformPos = t,
         needUpdateVelocity = needUpdateVelocity,
     })
@@ -158,6 +172,7 @@ function UpdateDeviceTeam(oldTeamId, newTeamId, deviceId, saveName)
     local device = FindDeviceInMasterIndex(deviceId)
     if device then
         device.team = newTeamId
+        device.side = newTeamId % MAX_SIDES
     end
 end
 
@@ -174,9 +189,11 @@ function FindDeviceIndexInMasterIndex(id)
     end
     return nil
 end
+ValidStructures = {}
 
 function UpdateDevices(frame)
     SellExtraControllers()
+    ValidStructures = {}
     for _, device in pairs(data.devices) do
         -- unavoidable api calls
         
@@ -195,6 +212,28 @@ function UpdateDevices(frame)
             EnumerateDestroyedCarDevice(device.saveName, device.strucId)
             device.strucId = newStructureId
             EnumerateCreatedCarDevice(device.saveName, device.strucId)
+        end
+        if not ValidStructures[device.strucId] then ValidStructures[device.strucId] = true end
+    end
+
+    for structureId, _ in pairs(data.motors) do
+        if not ValidStructures[structureId] then
+            data.motors[structureId] = nil
+        end
+    end
+    for structureId, _ in pairs(data.gearboxes) do
+        if not ValidStructures[structureId] then
+            data.gearboxes[structureId] = nil
+        end
+    end
+    for structureId, _ in pairs(data.brakes) do
+        if not ValidStructures[structureId] then
+            data.brakes[structureId] = nil
+        end
+    end
+    for structureId, _ in pairs(data.brakeSliders) do
+        if not ValidStructures[structureId] then
+            data.brakeSliders[structureId] = nil
         end
     end
 end

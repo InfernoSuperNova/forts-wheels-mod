@@ -49,7 +49,7 @@ function LoopStructures()
         local wheelCount = 0
         local wheelTouchingGroundCount = 0
         for deviceKey, device in pairs(devices) do
-            if data.wheelsTouchingGround[structureKey][deviceKey] then
+            if WheelsTouchingGround[structureKey][deviceKey] then
                 wheelTouchingGroundCount = wheelTouchingGroundCount + 1
             end
             wheelCount = wheelCount + 1
@@ -67,11 +67,19 @@ function LoopStructures()
         if math.abs(throttle) < THROTTLE_DEADZONE then throttle = 0 end
         ApplyPropulsionForces(devices, structureKey, throttle, gearboxCount, wheelCount, wheelTouchingGroundCount, motorCount)
     end
+    
+    for key, structure in pairs(data.previousThrottleMags) do
+        if not Structures[key] then
+            data.previousThrottleMags[key] = nil
+            data.currentRevs[key] = nil
+            data.brakeSliders[key] = nil
+        end
+    end
 end
 
 function ClearOldStructures()
     for structure, value in pairs(data.throttles) do
-        local result = GetStructureTeam(structure) - MAX_SIDES
+        local result = GetStructureTeam(structure) % MAX_SIDES
 
         if result ~= 1 and result ~= 2 then
             data.throttles[structure] = nil
@@ -103,14 +111,15 @@ end
 function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheelCount, wheelGroundCount, motorCount)
     
     
-    local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelGroundCount, PROPULSION_FACTOR * MAX_POWER_INPUT_RATIO)
+    --local propulsionFactor = math.min(PROPULSION_FACTOR * motorCount / wheelGroundCount, PROPULSION_FACTOR * maxPowerInputRatio)
+    local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelGroundCount
     local applicableGears = {}
     --sets up applicable gears for the structure
     for gear = 1, gearCount do
         local gearFactor = 2 ^ (gear - 1)
         applicableGears[gear] = {
             
-            propulsionFactor = propulsionFactor / (gearFactor ^ 0.5),
+            propulsionFactor = propulsionFactor / (gearFactor ^ 0.7),
             maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.95/wheelCount/wheelCount^0.01,
             gear = gear
             
@@ -122,7 +131,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     --get average velocity of every wheel
     local velocities = {}
     for deviceKey, device in pairs(devices) do
-        if data.wheelsTouchingGround[structureKey][deviceKey] then
+        if WheelsTouchingGround[structureKey][deviceKey] then
             table.insert(velocities, NodeVelocity(device.nodeA))
             table.insert(velocities, NodeVelocity(device.nodeB))
         end
@@ -144,35 +153,36 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     DrivechainDetails[structureKey][3] = currentGear.gear
     DrivechainDetails[structureKey][4] = currentGear.propulsionFactor
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
-    velocity, velocityMag, propulsionFactor * 0.2)
+    velocity, velocityMag)
     for nodeId, force in pairs(FinalPropulsionForces) do
         ApplyForce(nodeId, force)
     end
     FinalPropulsionForces = {}
 end
 
-function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag, brakeFactor)
+function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag)
     if data.brakes[structureKey] == true then 
         for deviceKey, device in pairs(devices) do
-            if data.wheelsTouchingGround[structureKey][deviceKey] then
-
+            if WheelsTouchingGround[structureKey][deviceKey] then
+                local brakeFactor = WHEEL_BRAKE_FACTORS[device.saveName]
                 local signX = math.sign(velocity.x)
-                local brakeVelocity = velocity.x * 0.01
-                local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3
+                local brakeVelocity = velocity.x * math.tanh(math.abs(velocity.x) / 1000)
+                local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3 -- number ranging from 0.5 to 3.5
                 brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
+
                 FinalPropulsionForces[device.nodeA] = Vec3( -brakeVelocity * brakeFactor, 0)
                 FinalPropulsionForces[device.nodeB] = Vec3( -brakeVelocity * brakeFactor, 0)
             end
         end
         return
     end
-    
     for deviceKey, device in pairs(devices) do
-        if data.wheelsTouchingGround[structureKey][deviceKey] then
-            local direction = PerpendicularVector(data.wheelsTouchingGround[structureKey][deviceKey])
+        if WheelsTouchingGround[structureKey][deviceKey] then
+            local direction = PerpendicularVector(WheelsTouchingGround[structureKey][deviceKey])
             local direction = NormalizeVector(direction)
             local desiredVel = maxSpeed * math.sign(throttle)
-            local enginePower = propulsionFactor * math.abs(throttle)
+            local maxPowerInputRatio = WHEEL_POWER_INPUT_RATIOS[device.saveName]
+            local enginePower = math.min(propulsionFactor * math.abs(throttle), PROPULSION_FACTOR * maxPowerInputRatio)
             local deltaVel = desiredVel - velocityMag
 
 
@@ -208,6 +218,15 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             FinalPropulsionForces[device.nodeB] = force
         end
     end
+    local deviceCount = #devices
+    if data.previousThrottleMags[structureKey] then
+        for k, v in pairs(data.previousThrottleMags[structureKey]) do
+            if k > deviceCount then
+                data.previousThrottleMags[structureKey][k] = nil
+            end
+        end
+    end
+    --ShallowLogTable(data.previousThrottleMags)
 end
 
 function GetCurrentGearFromVelocity(applicableGears, velocityMag)

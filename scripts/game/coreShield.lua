@@ -1,3 +1,4 @@
+ActiveShields = {}
 function InitializeCoreShield()
     data.coreShields = {}
 end
@@ -25,28 +26,39 @@ function RemoveCoreShield(id)
 end
 
 function UpdateCoreShields()
+    ActiveShields = {}
     for side = 1, 2 do
         if #data.coreShields > 0 then
-            for _, coords in pairs(data.coreShields[side]) do
+            for id, coords in pairs(data.coreShields[side]) do
                 local deviceSide = 3 - side
-                EnumerateDevicesInShieldRadius(coords, deviceSide, side)
+                EnumerateDevicesInShieldRadius(coords, deviceSide, side, id)
+            end
+        end
+    end
+    for side = 1, 2 do
+        if #data.coreShields > 0 then
+            for id, coords in pairs(data.coreShields[side]) do
+                if ActiveShields[id] then
+                    local color = { r = 255, g = 94, b = 94, a = 255 }
+                    if side == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
+                    SpawnCircle(coords, SHIELD_RADIUS, color, 0.1)
+                end
             end
         end
     end
 end
 
-function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
+function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide, id)
     for _, device in pairs(data.devices) do
+        if device.isGroundDevice then continue end
         if TURRET_ANIM_NAMES[device.saveName] then continue end
-        if device.team - MAX_SIDES == deviceSide then
-            if IsWithinDistance(device.pos, shieldCoords, SHIELD_RADIUS) then
-                local color = { r = 255, g = 94, b = 94, a = 255 }
-                if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
-                shieldCoords.z = -100
-                SpawnCircle(shieldCoords, SHIELD_RADIUS, color, 0.04)
-                EvaluatePositionInShield(device, shieldCoords)
-            end
-        end
+        if device.side ~= deviceSide then continue end
+        
+        if not IsWithinDistance(device.pos, shieldCoords, SHIELD_RADIUS) then continue end
+        
+        shieldCoords.z = -100
+        ActiveShields[id] = true
+        EvaluatePositionInShield(device, shieldCoords)
     end
 end
 
@@ -82,7 +94,7 @@ end
 --     local structureCount = GetStructureCount()
 --     for structure = 0, structureCount do
 --         local id = GetStructureId(structure)
---         local lside = GetStructureTeam(id) - MAX_SIDES
+--         local lside = GetStructureTeam(id) % MAX_SIDES
 
 --         if side == lside then
 --             local radius = GetStructureRadius(id)

@@ -1,6 +1,6 @@
 
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 0.05
+LifeSpan = 10e11
 
 Effects =
 {
@@ -14,7 +14,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "wheel_red",
 		Additive = false,
-		TimeToLive = 0.08,
+		TimeToLive = 10e11,
 		Angle = 0,
 		InitialSize = 3.8,
 		ExpansionRate = 0,
@@ -22,6 +22,7 @@ Effects =
 		RandomAngularVelocityMagnitude = 0,
 		Colour1 = { 255, 255, 255, 255 },
 		Colour2 = { 255, 255, 255, 255 },
+		KillParticleOnEffectCancel = true,
 	},
 
 }
