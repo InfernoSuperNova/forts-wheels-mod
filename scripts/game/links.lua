@@ -58,13 +58,13 @@ function IndexLinks()
 end
 function UpdateLinks(frame)
     
-    RoadCoords = {}
+    -- RoadCoords = {}
     
-    if frame % 25 == 0 then
-        RoadStructures = {}
-        CheckOldRoadLinks()
-    end
-    IndexRoadStructures(frame)
+    -- if frame % 25 == 0 then
+    --     RoadStructures = {}
+    --     CheckOldRoadLinks()
+    -- end
+    -- IndexRoadStructures(frame)
 end
 
 function DetermineLinks(nodeA, nodeB, linkPos, saveName, deviceId)

@@ -71,7 +71,7 @@ end
 
 function ClearOldStructures()
     for structure, value in pairs(data.throttles) do
-        local result = GetStructureTeam(structure) % MAX_SIDES
+        local result = GetStructureTeam(structure) - MAX_SIDES
 
         if result ~= 1 and result ~= 2 then
             data.throttles[structure] = nil
@@ -145,6 +145,10 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     DrivechainDetails[structureKey][4] = currentGear.propulsionFactor
     ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
     velocity, velocityMag, propulsionFactor * 0.2)
+    for nodeId, force in pairs(FinalPropulsionForces) do
+        ApplyForce(nodeId, force)
+    end
+    FinalPropulsionForces = {}
 end
 
 function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag, brakeFactor)
@@ -156,7 +160,8 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
                 local brakeVelocity = velocity.x * 0.01
                 local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3
                 brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
-                FinalPropulsionForces[device.id] = {x = -brakeVelocity * brakeFactor, y = 0}
+                FinalPropulsionForces[device.nodeA] = Vec3( -brakeVelocity * brakeFactor, 0)
+                FinalPropulsionForces[device.nodeB] = Vec3( -brakeVelocity * brakeFactor, 0)
             end
         end
         return
@@ -193,13 +198,14 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             local force
             --right
             if desiredVel > 0 then
-                force = {x = direction.x * mag * enginePower, y = direction.y * mag * enginePower}
+                force = mag * enginePower * direction
 
             --left
             else
-                force = {x = direction.x * -mag * enginePower, y = direction.y * -mag * enginePower}
+                force = -mag * enginePower * direction
             end
-            FinalPropulsionForces[device.id] = force
+            FinalPropulsionForces[device.nodeA] = force
+            FinalPropulsionForces[device.nodeB] = force
         end
     end
 end

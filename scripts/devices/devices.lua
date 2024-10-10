@@ -21,6 +21,10 @@ function IndexDevices()
             local nodeVelA = NodeVelocity(nodeA)
             local nodeVelB = NodeVelocity(nodeB)
             local platformPos = GetDeviceLinkPosition(id)
+            local needUpdateVelocity = false
+            if IsWheelDevice(SaveName) then
+                needUpdateVelocity = true
+            end
             table.insert(data.devices, {
                 strucId = structureId,
                 team = team,
@@ -34,6 +38,7 @@ function IndexDevices()
                 nodeVelA = nodeVelA,
                 nodeVelB = nodeVelB,
                 platformPos = platformPos,
+                needUpdateVelocity = needUpdateVelocity,
             })
         end
     end
@@ -70,6 +75,10 @@ function IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     local nodeVelA = NodeVelocity(nodeA)
     local nodeVelB = NodeVelocity(nodeB)
     local structureId = GetDeviceStructureId(deviceId)
+    local needUpdateVelocity = false
+    if IsWheelDevice(saveName) then
+        needUpdateVelocity = true
+    end
     table.insert(data.devices, {
         strucId = structureId,
         team = teamId,
@@ -83,6 +92,7 @@ function IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
         nodeVelA = nodeVelA,
         nodeVelB = nodeVelB,
         platformPos = t,
+        needUpdateVelocity = needUpdateVelocity,
     })
     if upgradedId ~= 0 then
         local index = FindDeviceIndexInMasterIndex(deviceId)
@@ -168,13 +178,20 @@ end
 function UpdateDevices(frame)
     SellExtraControllers()
     for _, device in pairs(data.devices) do
-        device.nodePosA = NodePosition(device.nodeA)
-        device.nodePosB = NodePosition(device.nodeB)
-        device.nodeVelA = NodeVelocity(device.nodeA)
-        device.nodeVelB = NodeVelocity(device.nodeB)
-        device.pos = Vec3Lerp(device.nodePosA, device.nodePosB, device.platformPos)
+        -- unavoidable api calls
+        
+        -- and yet still we avoid what we can
+        if device.needUpdateVelocity then
+            device.nodeVelA = NodeVelocity(device.nodeA)
+            device.nodeVelB = NodeVelocity(device.nodeB)
+            device.nodePosA = NodePosition(device.nodeA)
+            device.nodePosB = NodePosition(device.nodeB)
+            device.pos = Vec3Lerp(device.nodePosA, device.nodePosB, device.platformPos)
+        else
+            device.pos = GetDevicePosition(device.id)
+        end
         local newStructureId = GetDeviceStructureId(device.id)
-        if  newStructureId ~= device.strucId then
+        if newStructureId ~= device.strucId then
             EnumerateDestroyedCarDevice(device.saveName, device.strucId)
             device.strucId = newStructureId
             EnumerateCreatedCarDevice(device.saveName, device.strucId)
@@ -185,7 +202,7 @@ end
 function SellExtraControllers()
     local controllers = {}
     for _, device in pairs(data.devices) do
-        if CheckSaveNameTable(device.saveName, CONTROLLER_SAVE_NAME) then
+        if device.saveName == CONTROLLER_SAVE_NAME[1] or device.saveName == CONTROLLER_SAVE_NAME[2] then
             if not controllers[device.strucId] then controllers[device.strucId] = {} end
             if not controllers[device.strucId][device.team] then controllers[device.strucId][device.team] = 0 end
             controllers[device.strucId][device.team] = controllers[device.strucId][device.team] + 1

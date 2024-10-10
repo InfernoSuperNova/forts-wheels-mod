@@ -30,7 +30,7 @@ end
 ---@return {x:number, y:number}
 function NormalizeVector(vector)
     local length = ((vector.x) ^ 2 + (vector.y) ^ 2) ^ 0.5
-    return { x = vector.x / length, y = vector.y / length }
+    return Vec3(vector.x / length, vector.y / length)
 end
 
 -- Find the closest edge of a polygon to a point
@@ -116,7 +116,7 @@ end
 function PerpendicularVector(vector)
     local nx = -vector.y
     local ny = vector.x
-    return { x = nx, y = ny }
+    return Vec3(nx,ny)
 end
 
 function VecMagnitude(v)
@@ -143,14 +143,14 @@ function OffsetPerpendicular(p1, p2, offset)
     local perp = { x = -U.y, y = U.x }
 
     -- scale perpendicular vector by offset distance and add to original point
-    local offsetVector = { x = perp.x * offset, y = perp.y * offset }
+    local offsetVector = Vec3(perp.x * offset, perp.y * offset)
 
     return offsetVector
 end
 
 --gets the average of a list of co ordinates
 function AverageCoordinates(Coords)
-    local output = { x = 0, y = 0 }
+    local output = Vec3(0,0)
     if #Coords == 0 then return output end
     for k, coords in pairs(Coords) do
         output.x = output.x + coords.x
@@ -216,6 +216,7 @@ function ClosestPointOnLineSegment(p, a, b)
 end
 
 function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
+    startingOffset = startingOffset % distance
     local segmentLength = Distance(startPoint, endPoint)
     local directionX = (endPoint.x - startPoint.x) / segmentLength
     local directionY = (endPoint.y - startPoint.y) / segmentLength
@@ -228,7 +229,8 @@ function SubdivideLineSegment(startPoint, endPoint, distance, startingOffset)
         table.insert(points, { x = x, y = y })
         t = t + distance
     end
-
+    local remainder = segmentLength - t + distance
+    points.remainder = remainder
     return points
 end
 
@@ -246,7 +248,7 @@ function PointsAroundArc(center, radius, p1, p2, spacing, offset)
     local trackFactor = 1.4
     local arc_length = angle_diff * radius
     local num_points = math.ceil(arc_length / spacing)
-    if num_points == 0 then return {} end
+    if num_points == 0 then return { remainder = arc_length} end
     local angle_incr = angle_diff / (num_points - 1)
 
     local points = {}
@@ -256,6 +258,8 @@ function PointsAroundArc(center, radius, p1, p2, spacing, offset)
         local y = center.y + radius * math.sin(angle)
         table.insert(points, { x = x, y = y })
     end
+    local remainder = arc_length - (num_points - 1) * spacing
+    points.remainder = remainder
     return points
 end
 

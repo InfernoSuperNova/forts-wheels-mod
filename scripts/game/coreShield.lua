@@ -38,7 +38,7 @@ end
 function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide)
     for _, device in pairs(data.devices) do
         if TURRET_ANIM_NAMES[device.saveName] then continue end
-        if device.team % MAX_SIDES == deviceSide then
+        if device.team - MAX_SIDES == deviceSide then
             if IsWithinDistance(device.pos, shieldCoords, SHIELD_RADIUS) then
                 local color = { r = 255, g = 94, b = 94, a = 255 }
                 if shieldSide == 1 then color = { r = 77, g = 166, b = 255, a = 255 } end
@@ -82,7 +82,7 @@ end
 --     local structureCount = GetStructureCount()
 --     for structure = 0, structureCount do
 --         local id = GetStructureId(structure)
---         local lside = GetStructureTeam(id) % MAX_SIDES
+--         local lside = GetStructureTeam(id) - MAX_SIDES
 
 --         if side == lside then
 --             local radius = GetStructureRadius(id)
