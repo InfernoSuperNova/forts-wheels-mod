@@ -2,7 +2,10 @@
 function InitializeTracks()
     data.trackGroups = {}
 end
-function RemoveFromTrackGroup(deviceId)
+function UntrackDevice(deviceId)
+    BetterLog(deviceId .. "deleted")
+    CancelEffect(WheelSpriteIds[deviceId])
+    WheelSpriteIds[deviceId] = nil
     data.trackGroups[deviceId] = nil
 end
 function UpdateTracks(frame)
@@ -39,7 +42,6 @@ function FillTracks()
     for _, device in pairs(data.devices) do
         PlaceSuspensionPosInTable(device)
     end
-    BetterLog(Tracks)
 end
 
 function PlaceSuspensionPosInTable(device)
@@ -49,7 +51,6 @@ function PlaceSuspensionPosInTable(device)
     (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
-        BetterLog(device)
         if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
@@ -131,7 +132,7 @@ function DrawTracks(localSide, t)
         if not IsCommanderAndEnemyActive("phantom", team, localSide) then
             for trackGroup, trackSet in pairs(trackSets) do
                 local teamId = Tracks[base][trackGroup][1].teamId
-                -- DrawTrackTreads(trackSet, base, trackGroup, teamId)
+                --DrawTrackTreads(trackSet, base, trackGroup, teamId)
                 DrawTrackSprockets(base, trackGroup, t)
             end
         end
@@ -171,11 +172,12 @@ function DrawTrackSprockets(base, trackGroup, t)
             local vecAngle = AngleToVector(newAngle)
             
 
-            if not WheelSpriteIds[device] then 
-                WheelSpriteIds[device] = SpawnEffectEx(effectPath, pos, vecAngle) 
+            if not WheelSpriteIds[pos.deviceId] then 
+                WheelSpriteIds[pos.deviceId] = SpawnEffectEx(effectPath, pos, vecAngle) 
+                BetterLog(pos .. "created")
             else
-                SetEffectPosition(WheelSpriteIds[device], actualPos)
-                SetEffectDirection(WheelSpriteIds[device], vecAngle)
+                SetEffectPosition(WheelSpriteIds[pos.deviceId], actualPos)
+                SetEffectDirection(WheelSpriteIds[pos.deviceId], vecAngle)
             end
         end
     else
@@ -395,6 +397,8 @@ end
 
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group
+    CancelEffect(WheelSpriteIds[deviceId])
+    WheelSpriteIds[deviceId] = nil
 end
 
 

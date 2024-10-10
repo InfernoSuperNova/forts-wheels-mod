@@ -88,7 +88,6 @@ local lastUpdate = 0
 function Update(frame)
 
     local rotation = AngleToVector(frame)
-    BetterLog(rotation)
     SetEffectDirection(WheelSprite, rotation)
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
@@ -225,7 +224,7 @@ function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     RemoveCoreShield(deviceId)
     RemoveTurretDirection(deviceId)
     HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
-    RemoveFromTrackGroup(deviceId)
+    UntrackDevice(deviceId)
 end
 
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
@@ -233,7 +232,7 @@ function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     DrillRemove(saveName, deviceId)
     RemoveTurretDirection(deviceId)
     HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
-    RemoveFromTrackGroup(deviceId)
+    UntrackDevice(deviceId)
 end
 
 function OnNodeBroken(nodeId, nodeIdNew)
