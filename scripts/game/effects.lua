@@ -20,7 +20,7 @@ function WheelSmoke(frame)
         for deviceId, pos in pairs(wheels) do
             local deviceKey = GetDeviceKeyFromId(structure, deviceId)
             if not deviceKey then continue end
-            local wheelIsTouchingGround = data.wheelsTouchingGround[structure][deviceKey]
+            local wheelIsTouchingGround = WheelsTouchingGround[structure][deviceKey]
             if not wheelIsTouchingGround then continue end
             local nodeA = GetDevicePlatformA(deviceId)
             local nodeB = GetDevicePlatformB(deviceId)

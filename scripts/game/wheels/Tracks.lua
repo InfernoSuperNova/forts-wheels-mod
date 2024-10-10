@@ -2,30 +2,15 @@
 function InitializeTracks()
     data.trackGroups = {}
 end
-
+function RemoveFromTrackGroup(deviceId)
+    data.trackGroups[deviceId] = nil
+end
 function UpdateTracks(frame)
-
-    -- local lineSegment = {Vec3(-30000, -2500), Vec3(-2700, -4250)}
-
-    -- local subdivsion = SubdivideLineSegment(lineSegment[1], lineSegment[2], 100, frame)
-
-    -- SpawnCircle(lineSegment[1], 100, Red(), 0.04)
-    -- SpawnCircle(lineSegment[2], 100, Red(), 0.04)
-    -- for i = 1, #subdivsion do
-    --     SpawnCircle(subdivsion[i], 50, Blue(), 0.04)
-    -- end
-
-    -- BetterLog(100 - subdivsion.remainder)
-
+    local localSide = GetLocalTeamId() % MAX_SIDES
     ClearEffects()
     FillTracks()
-    SortTracks()
+    SortTracks(localSide)
     GetTrackSetPositions()
-    DrawTracks()
-end
-
-function TrueUpdateTracks()
-    
 end
 
 --clears any wheel sprites on the screen
@@ -60,7 +45,7 @@ function PlaceSuspensionPosInTable(device)
     
     if DeviceExists(device.id) 
     and 
-    (IsWheelDevice(device.saveName)
+    (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
         
@@ -81,6 +66,8 @@ function PlaceSuspensionPosInTable(device)
                     y = actualPos.y + Displacement[device.id].y,
                 }
             end
+            local previousPos = data.previousDevicePositions[device.id]
+            if not previousPos then previousPos = {x = 0, y = 0} end
             --bad coding practices, don't do this kids
             suspensionPos.radius = GetWheelStats(device).radius
             suspensionPos.saveName = device.saveName
@@ -88,12 +75,19 @@ function PlaceSuspensionPosInTable(device)
             TracksId[structureId][device.id] = suspensionPos
             suspensionPos.deviceId = device.id
             suspensionPos.teamId = device.team
+            if Displacement[device.id] then
+                suspensionPos.previousPos = {
+                    x = previousPos.x + Displacement[device.id].x,
+                    y = previousPos.y + Displacement[device.id].y,
+                }
+            end
+            
             table.insert(Tracks[structureId][trackGroup], suspensionPos)
         end
     end
 end
 
-function SortTracks()
+function SortTracks(localSide)
     if ReducedVisuals then PushedTracks = Tracks return end
     for structure, trackSets in pairs(Tracks) do
         local team = GetStructureTeam(structure)
@@ -101,7 +95,7 @@ function SortTracks()
         for trackGroup, trackSet in pairs(trackSets) do
             if not SortedTracks[structure] then SortedTracks[structure] = {} end
             --Don't do unnecessary track calculations if the wheel is a wheel
-            if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team) then
+            if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team, localSide) then
                 
 
                 
@@ -126,24 +120,24 @@ function GetTrackSetPositions()
     end
 end
 
-function DrawTracks()
+function DrawTracks(localSide, t)
 
 
     --loop through list of track sets
     for base, trackSets in pairs(PushedTracks) do
         local team = GetStructureTeam(base)
             --hide tracks on phantom
-        if not IsCommanderAndEnemyActive("phantom", team) then
+        if not IsCommanderAndEnemyActive("phantom", team, localSide) then
             for trackGroup, trackSet in pairs(trackSets) do
                 local teamId = Tracks[base][trackGroup][1].teamId
-                DrawTrackTreads(trackSet, base, trackGroup, teamId)
-                DrawTrackSprockets(base, trackGroup)
+                -- DrawTrackTreads(trackSet, base, trackGroup, teamId)
+                DrawTrackSprockets(base, trackGroup, t)
             end
         end
     end
 end
 
-function DrawTrackSprockets(base, trackGroup)
+function DrawTrackSprockets(base, trackGroup, t)
     local wheelType
     local angle
 
@@ -159,6 +153,10 @@ function DrawTrackSprockets(base, trackGroup)
         end
 
         for device, pos in pairs(Tracks[base][trackGroup]) do
+
+            if not pos.previousPos then pos.previousPos = pos end
+            local actualPos = Vec3Lerp(pos.previousPos, pos, t)
+
             local effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["small"]
             local newAngle = angle
             if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
@@ -170,18 +168,22 @@ function DrawTrackSprockets(base, trackGroup)
                 newAngle = newAngle / 5
             end
             local vecAngle = AngleToVector(newAngle)
-            local effect = SpawnEffectEx(effectPath, pos, vecAngle)
-            table.insert(LocalEffects, effect)
+            
+
+            if not WheelSpriteIds[device] then 
+                WheelSpriteIds[device] = SpawnEffectEx(effectPath, pos, vecAngle) 
+            else
+                SetEffectPosition(WheelSpriteIds[device], actualPos)
+                SetEffectDirection(WheelSpriteIds[device], vecAngle)
+            end
         end
     else
-        for device, pos in pairs(Tracks[base][trackGroup]) do
-            local radius = 75
-            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then radius = 150 end
-            if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.extraLarge) then radius = 250 end
-            SpawnCircle(pos, radius, { r = 255, g = 255, b = 255, a = 255 }, 0.06)
-        end
+        
     end
 end
+
+WheelSpriteIds = {}
+
 
 function DrawTrackTreads(trackSet, base, trackGroup, teamId)
     if ReducedVisuals then return end
@@ -189,16 +191,61 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
     if trackGroup == 11 then return end
     
 
-    BetterLog(trackSet)
     local points = {}
-    local previousRemainder = -TrackOffsets[base].x % TRACK_LINK_DISTANCE or 0
-    for wheel = 1, #trackSet, 1 do
-        local remainder = previousRemainder
-        SpawnCircle(trackSet[wheel], 50, { r = 255, g = 0, b = 0, a = 255 }, 0.06)
+    local previousRemainder = TrackOffsets[base].x % TRACK_LINK_DISTANCE or 0
+
+    for segmentIndex= 1, #trackSet do
+        if #trackSet < 2 then continue end
+        local segment = trackSet[segmentIndex]
+        local prevSegment = trackSet[(segmentIndex - 2) % #trackSet + 1]
+
+        local arc = PointsAroundArc(segment.wheelPosA, segment.radiusA, prevSegment.posB,segment.posA, TRACK_LINK_DISTANCE, previousRemainder, false)
+        local remainder = TRACK_LINK_DISTANCE - arc.remainder
+        local segmentNormal = PerpendicularVector(SubtractVectors(segment.posA, segment.posB))
+        local gravity= Vec3(0, 1)
+        local bowing = -0.1 * Dot(segmentNormal, gravity)
+        local straightPoints = SubdivideLineSegmentWithBowing(segment.posA, segment.posB, TRACK_LINK_DISTANCE, remainder, bowing)
+        previousRemainder = straightPoints.remainder
+        for i = 1, #arc.points do
+            table.insert(points, arc.points[i])
+        end
+        for i = 1, #straightPoints do
+            table.insert(points, straightPoints[i])
+        end
     end
 
+    for i = 1, #points do
+        local point = points[i]
+        local nextPoint = points[i % #points + 1]
+        local previousPoint = points[(i - 2) % #points + 1]
 
+        local track = data.teamWheelTypes[teamId]["track"]
+        local trackLink = data.teamWheelTypes[teamId]["trackLink"]
+        local previousTrackDirection = SubtractVectors(previousPoint.pos, point.pos)
+        previousTrackDirection = {x = -previousTrackDirection.x, y = -previousTrackDirection.y}
+        previousTrackDirection = NormalizeVector(previousTrackDirection)
+        local trackDirection = SubtractVectors(point.pos, nextPoint.pos)
+        trackDirection = {x = -trackDirection.x, y = -trackDirection.y}
+        trackDirection = NormalizeVector(trackDirection)
+        -- I hate this so much
+        -- I wish I chose oop
+        local linkPos = Vec3Lerp(point.pos, nextPoint.pos, 0.5)
+        SpawnEffectEx(path .. trackLink, linkPos, trackDirection)
+
+        trackDirection = NormalizeVector(AverageCoordinates({trackDirection, previousTrackDirection}))
+        SpawnEffectEx(path .. track, point.pos, trackDirection)
+
+
+    end
 end
+
+
+
+
+
+
+
+
 
 function GetTrackTreadsRound(center, track1, track2, teamId, offset)
 
@@ -221,6 +268,18 @@ function Orientation(p, q, r)
     end
 end
 
+function OrientationWithRadius(p, q, r)
+    local val = ((q.y - q.radius) - (p.y - p.radius)) * ((r.x - r.radius) - (q.x - q.radius)) - ((q.x - q.radius) - (p.x - p.radius)) * ((r.y - r.radius) - (q.y - q.radius))
+    if val == 0 then
+        return 0 -- Collinear
+    elseif val > 0 then
+        return 1 -- Clockwise
+    else
+        return 2 -- Counterclockwise
+    end
+end
+
+
 -- Gift wrapping function using Chan's algorithm
 function GiftWrapping(points)
     local n = #points
@@ -231,9 +290,9 @@ function GiftWrapping(points)
     -- Find the leftmost point
     local leftmost = 1
     for i = 2, n do
-        if points[i].x < points[leftmost].x then
+        if (points[i].x - points[i].radius) < (points[leftmost].x - points[leftmost].radius) then
             leftmost = i
-        elseif points[i].x == points[leftmost].x and points[i].y < points[leftmost].y then
+        elseif (points[i].x - points[i].radius) == (points[leftmost].x - points[leftmost].radius) and (points[i].y - points[i].radius) < (points[leftmost].y - points[leftmost].radius) then
             leftmost = i
         end
     end
@@ -252,7 +311,7 @@ function GiftWrapping(points)
         q = (p % n) + 1
         for i = 1, n do
             -- Check if points[i] is more counterclockwise than the current q
-            if Orientation(points[p], points[i], points[q]) == 2 then
+            if OrientationWithRadius(points[p], points[i], points[q]) == 2 then
                 q = i
             end
         end
@@ -290,16 +349,18 @@ function PushOutTracks(polygon)
     local newPolygon = {}
     local count = #polygon
     for i = 1, count do
-        local prev = (i - 2 + count) % count + 1
-        local next = i % count + 1
-        local perpPrev = GetPerpendicularVectorAngle(polygon[prev], polygon[i])
-        local perpNext = GetPerpendicularVectorAngle(polygon[i], polygon[next])
-        local x1 = polygon[i].x + perpPrev.x * polygon[i].radius
-        local y1 = polygon[i].y + perpPrev.y * polygon[i].radius
-        local x2 = polygon[i].x + perpNext.x * polygon[i].radius
-        local y2 = polygon[i].y + perpNext.y * polygon[i].radius
-        table.insert(newPolygon, { x = x1, y = y1, radius = polygon[i].radius })
-        table.insert(newPolygon, { x = x2, y = y2, radius = polygon[i].radius })
+
+        local pointA = polygon[i]
+        local pointB = polygon[i % count + 1]
+        
+        local dir = Vec3(pointB.x - pointA.x, pointB.y - pointA.y)
+        local normal = PerpendicularVector(NormalizeVector(dir))
+        
+        local newPosA = Vec3(pointA.x + normal.x * pointA.radius, pointA.y + normal.y * pointA.radius)
+        local newPosB = Vec3(pointB.x + normal.x * pointB.radius, pointB.y + normal.y * pointB.radius)
+        
+        local segment = {posA = newPosA, posB = newPosB, wheelPosA = pointA, wheelPosB = pointB, radiusA = pointA.radius, radiusB = pointB.radius}
+        table.insert(newPolygon, segment)
     end
     return newPolygon
 end

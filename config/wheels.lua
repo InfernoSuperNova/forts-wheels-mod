@@ -18,6 +18,26 @@ WHEEL_SPRINGS = {
     extraLargeSuspensionInverted = {springConst = 100000, dampening = 6000},
 }
 
+WHEEL_POWER_INPUT_RATIOS = {
+    smallSuspension = 1,
+    smallSuspensionInverted = 1,
+    suspension = 1,
+    suspensionInverted = 1,
+    largeSuspension = 2,
+    largeSuspensionInverted = 2,
+    extraLargeSuspension = 4,
+    extraLargeSuspensionInverted = 4,
+}
+WHEEL_BRAKE_FACTORS = {
+    smallSuspension = 120000,   
+    smallSuspensionInverted = 120000,
+    suspension = 120000,
+    suspensionInverted = 120000,
+    largeSuspension = 240000,
+    largeSuspensionInverted = 240000,
+    extraLargeSuspension = 480000,
+    extraLargeSuspensionInverted = 480000,
+}
 
 WHEEL_SUSPENSION_HEIGHTS = {
     small = 75, 
@@ -39,6 +59,7 @@ WHEEL_SAVE_NAMES =
     large = {"largeSuspension", "largeSuspensionInverted"},
     extraLarge = {"extraLargeSuspension", "extraLargeSuspensionInverted"},
 }
+WHEEL_SAVE_NAMES_RAW = {}
 TRACK_SPROCKET_EFFECT_PATHS = 
 {
     sprocket = {

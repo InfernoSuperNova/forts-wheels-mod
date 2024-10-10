@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Mod with LuaPlusC",
+        "type": "shell",
+        "command": "${workspaceFolder}/deploy.sh",  // Path to your script
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always",  // "silent" or "never" to hide output
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
