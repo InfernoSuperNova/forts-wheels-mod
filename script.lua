@@ -1,6 +1,5 @@
 --- forts script API --- --script.lua
 
-dofile(path .. "/debugMagic.lua")
 dofile("scripts/forts.lua")
 dofile(path .. "/config/fileList.lua")
 LoadFiles()
@@ -29,8 +28,14 @@ function Load(GameStart)
     Fps = GetConstant("Physics.FramesRate")
 end
 
+
+WheelSprite = 0
+
+
+
 function InitializeScript()
-    
+    LocalTeam = GetLocalTeamId() % MAX_SIDES
+    CompileWheelSaveNames()
     InitializeCommanders()
     InitializeTerrainBlockSats()
     for side = 1, 2 do
@@ -39,7 +44,6 @@ function InitializeScript()
         EnableDevice("smokestack", true, side)
     end
     IndexLinks()
-    data.terrainCollisionBoxes = {}
     IndexTerrainBlocks()
     InitializeTracks()
     InitializePropulsion()
@@ -49,7 +53,8 @@ function InitializeScript()
     IndexDevices()
     LoadWeapons()
     data.previousVals = {}
-    data.wheelsTouchingGround = {}
+    WheelsTouchingGround = {}
+    WheelForces = {}
     data.wheelLinksColliding = {}
     -- local circle = MinimumBoundingCircle(terrain)
     -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
@@ -78,7 +83,13 @@ function AlertReducedVisuals()
 
 end
 
+
+local lastUpdate = 0
 function Update(frame)
+
+    local rotation = AngleToVector(frame)
+    BetterLog(rotation)
+    SetEffectDirection(WheelSprite, rotation)
     LocalScreen = GetCamera()
     local startUpdateTime = GetRealTime()
     
@@ -109,18 +120,24 @@ function Update(frame)
     DebugLog("---------End of update---------")
     local delta = (GetRealTime() - startUpdateTime) * 1000
     if ModDebug.update then
-        DebugLog("Update took " .. string.format("%.2f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        DebugLog("Update took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        DebugLog("Memory Usage: " .. FormatNumberWithCommas(gcinfo()) .. " KB")
         UpdateFunction("DebugUpdate", frame)
     end
     
+    --RogueTableChecker()
+    lastUpdate = GetRealTime()
 end
 
+function FormatNumberWithCommas(number)
+    return string.format("%d", number):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+end
 function UpdateFunction(callback, frame)
     if ModDebug.update then
         local prevTime = GetRealTime()
         _G[callback](frame)
         local delta = (GetRealTime() - prevTime) * 1000
-        DebugLog(callback .. " took " .. string.format("%.2f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        DebugLog(callback .. " took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
     else
         _G[callback](frame)
     end
@@ -133,17 +150,20 @@ function CheckSaveNameTable(input, t)
     return false
 end
 
-function IsWheelDevice(saveName)
-    for wheelType, names in pairs(WHEEL_SAVE_NAMES) do
-
-        for _, name in ipairs(names) do
-            if saveName == name then
-                return true
-            end
+function CompileWheelSaveNames()
+    local saveNames = {}
+    for k, wheelType in pairs(WHEEL_SAVE_NAMES) do
+        for _, name in ipairs(wheelType) do
+            WHEEL_SAVE_NAMES_RAW[name] = true
         end
     end
-    return false
+    return saveNames
 end
+
+function IsWheelDevice(saveName)
+    return WHEEL_SAVE_NAMES_RAW[saveName]
+end
+
 function OnRestart()
     InitializeScript()
 end
@@ -153,9 +173,17 @@ function OnSeekStart()
     SoundOnJoin()
 end
 
-function OnDraw(frame)
+function OnInstantReplay()
+    InitializeScript()
+end
+
+LocalSide = 0
+function OnDraw()
     if not IsPaused() then
-        
+        local currentTime = GetRealTime()
+        local deltaTime = currentTime - lastUpdate
+        local t = deltaTime / data.updateDelta
+        DrawTracks(LocalSide, t)
     end
     
     if InEditor then
@@ -197,6 +225,7 @@ function OnDeviceDestroyed(teamId, deviceId, saveName, nodeA, nodeB, t)
     RemoveCoreShield(deviceId)
     RemoveTurretDirection(deviceId)
     HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
+    RemoveFromTrackGroup(deviceId)
 end
 
 function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
@@ -204,6 +233,7 @@ function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     DrillRemove(saveName, deviceId)
     RemoveTurretDirection(deviceId)
     HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
+    RemoveFromTrackGroup(deviceId)
 end
 
 function OnNodeBroken(nodeId, nodeIdNew)
@@ -231,7 +261,9 @@ function OnTerrainHit(terrainId, damage, projectileNodeId, projectileSaveName, s
 end
 function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
 --broken until beeman fixes
---     DestroyOldRoadLinks(saveName, nodeA, nodeB)
+--     DestroyOldRoadLinks(saveName, nodeA, node
+
+-- 29/01/2024: I don't remember what was broken? - DeltaWing
 end
 
 
@@ -337,7 +369,6 @@ function GetDeviceIdFromKey(structure, key)
     return Structures[structure][key].id
 end
 
-dofile(path .. "/debugMagic.lua")
 
 function TimeCode(fn, arg0, arg1, arg2, arg3)
     --logs how long it takes to run a function
@@ -384,4 +415,64 @@ function GetHighestIndex(tbl)
         end
     end
     return highest
+end
+
+
+function ToSide(team)
+    
+end
+
+
+RogueTables = {}
+function RogueTableChecker()
+    CheckRogueTable(data, "data")
+end
+
+function CheckRogueTable(table, parentTree)
+    local LogOnlyTablesThatHaventDecreased = true
+    for tableType, obj in pairs(table) do
+        if type(obj) == "table" then
+            local parentTree = parentTree .. "." .. tableType
+            local newCount = GetTableCount(obj)
+            if not RogueTables[obj] then
+                RogueTables[obj] = {length = newCount, parentTree = parentTree, hasDecreased = false, countSinceDecrease = 0}
+            else
+                local prevLength = RogueTables[obj].length
+                RogueTables[obj].length = newCount
+                if prevLength < RogueTables[obj].length then
+                    RogueTables[obj].countSinceDecrease = RogueTables[obj].countSinceDecrease + 1
+                    if LogOnlyTablesThatHaventDecreased then
+                        if not RogueTables[obj].hasDecreased then
+                            BetterLog(RogueTables[obj].parentTree .. " has increased in size from " .. prevLength .. " to " .. RogueTables[obj].length .. ". Count since decrease: " .. RogueTables[obj].countSinceDecrease)
+                        end
+                    else
+                        BetterLog(RogueTables[obj].parentTree .. " has increased in size from " .. prevLength .. " to " .. RogueTables[obj].length .. ". Has decreased: " .. tostring(RogueTables[obj].hasDecreased) .. ". Count since decrease: " .. RogueTables[obj].countSinceDecrease)
+                    end
+                    
+                end
+                if prevLength > RogueTables[obj].length then
+                    if LogOnlyTablesThatHaventDecreased then
+                        if not RogueTables[obj].hasDecreased then
+                            RogueTables[obj].hasDecreased = true
+                            RogueTables[obj].countSinceDecrease = 0
+                            BetterLog(RogueTables[obj].parentTree .. " has decreased in size from " .. prevLength .. " to " .. RogueTables[obj].length .. ", removing from tracker")
+                        end
+                    else
+                        RogueTables[obj].hasDecreased = true
+                        RogueTables[obj].countSinceDecrease = 0
+                        BetterLog(RogueTables[obj].parentTree .. " has decreased in size from " .. prevLength .. " to " .. RogueTables[obj].length)
+                    end
+                end
+            end 
+            CheckRogueTable(obj, parentTree)
+        end
+    end
+end
+
+function GetTableCount(table)
+    local count = 0
+    for k, v in pairs(table) do
+        count = count + 1
+    end
+    return count
 end

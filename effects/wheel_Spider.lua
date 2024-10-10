@@ -1,6 +1,6 @@
 
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 0.05
+LifeSpan = 10e11
 
 Sprites =
 {
@@ -46,6 +46,7 @@ Effects =
 		RandomAngularVelocityMagnitude = 0,
 		Colour1 = { 255, 255, 255, 255 },
 		Colour2 = { 255, 255, 255, 255 },
+		KillParticleOnEffectCancel = true,
 	},
 
 }

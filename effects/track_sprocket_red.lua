@@ -1,5 +1,5 @@
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 0.05
+LifeSpan = 10e11
 
 Sprites =
 {
@@ -38,7 +38,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "track_sprocket_red",
 		Additive = false,
-		TimeToLive = 0.08,
+		TimeToLive = 10e11,
 		Angle = 0,
 		InitialSize = 1.3,
 		ExpansionRate = 0,
@@ -46,6 +46,7 @@ Effects =
 		RandomAngularVelocityMagnitude = 0,
 		Colour1 = { 255, 255, 255, 255 },
 		Colour2 = { 255, 255, 255, 255 },
+		KillParticleOnEffectCancel = true,
 	},
 
 }
