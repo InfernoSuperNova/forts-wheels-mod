@@ -56,7 +56,7 @@ MouseSensitivityFactor = 0.5
 PanDuration = 0
 FireStdDev = 0.01 -- Move to Ammo
 FireStdDevAuto = 0.012 -- Move to Ammo
-Recoil = 600000
+Recoil = 12000000
 EnergyFireCost = 4000.0 -- Move to Ammo
 MetalFireCost = 150.0 -- Move to Ammo
 

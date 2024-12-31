@@ -166,7 +166,7 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             if WheelsTouchingGround[structureKey][deviceKey] then
                 local brakeFactor = WHEEL_BRAKE_FACTORS[device.saveName]
                 local signX = math.sign(velocity.x)
-                local brakeVelocity = velocity.x * math.tanh(math.abs(velocity.x) / 1000)
+                local brakeVelocity = velocity.x * math.pow(math.tanh(math.abs(velocity.x) / 1000), 1.1)
                 local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3 -- number ranging from 0.5 to 3.5
                 brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
 

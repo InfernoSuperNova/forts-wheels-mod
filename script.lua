@@ -78,7 +78,7 @@ end
 
 function AlertReducedVisuals()
     Notice(RGBAtoHex(150, 200, 50, 255, false) ..
-    "Press Ctrl + Alt + V to toggle reduced visuals")
+    "Press Ctrl + LShift + LAlt + V to toggle reduced visuals")
 
 
 end
@@ -211,6 +211,7 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
         --apply force
         dlc2_ApplyForce(projectileNodeId, force)
     end
+
 end
 
 

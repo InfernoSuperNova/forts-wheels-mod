@@ -9,6 +9,7 @@ data.previousDevicePositions = {}
 function IndexDevices()
     for _, device in pairs(data.devices) do
         data.previousDevicePositions[device.id] = device.pos
+
     end
 
     data.devices = {}
@@ -17,7 +18,7 @@ function IndexDevices()
         for index = 0, count do
             local id = GetDeviceIdSide(side, index)
             local structureId = GetDeviceStructureId(id)
-            local team = GetDeviceTeamId(id)
+            local team = GetDeviceTeamIdActual(id)
             local SaveName = GetDeviceType(id)
             local pos = GetDevicePosition(id)
             local nodeA = GetDevicePlatformA(id)
@@ -203,8 +204,10 @@ function UpdateDevices(frame)
             device.nodeVelB = NodeVelocity(device.nodeB)
             device.nodePosA = NodePosition(device.nodeA)
             device.nodePosB = NodePosition(device.nodeB)
+            device.previousPos = device.pos
             device.pos = Vec3Lerp(device.nodePosA, device.nodePosB, device.platformPos)
         else
+            device.previousPos = device.pos
             device.pos = GetDevicePosition(device.id)
         end
         local newStructureId = GetDeviceStructureId(device.id)

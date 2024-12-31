@@ -153,9 +153,10 @@ end
 function AverageCoordinates(Coords)
     local output = Vec3(0,0)
     if #Coords == 0 then return output end
-    for k, coords in pairs(Coords) do
-        output.x = output.x + coords.x
-        output.y = output.y + coords.y
+    for i = 1, #Coords do
+        local coord = Coords[i]
+        output.x = output.x + coord.x
+        output.y = output.y + coord.y
     end
     output.x = output.x / #Coords
     output.y = output.y / #Coords

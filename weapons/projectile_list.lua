@@ -26,7 +26,18 @@ turretCannon.ProjectileSplashDamageMaxRadius = 400
 turretCannon.ProjectileThickness = 15
 turretCannon.SpeedIndicatorFactor = 1
 turretCannon.BeamTileRate = 0.05
+turretCannon.Impact = 6000000
 
 table.insert(Projectiles, turretCannon)
+
+local turretLaser = DeepCopy(FindProjectile("laser"))
+
+turretLaser.SaveName = "turretLaser"
+turretLaser.BeamMaxTravel = 10000
+turretLaser.Impact = 2400000
+
+turretLaser.Effects.Age = {["t1"] = "effects/energy_absorb.lua"}
+
+table.insert(Projectiles, turretLaser)
 
 MakeFlamingVersion("turretCannon", 1.25, 0.4, flamingTrail, 80, nil, nil)

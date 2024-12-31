@@ -238,6 +238,22 @@ function LoadWheelTypeDefinitions()
             },
             track = "/effects/track.lua",
             trackLink = "/effects/track_link.lua",
+        },
+        NukeWheel = {
+            sprocket = {
+                small = "/effects/track_sprocket_Nuke.lua",
+                medium = "/effects/track_sprocket_Nuke.lua",
+                large = "/effects/track_sprocket_Nuke_large.lua",
+                extraLarge = "/effects/track_sprocket_Nuke_extraLarge.lua",
+            },
+            wheel = {
+                small = "/effects/wheel_Nuke.lua",
+                medium = "/effects/wheel_Nuke.lua",
+                large = "/effects/wheel_Nuke_large.lua",
+                extraLarge = "/effects/wheel_Nuke_extraLarge.lua",
+            },
+            track = "/effects/track.lua",
+            trackLink = "/effects/track_link.lua",
         }
     }
 end
@@ -292,10 +308,10 @@ end
 function GetCosmeticWheelChoice(type)
     local teamId = GetLocalTeamId()
     if not type then 
-        Notice("Default selected! Press CTRL + ALT + C to change selection.")
+        Notice("Default selected! Press CTRL + LSHIFT + LALT + C to change selection.")
         type = teamId % MAX_SIDES
     else
-        Notice(type .. " selected! Press CTRL + ALT + C  to change selection.")
+        Notice(type .. " selected! Press CTRL + LSHIFT + LALT + C  to change selection.")
     end
     SendScriptEvent("ShareCosmeticWheel",  "\"" ..type .. "\"," .. teamId, "", false)
     ShowControl("HUD", "cosmeticWheelContainer", false)

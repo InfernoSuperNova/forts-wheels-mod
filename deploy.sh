@@ -25,10 +25,10 @@ stringfuscatorPath="/home/deltawing/.steam/debian-installation/steamapps/common/
 LuaPlusCPath="/home/deltawing/.steam/debian-installation/steamapps/common/Forts/LuaPlusC.exe"
 
 python3 "$stringfuscatorPath" "$NewFolder/scripts/game/premiumWheels.lua" "$NewFolder/scripts/game/premiumWheels.lua"
-wine "$LuaPlusCPath" -o "$NewFolder/scripts/game/premiumWheels.lua" "$NewFolder/scripts/game/premiumWheels.lua"
+DISPLAY= wine "$LuaPlusCPath" -o "$NewFolder/scripts/game/premiumWheels.lua" "$NewFolder/scripts/game/premiumWheels.lua"
 
 python3 "$stringfuscatorPath" "$NewFolder/config/premiumIds.lua" "$NewFolder/config/premiumIds.lua"
-wine "$LuaPlusCPath" -o "$NewFolder/config/premiumIds.lua" "$NewFolder/config/premiumIds.lua"
+DISPLAY= wine "$LuaPlusCPath" -o "$NewFolder/config/premiumIds.lua" "$NewFolder/config/premiumIds.lua"
 
 # Remove this deploy.sh script from the new folder
 rm "$NewFolder/deploy.sh"

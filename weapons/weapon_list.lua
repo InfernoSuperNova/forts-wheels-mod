@@ -476,3 +476,201 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 	},
 })
 LCAddComp({"turretCannon", "turretCannon2", "turretCannon3", "turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip3"})
+
+
+table.insert(Sprites, ButtonSprite("hud-turretLaser-icon", "HUD/HUD-turretlaser", nil, ButtonSpriteBottom, nil, nil, path))
+table.insert(Sprites, DetailSprite("hud-detail-turretlaser", "turretlaser", path))
+table.insert(Weapons, IndexOfWeapon("laser") + 1, {
+    SaveName = "turretLaser",
+    FileName = path .. "/weapons/turretLaser.lua",
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    AnimationScript = path .. "/weapons/turretLaser_anim.lua",
+    Prerequisite = "factory",
+    BuildTimeComplete = 150.0,
+    ScrapPeriod = 8,
+    MetalCost = 2000,
+    EnergyCost = 12000,
+    MetalRepairCost = 500,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = StandardMaxUpAngle,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaser2"] =
+		{
+			Enabled = true,
+			SaveName = "turretLaser2",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretLaser") + 1, {
+    SaveName = "turretLaser2",
+    FileName = path .. "/weapons/turretLaser2.lua",
+    Enabled = false,
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaserFlip1"] =
+		{
+			Enabled = true,
+			SaveName = "turretLaserFlip1",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+    
+})
+table.insert(Weapons, IndexOfWeapon("turretLaser") + 1, {
+    SaveName = "turretLaser3",
+    FileName = path .. "/weapons/turretLaser3.lua",
+    Enabled = false,
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaser2"] =
+		{
+			Enabled = true,
+			SaveName = "turretLaser2",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretLaser") + 1, {
+    SaveName = "turretLaserFlip1",
+    FileName = path .. "/weapons/turretLaserFlip1.lua",
+    Enabled = false,
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaserFlip2"] =
+		{
+			Enabled = false,
+			SaveName = "turretLaserFlip2",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+        ["turretLaser3"] =
+		{
+			Enabled = false,
+			SaveName = "turretLaser3",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretLaser") + 1, {
+    SaveName = "turretLaserFlip2",
+    FileName = path .. "/weapons/turretLaserFlip2.lua",
+    Enabled = false,
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaserFlip3"] =
+		{
+			Enabled = false,
+			SaveName = "turretLaserFlip3",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+        ["turretLaserFlip1"] =
+		{
+			Enabled = false,
+			SaveName = "turretLaserFlip1",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+table.insert(Weapons, IndexOfWeapon("turretLaser") + 1, {
+    SaveName = "turretLaserFlip3",
+    FileName = path .. "/weapons/turretLaserFlip3.lua",
+    Enabled = false,
+    Icon = "hud-turretLaser-icon",
+    GroupButton = "hud-group-laser",
+    Detail = "hud-detail-turretlaser",
+    BuildTimeComplete = 0.0,
+    ScrapPeriod = 8,
+    MetalCost = 0,
+    EnergyCost = 0,
+    MetalRepairCost = 150,
+    EnergyRepairCost = 3000,
+    MaxSpotterAssistance = 1, -- major benefit from spotters
+    MaxUpAngle = 90,
+    BuildOnGroundOnly = false,
+    SelectEffect = "ui/hud/weapons/ui_weapons",
+    Upgrades =
+	{
+		["turretLaserFlip2"] =
+		{
+			Enabled = false,
+			SaveName = "turretLaserFlip2",
+			TransferReloadProgress = true,
+			MetalCost = 0,
+			EnergyCost = 0,
+		},
+	},
+})
+
+LCAddComp({"turretLaser", "turretLaser2", "turretLaser3", "turretLaserFlip1", "turretLaserFlip2", "turretLaserFlip3", "laser"})

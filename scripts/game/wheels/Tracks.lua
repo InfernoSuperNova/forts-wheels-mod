@@ -10,6 +10,7 @@ function UntrackDevice(deviceId)
     data.trackGroups[deviceId] = nil
 end
 function UpdateTracks(frame)
+    OffscreenEffects = {}
     local localSide = GetLocalTeamId() % MAX_SIDES
     ClearEffects()
     FillTracks()
@@ -19,12 +20,14 @@ end
 
 
 function RefreshWheels(teamId) 
+
+    
     for k, v in pairs(data.devices) do
         if v.team == teamId then
-            BetterLog(v)
             if WheelSpriteIds[v.id] then
                 CancelEffect(WheelSpriteIds[v.id])
                 WheelSpriteIds[v.id] = nil
+                
             end
             
         end
@@ -66,9 +69,12 @@ function PlaceSuspensionPosInTable(device)
     (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
-        if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
+        if not data.trackGroups[device.id] then data.trackGroups[device.id] = 11 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
+        local previousPos = PreviousWheelPos[device.id]
+        if not previousPos then previousPos = actualPos end
+        previousPos.z = 0
         if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
 
             --get the structure that the track set belongs to
@@ -77,14 +83,16 @@ function PlaceSuspensionPosInTable(device)
             if not Tracks[structureId] then Tracks[structureId] = {} end
             if not Tracks[structureId][trackGroup] then Tracks[structureId][trackGroup] = {} end
             local suspensionPos = actualPos
+
             if Displacement[device.id] then
                 suspensionPos = {
                     x = actualPos.x + Displacement[device.id].x,
                     y = actualPos.y + Displacement[device.id].y,
                 }
+                previousPos.x = previousPos.x + Displacement[device.id].x
+                previousPos.y = previousPos.y + Displacement[device.id].y
             end
-            local previousPos = data.previousDevicePositions[device.id]
-            if not previousPos then previousPos = {x = 0, y = 0} end
+
             --bad coding practices, don't do this kids
             suspensionPos.radius = GetWheelStats(device).radius
             suspensionPos.saveName = device.saveName
@@ -92,14 +100,15 @@ function PlaceSuspensionPosInTable(device)
             TracksId[structureId][device.id] = suspensionPos
             suspensionPos.deviceId = device.id
             suspensionPos.teamId = device.team
-            if Displacement[device.id] then
-                suspensionPos.previousPos = {
-                    x = previousPos.x + Displacement[device.id].x,
-                    y = previousPos.y + Displacement[device.id].y,
-                }
-            end
+
+            suspensionPos.previousPos = previousPos
+  
+
             
+            --BetterLog(suspensionPos)
             table.insert(Tracks[structureId][trackGroup], suspensionPos)
+        else
+            table.insert(OffscreenEffects, device.id)
         end
     end
 end
@@ -139,7 +148,6 @@ end
 
 function DrawTracks(localSide, t)
 
-
     --loop through list of track sets
     for base, trackSets in pairs(PushedTracks) do
         local team = GetStructureTeam(base)
@@ -151,6 +159,14 @@ function DrawTracks(localSide, t)
                 DrawTrackSprockets(base, trackGroup, t)
             end
         end
+    end
+    if not LocalScreen then return end
+    local pos = {x = LocalScreen.MaxX + 500, y = LocalScreen.MaxY + 500}
+    for i = 1, #OffscreenEffects do
+        local deviceId = OffscreenEffects[i]
+        local effectId = WheelSpriteIds[deviceId]
+        if not effectId then return end
+        SetEffectPosition(effectId, pos)
     end
 end
 
@@ -171,6 +187,7 @@ function DrawTrackSprockets(base, trackGroup, t)
 
         for device, pos in pairs(Tracks[base][trackGroup]) do
 
+
             if not pos.previousPos then pos.previousPos = pos end
             local actualPos = Vec3Lerp(pos.previousPos, pos, t)
 
@@ -187,9 +204,8 @@ function DrawTrackSprockets(base, trackGroup, t)
             local vecAngle = AngleToVector(newAngle)
             
 
-            if not WheelSpriteIds[pos.deviceId] then 
+            if not ReducedVisuals and not WheelSpriteIds[pos.deviceId] then 
                 WheelSpriteIds[pos.deviceId] = SpawnEffectEx(effectPath, pos, vecAngle) 
-                BetterLog(pos .. "created")
             else
                 SetEffectPosition(WheelSpriteIds[pos.deviceId], actualPos)
                 SetEffectDirection(WheelSpriteIds[pos.deviceId], vecAngle)
