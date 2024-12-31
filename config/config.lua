@@ -30,15 +30,15 @@ SHIELD_FORCE = 2500000                                  --pushback force of the 
 --roads
 ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road material
 --Turrets
-TURRET_SAVE_NAME = {"turretCannon2"}
+TURRET_SAVE_NAME = {"turretCannon2", "turretLaser2"}
 TURRET_ANIM_NAMES = {["turretCannonFlip1"] = true, ["turretCannonFlip2"] = true, ["turretCannonFlip3"] = true} 
 --binds
 KEYBINDS = {
-    ToggleUpdateDebug = {"left control", "left alt", "t"},
-    ToggleCollisionDebug = {"left control", "left alt", "d"},
-    ToggleForcesDebug = {"left control", "left alt", "f"},
-    ToggleReducedVisuals = {"left control", "left alt", "v"},
-    ShowWheelSelectionScreen = {"left control", "left alt", "c"},
+    ToggleUpdateDebug = {"left control", "left shift", "left alt", "t"},
+    ToggleCollisionDebug = {"left control", "left shift", "left alt", "d"},
+    ToggleForcesDebug = {"left control", "left shift", "left alt", "f"},
+    ToggleReducedVisuals = {"left control", "left shift", "left alt", "v"},
+    ShowWheelSelectionScreen = {"left control", "left shift", "left alt", "c"},
 
     MouseLeft = {"mouse left"},
     CtrlLeft = {"left control"},
@@ -72,6 +72,7 @@ JustJoined = true --to run something once upon joining through Update. (used for
 Metric = true --switch hud elements between mph and km/h
 Displacement = {}
 WheelPos = {}
+PreviousWheelPos = {}
 TracksId = {}
 FinalSuspensionForces = {}
 FinalPropulsionForces = {}
@@ -80,6 +81,7 @@ data.motors = {}
 data.gearboxes = {}
 TrackOffsets = {}
 Tracks = {}
+OffscreenEffects = {}
 SortedTracks = {}
 PushedTracks = {}
 LocalEffects = {}

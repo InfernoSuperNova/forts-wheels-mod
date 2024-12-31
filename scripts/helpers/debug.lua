@@ -86,6 +86,9 @@ end
 
 function ToggleReducedVisuals()
     ReducedVisuals = not ReducedVisuals
+    RefreshWheels(0)
+    RefreshWheels(1)
+    RefreshWheels(2)
     Notice("Reduced visuals: " .. tostring(ReducedVisuals))
 end
 function ClearDebugControls()
@@ -111,7 +114,7 @@ function DebugUpdate()
     local mpos = GetMousePos()
     DebugLog(string.format("Mouse: %.2f, %.2f", mpos.x, mpos.y))
 
-    DebugLog("Press Ctrl + Alt + T to hide")
+    DebugLog("Press LCTRL + LSHIFT + LALT + T to hide")
     if not ControlExists("root", "debugControl") then
         AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
     end
@@ -175,7 +178,7 @@ function EnableTerrainDebug()
     SetControlText("", "terrainStat1", "Largest block: " .. largestBlock)
     SetControlText("", "terrainStat2", "Total vertex count: " .. BlockStatistics.totalNodes)
     SetControlText("", "terrainStat3", "Total block count: " .. BlockStatistics.totalBlocks)
-    SetControlText("", "terrainStat4", "Press Ctrl + Alt + D to hide")
+    SetControlText("", "terrainStat4", "Press LCTRL + LSHIFT + LALT + D to hide")
 end
 function DisableTerrainDebug()
     SetControlText("", "terrainStat1", "")

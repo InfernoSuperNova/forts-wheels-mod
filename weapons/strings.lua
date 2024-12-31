@@ -21,6 +21,11 @@ Merge(Weapon,
 	--missilestructure2invTip3 = L"Requires: Workshop, Upgrade Centre",
 
     turretCannon = L"Cannon Turret",
-    turretCannonTip2 = L"A large and well protected cannon. Upgrade to rotate the turret around.",
-    --turretCannonTip3 = L"Requires: Munitions Plant",
+    turretCannonTip2 = L"A large and well protected cannon. Fires a powerful shell.",
+    turretCannonTip3 = L"Upgrade to rotate the turret around.",
+
+    turretLaser = L"Laser Turret",
+    turretLaserTip2 = L"A large and well protected laser. Fires a powerful, short range beam with high recoil.",
+    turretLaserTip3 = L"Upgrade to rotate the turret around.",
+
 })

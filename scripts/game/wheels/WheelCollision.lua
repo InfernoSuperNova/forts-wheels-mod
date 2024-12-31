@@ -17,38 +17,59 @@ function WheelCollisionHandler()
             if not WheelsTouchingGround[structureKey] then WheelsTouchingGround[structureKey] = {} WheelForces[structureKey] = {} end
             local wheelStats = GetWheelStats(device)
             local wheelRadius = wheelStats.radius + TRACK_WIDTH
-            local snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND, -1, -1, "")
+            local wheelPos = wheelStats.pos
+            local wheelPosX = wheelPos.x
+            local wheelPosY = wheelPos.y
+            local snapResult = SnapToWorld(wheelPos, wheelRadius, SNAP_GROUND, -1, -1, "")
 
+            
+
+            local snapResultPos = snapResult.Position
+            local snapResultPosX = snapResultPos.x
+            local snapResultPosY = snapResultPos.y
             if SpecialTerrain.ignored[snapResult.BlockIndex] or snapResult.BlockVertexIndex == -1 then
                 --unfortunately, this means that only background terrain can be ignored
-                snapResult = SnapToWorld(wheelStats.pos, wheelRadius, SNAP_GROUND_FORE, -1, -1, "")
+                snapResult = SnapToWorld(wheelPos, wheelRadius, SNAP_GROUND_FORE, -1, -1, "")
+                snapResultPos = snapResult.Position
+                snapResultPosX = snapResultPos.x
+                snapResultPosY = snapResultPos.y
             end
 
 
-            if snapResult.Position.x == wheelStats.pos.x and snapResult.Position.y == wheelStats.pos.y then
-                WheelPos[device.id] = wheelStats.pos
+            if snapResult.Position.x == wheelPosX and snapResult.Position.y == wheelPosY then
+                PreviousWheelPos[device.id] = WheelPos[device.id]
+                WheelPos[device.id] = wheelPos
                 continue
             end
-            local normal = NormalizeVector(snapResult.Position - wheelStats.pos)
-            normal.x = math.abs(normal.x) * math.sign(snapResult.Normal.x)
-            normal.y = math.abs(normal.y) * math.sign(snapResult.Normal.y)
+            
+            local snapResultPosXToWheelPosX = snapResultPosX - wheelPosX
+            local snapResultPosYToWheelPosY = snapResultPosY - wheelPosY
+            local magnitude = math.sqrt(snapResultPosXToWheelPosX * snapResultPosXToWheelPosX + snapResultPosYToWheelPosY * snapResultPosYToWheelPosY)
+            local normal = {x = snapResultPosXToWheelPosX / magnitude, y = snapResultPosYToWheelPosY / magnitude, z = 0}
+            local snapResultNormal = snapResult.Normal
+            local snapResultNormalX = snapResultNormal.x
+            local snapResultNormalY = snapResultNormal.y
+            normal.x = math.abs(normal.x) * math.sign(snapResultNormalX)
+            normal.y = math.abs(normal.y) * math.sign(snapResultNormalY)
             if data.brakes[structureKey] then
                 normal.x = 0
                 normal.y = -1
-                snapResult.Position.x = wheelStats.pos.x
+                snapResultPosX = wheelPosX
             end
 
             if ModDebug.collision then
-                SpawnCircle(snapResult.Position, 25, Blue(), 0.04)
-                SpawnLine(snapResult.Position, snapResult.Position + 75 * normal, Blue(), 0.04)
-                SpawnCircle(snapResult.Position + 75 * normal, 75, Red(), 0.04)
+                SpawnCircle(snapResultPos, 25, Blue(), 0.04)
+                SpawnLine(snapResultPos, snapResultPos + 75 * normal, Blue(), 0.04)
+                SpawnCircle(snapResultPos + 75 * normal, 75, Red(), 0.04)
             end
 
 
-            local displacedPos = snapResult.Position + wheelRadius * normal
+            local displacedPos = {x = snapResultPosX + wheelRadius * normal.x, y = snapResultPosY + wheelRadius * normal.y, z = 0}
+            PreviousWheelPos[device.id] = WheelPos[device.id]
             WheelPos[device.id] = displacedPos
-            local displacement = displacedPos - wheelStats.pos
-
+            local displacementX = displacedPos.x - wheelPosX
+            local displacementY = displacedPos.y - wheelPosY
+            local displacement = {x = displacementX, y = displacementY, z = 0}
             local spring = WHEEL_SPRINGS[device.saveName]
             
             local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, AverageCoordinates({device.nodeVelA, device.nodeVelB}), normal)
@@ -81,10 +102,17 @@ function GetOffsetDevicePos(device, offset)
 end
 
 function DirectionalDampening(springConst, displacement, dampening, velocity, surfacePerpVector)
-    local velocityPerpToSurface = Dot(velocity, surfacePerpVector)
-    local force = springConst * displacement - dampening * velocityPerpToSurface * surfacePerpVector
+    local velocityX = velocity.x
+    local velocityY = velocity.y
+    local surfacePerpVectorX = surfacePerpVector.x
+    local surfacePerpVectorY = surfacePerpVector.y
+    local displacementX = displacement.x
+    local displacementY = displacement.y
+    local velocityPerpToSurface = velocityX * surfacePerpVectorX + velocityY * surfacePerpVectorY
+    local forceX = springConst * displacementX - dampening * velocityPerpToSurface * surfacePerpVectorX
+    local forceY = springConst * displacementY - dampening * velocityPerpToSurface * surfacePerpVectorY
     
-    return force
+    return {x = forceX, y = forceY, z = 0}
 end
 
 --A cool helper function I sotle from landcroozers 2

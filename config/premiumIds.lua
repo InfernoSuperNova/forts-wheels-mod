@@ -5,9 +5,9 @@ PremiumNames = {}
 function InitializePremiumIds()
 
     PremiumWheels = {
-        ["76561198126608185"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel"}, --DeltaWing
-        ["76561198869176906"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel"}, -- AlexD
-        ["76561198163519264"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel"}, -- Samster
+        ["76561198126608185"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel", "NukeWheel"}, --DeltaWing
+        ["76561198869176906"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel", "NukeWheel"}, -- AlexD
+        ["76561198163519264"] = {"DeltawingWheel", "LinnWheel", "IncursusWheel", "SpiderWheel", "FrazzzWheel", "NozeWheel", "DevWheel", "FishyWheel", "DiscordWheel", "CodeUltimateWheel", "PaulWheel", "NukeWheel"}, -- Samster
         ["76561198181650771"] = {"LinnWheel", "DeltawingWheel", "DevWheel",}, --Flinnshadow
         ["76561197985174884"] = {"IncursusWheel",}, --Incursus
         ["76561198438724626"] = {"SpiderWheel",}, --Romerolagus
@@ -25,6 +25,9 @@ function InitializePremiumIds()
         ["76561199287373883"] = {"DiscordWheel",}, -- jammingdoodler
         ["76561198938850188"] = {"DiscordWheel",}, -- Bulyga
         ["76561198422531110"] = {"DiscordWheel",}, -- Dragon1008
+        ["76561198802240315"] = {"DiscordWheel",}, -- Bryqnthesup3r
+        ["76561199134452265"] = {"DiscordWheel",}, -- Snake_Tank
+        ["76561198814805751"] = {"DiscordWheel",}, -- PK
     }
     
     PremiumNames = {
@@ -48,5 +51,8 @@ function InitializePremiumIds()
         ["76561199287373883"] = "jammingdoodler",
         ["76561198938850188"] = "Bulyga",
         ["76561198422531110"] = "Dragon1008",
+        ["76561198802240315"] = "Bryqnthesup3r",
+        ["76561199134452265"] = "Snake_Tank",
+        ["76561198814805751"] = "PK",
     }
 end 

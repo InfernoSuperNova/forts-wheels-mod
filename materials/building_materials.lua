@@ -124,6 +124,8 @@ table.insert(Sprites,
 		},
 	}
 )
+table.insert(Sprites, ButtonSprite("hud-structural-icon", "HUD/HUD-structural", nil, 0.664, nil, nil, path))
+table.insert(Sprites, ButtonSprite("hud-structuralbackground-icon", "HUD/HUD-structuralBackground", nil, 0.664, nil, nil, path))
 local road = DeepCopy(FindMaterial("armour"))
 if road then
     road.SaveName = "RoadLink"
@@ -139,6 +141,7 @@ local structuralAluminium = DeepCopy(FindMaterial("armour"))
 if structuralAluminium then
 	structuralAluminium.SaveName = "StructuralAluminium"
 	structuralAluminium.Sprite = "structural"
+    structuralAluminium.Icon = "hud-structural-icon"
 	structuralAluminium.MetalBuildCost = 0.5
 	structuralAluminium.MetalReclaim = 0.25
 	structuralAluminium.EnergyBuildCost = 0.5
@@ -162,6 +165,7 @@ local structuralAluminiumBackground = DeepCopy(FindMaterial("armour"))
 if structuralAluminiumBackground then
 	structuralAluminiumBackground.SaveName = "StructuralAluminiumBackground"
 	structuralAluminiumBackground.Sprite = "structuralBackground"
+    structuralAluminiumBackground.Icon = "hud-structuralbackground-icon"
 	structuralAluminiumBackground.MetalBuildCost = 0.4
 	structuralAluminiumBackground.MetalReclaim = 0.2
 	structuralAluminiumBackground.EnergyBuildCost = 0.4
