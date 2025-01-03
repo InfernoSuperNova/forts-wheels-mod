@@ -54,7 +54,7 @@ function OnControlActivated(name, code, doubleClick)
 
     elseif string.sub(name, 1, 16) == "button_cosmetic_" then
         
-        GetCosmeticWheelChoice(LocallyAvailableTypes[code])
+        GetCosmeticWheelChoice(code)
     end
 end
 
@@ -79,40 +79,6 @@ function GetControlledStructureId(controllerId)
     end
 end
 
-function ThrottleControl()
-    local deviceStructureId = GetControlledStructureId(GetLocalSelectedDeviceId())
-    local uid = GetLocalClientIndex()
-    
-    SetControlFrame(0)
-    if deviceStructureId then
-        --user has a valid controller selected so we should show the UI and read throttle slider
-
-        if deviceStructureId ~= current_UI_deviceStructureId then DestroyUI(uid) end --recreate UI so button callbacks get updated to new structureid
-
-        if not ControlExists("root", "ThrottleSlider") then
-            CreateUI(deviceStructureId, uid)
-        else
-            local throttlePos = GetControlRelativePos("ThrottleSlider", "SliderBar")
-            --send the pos to the throttles table
-            if ControlExists("root", "ThrottleSlider") then
-                SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(throttlePos.x, 3) .. "," .. throttlePos.y .. "," .. deviceStructureId, "", false)
-            end
-            local brakePos = GetControlRelativePos("BrakeSlider", "SliderBar")
-            if ControlExists("root", "BrakeSlider") then
-                SendScriptEvent("UpdateBrakeSliders", IgnoreDecimalPlaces(brakePos.x, 3) .. "," .. brakePos.y .. "," .. deviceStructureId, "", false)
-            end
-        end
-
-        UpdateVehicleInfo(deviceStructureId, uid)
-
-        DestroySmallUI()
-    else
-        if ControlExists("HUD", "throttle backdrop") then
-            DestroyUI(uid)
-            CreateSmallUI()
-        end
-    end
-end
 
 function CreateUI(deviceStructureId, uid)
     current_UI_deviceStructureId = deviceStructureId
@@ -239,6 +205,8 @@ function UpdateVehicleInfo(structure, uid)
 end
 
 function CreateSmallUI()
+    if SmallUIExists then return end
+    SmallUIExists = true
     SetControlFrame(0)
 
     smallui_size  = {x = 254 * smallui_scale, y = 70 * smallui_scale}
@@ -265,6 +233,8 @@ function CreateSmallUI()
 end
 
 function DestroySmallUI()
+    if not SmallUIExists then return end
+    SmallUIExists = false
     SetControlFrame(0)
     if ControlExists("HUDPanel", "smallui-box") then
         DeleteControl("HUDPanel", "smallui-box")
@@ -300,11 +270,15 @@ function FocusCamOnController()
 end
 
 function UpdateSmallUI()
-    if not ControlExists("HUDPanel", "smallui-box") then return end
+    if #SelectedData.Group ~= 0 then
+        return
+    end
 
     if not IsValidController(last_selected_controllerId) then
         DestroySmallUI()
         return
+    else
+        CreateSmallUI()
     end
 
     local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
@@ -493,3 +467,66 @@ function Log_UI_Tree(parent, name, ind)
     end
 end
 ]]
+
+SmallUIExists = false
+-- Contributed by Harder_天使的花园
+SelectedData = {Name = true, Group = {}}
+    SelectedOnSelf = false
+
+    local onGroupMemberSelected = OnGroupMemberSelected
+    function OnGroupMemberSelected(deviceId)
+        if onGroupMemberSelected then
+            onGroupMemberSelected(deviceId)
+        end
+        table.insert(SelectedData.Group, deviceId)
+    end
+    
+    local onGroupMemberDeselected = OnGroupMemberDeselected
+    function OnGroupMemberDeselected(deviceId)
+        if onGroupMemberDeselected then
+            onGroupMemberDeselected(deviceId)
+        end
+        SelectedData.Name = nil
+        SelectedOnSelf = nil
+        SelectedData.Group = {}
+    end
+
+    function ThrottleControl()
+        local uid = GetLocalClientIndex()
+        for _, id in pairs(SelectedData.Group) do
+            local deviceStructureId = GetControlledStructureId(id)
+            SetControlFrame(0)
+            if deviceStructureId then
+                --user has a valid controller selected so we should show the UI and read throttle slider
+
+                if (deviceStructureId ~= current_UI_deviceStructureId) and (current_UI_deviceStructureId ~= nil) then 
+                    DestroyUI(uid) --recreate UI so button callbacks get updated to new structureid
+                end 
+                
+                if not ControlExists("HUD", "throttle backdrop") then
+                    CreateUI(deviceStructureId, uid)
+                else
+                    local throttlePos = GetControlRelativePos("ThrottleSlider", "SliderBar")
+                    --send the pos to the throttles table
+                    if ControlExists("root", "ThrottleSlider") then
+                        SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(throttlePos.x, 3) .. "," .. throttlePos.y .. "," .. deviceStructureId, "", false)
+                    end
+                    local brakePos = GetControlRelativePos("BrakeSlider", "SliderBar")
+                    if ControlExists("root", "BrakeSlider") then
+                        SendScriptEvent("UpdateBrakeSliders", IgnoreDecimalPlaces(brakePos.x, 3) .. "," .. brakePos.y .. "," .. deviceStructureId, "", false)
+                    end
+                end
+
+                UpdateVehicleInfo(deviceStructureId, uid)
+
+                DestroySmallUI()
+            else
+                if ControlExists("HUD", "throttle backdrop") then
+                    DestroyUI(uid)
+                end
+            end
+        end      
+        if #SelectedData.Group == 0 then
+            DestroyUI(uid)
+        end
+    end

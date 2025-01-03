@@ -4,7 +4,7 @@ LifeSpan = 10e11
 Sprites =
 {
 	{
-		Name = "track_link",
+		Name = "[placeholder]Sprocket",
 
 		States =
 		{
@@ -12,7 +12,7 @@ Sprites =
 			{
 				Frames =
 				{
-					{ texture = path .. "/effects/media/tracklink.png" },
+					{ texture = path .. "/effects/wheels/[placeholder]/sprocket.png" },
 					
 
 					duration = 0.04,
@@ -32,15 +32,15 @@ Effects =
 	{
 		Type = "sprite",
 		TimeToTrigger = 0,
-		LocalPosition = { x = 5, y = 0, z = -0.2 },
+		LocalPosition = { x = 0, y = 0, z = -0.1 },
 		LocalVelocity = { x = 0, y = 0, z = 0 },
 		Acceleration = { x = 0, y = 0, z = 0 },
 		Drag = 0.0,
-		Sprite = "track_link",
+		Sprite = "[placeholder]Sprocket",
 		Additive = false,
 		TimeToLive = 10e11,
 		Angle = 0,
-		InitialSize = 1.0,
+		InitialSize = 1.3,
 		ExpansionRate = 0,
 		AngularVelocity = 0,
 		RandomAngularVelocityMagnitude = 0,

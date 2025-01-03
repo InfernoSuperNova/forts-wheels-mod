@@ -18,13 +18,13 @@ MetalStorageCapacity = 0.0
 MinWindEfficiency = 1
 MaxWindHeight = 0
 MaxRotationalSpeed = 0
-DeviceSplashDamage = 200
-DeviceSplashDamageMaxRadius = 400
+DeviceSplashDamage = 150
+DeviceSplashDamageMaxRadius = 300
 DeviceSplashDamageDelay = 0.2
 IncendiaryRadius = 250
 IncendiaryRadiusHeated = 300
-StructureSplashDamage = 300
-StructureSplashDamageMaxRadius = 250
+StructureSplashDamage = 250
+StructureSplashDamageMaxRadius = 150
 
 FireEffect = "effects/fire_cannon.lua"
 ConstructEffect = "effects/device_construct.lua"

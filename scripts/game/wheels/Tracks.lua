@@ -4,13 +4,13 @@ function InitializeTracks()
 end
 function UntrackDevice(deviceId)
     if (WheelSpriteIds[deviceId]) then
-        CancelEffect(WheelSpriteIds[deviceId])
+        EffectManager:DestroyEffect(WheelSpriteIds[deviceId])
         WheelSpriteIds[deviceId] = nil
     end
     data.trackGroups[deviceId] = nil
 end
 function UpdateTracks(frame)
-    OffscreenEffects = {}
+    
     local localSide = GetLocalTeamId() % MAX_SIDES
     ClearEffects()
     FillTracks()
@@ -18,14 +18,14 @@ function UpdateTracks(frame)
     GetTrackSetPositions()
 end
 
-
+TrackEffectIdsThisFrame = {}
 function RefreshWheels(teamId) 
 
     
     for k, v in pairs(data.devices) do
         if v.team == teamId then
             if WheelSpriteIds[v.id] then
-                CancelEffect(WheelSpriteIds[v.id])
+                EffectManager:DestroyEffect(WheelSpriteIds[v.id])
                 WheelSpriteIds[v.id] = nil
                 
             end
@@ -36,6 +36,8 @@ end
 
 --clears any wheel sprites on the screen
 function ClearEffects()
+
+
     for k, v in pairs(data.trackGroups) do
         if not DeviceExists(k) then k = nil end
     end
@@ -62,6 +64,10 @@ function FillTracks()
     end
 end
 
+
+
+
+
 function PlaceSuspensionPosInTable(device)
     
     if DeviceExists(device.id) 
@@ -69,11 +75,12 @@ function PlaceSuspensionPosInTable(device)
     (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
-        if not data.trackGroups[device.id] then data.trackGroups[device.id] = 11 end
+        if not data.trackGroups[device.id] then data.trackGroups[device.id] = 1 end
         local trackGroup = data.trackGroups[device.id]
         local actualPos = WheelPos[device.id]
         local previousPos = PreviousWheelPos[device.id]
         if not previousPos then previousPos = actualPos end
+        previousPos = {x = previousPos.x, y = previousPos.y}
         previousPos.z = 0
         if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
 
@@ -105,10 +112,10 @@ function PlaceSuspensionPosInTable(device)
   
 
             
-            --BetterLog(suspensionPos)
             table.insert(Tracks[structureId][trackGroup], suspensionPos)
         else
-            table.insert(OffscreenEffects, device.id)
+            EffectManager:DestroyEffect(WheelSpriteIds[device.id])
+            WheelSpriteIds[device.id] = nil
         end
     end
 end
@@ -148,6 +155,12 @@ end
 
 function DrawTracks(localSide, t)
 
+    for i = 1, #TrackEffectIdsThisFrame do
+        EffectManager:DestroyEffect(TrackEffectIdsThisFrame[i])
+    end
+    TrackEffectIdsThisFrame = {}
+
+
     --loop through list of track sets
     for base, trackSets in pairs(PushedTracks) do
         local team = GetStructureTeam(base)
@@ -161,13 +174,6 @@ function DrawTracks(localSide, t)
         end
     end
     if not LocalScreen then return end
-    local pos = {x = LocalScreen.MaxX + 500, y = LocalScreen.MaxY + 500}
-    for i = 1, #OffscreenEffects do
-        local deviceId = OffscreenEffects[i]
-        local effectId = WheelSpriteIds[deviceId]
-        if not effectId then return end
-        SetEffectPosition(effectId, pos)
-    end
 end
 
 function DrawTrackSprockets(base, trackGroup, t)
@@ -190,7 +196,7 @@ function DrawTrackSprockets(base, trackGroup, t)
 
             if not pos.previousPos then pos.previousPos = pos end
             local actualPos = Vec3Lerp(pos.previousPos, pos, t)
-
+            
             local effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["small"]
             local newAngle = angle
             if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
@@ -205,7 +211,7 @@ function DrawTrackSprockets(base, trackGroup, t)
             
 
             if not ReducedVisuals and not WheelSpriteIds[pos.deviceId] then 
-                WheelSpriteIds[pos.deviceId] = SpawnEffectEx(effectPath, pos, vecAngle) 
+                WheelSpriteIds[pos.deviceId] = EffectManager:CreateEffect(effectPath, pos, vecAngle) 
             else
                 SetEffectPosition(WheelSpriteIds[pos.deviceId], actualPos)
                 SetEffectDirection(WheelSpriteIds[pos.deviceId], vecAngle)
@@ -264,12 +270,12 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
         -- I hate this so much
         -- I wish I chose oop
         local linkPos = Vec3Lerp(point.pos, nextPoint.pos, 0.5)
-        SpawnEffectEx(path .. trackLink, linkPos, trackDirection)
-
+        local linkId = EffectManager:CreateEffect(path .. trackLink, linkPos, trackDirection)
         trackDirection = NormalizeVector(AverageCoordinates({trackDirection, previousTrackDirection}))
-        SpawnEffectEx(path .. track, point.pos, trackDirection)
+        local linkId2 = EffectManager:CreateEffect(path .. track, point.pos, trackDirection)
 
-
+        TrackEffectIdsThisFrame[#TrackEffectIdsThisFrame+1] = linkId
+        TrackEffectIdsThisFrame[#TrackEffectIdsThisFrame+1] = linkId2
     end
 end
 
@@ -429,7 +435,7 @@ end
 function UpdateTrackGroups(deviceId, group)
     data.trackGroups[deviceId] = group
     if (WheelSpriteIds[deviceId]) then
-        CancelEffect(WheelSpriteIds[deviceId])
+        EffectManager:DestroyEffect(WheelSpriteIds[deviceId])
         WheelSpriteIds[deviceId] = nil
     end
 end

@@ -21,13 +21,13 @@ MetalStorageCapacity = 0.0
 MinWindEfficiency = 1
 MaxWindHeight = 0
 MaxRotationalSpeed = 0
-DeviceSplashDamage = 200
-DeviceSplashDamageMaxRadius = 400
+DeviceSplashDamage = 150
+DeviceSplashDamageMaxRadius = 300
 DeviceSplashDamageDelay = 0.2
 IncendiaryRadius = 250
 IncendiaryRadiusHeated = 300
-StructureSplashDamage = 300
-StructureSplashDamageMaxRadius = 250
+StructureSplashDamage = 250
+StructureSplashDamageMaxRadius = 150
 
 FireEffect = path .. "/effects/fire_turretlaser.lua"
 ConstructEffect = "effects/device_construct.lua"
@@ -45,8 +45,8 @@ FireClearanceOffsetOuter = 40
 AttractZoomOutDuration = 5
 ReloadTime = 45.0
 ReloadTimeIncludesBurst = false
-MinFireSpeed = 8000.0 -- Move to Ammo
-MaxFireSpeed = 8000.1 -- Move to Ammo
+MinFireSpeed = 15000.0 -- Move to Ammo
+MaxFireSpeed = 15000.0 -- Move to Ammo
 MinFireRadius = 600.0
 MaxFireRadius = 1200.0
 MinVisibility = 0.7
@@ -59,9 +59,12 @@ MouseSensitivityFactor = 0.5
 PanDuration = 0
 FireStdDev = 0.01 -- Move to Ammo
 FireStdDevAuto = 0.012 -- Move to Ammo
-Recoil = 2400000
+Recoil = 1200000
 EnergyFireCost = 6000.0 -- Move to Ammo
 MetalFireCost = 25.0 -- Move to Ammo
+
+BeamThicknessMultiplier = 1.0
+BeamDamageMultiplier = 1.0
 
 ShowFireAngle = true
 
@@ -70,8 +73,8 @@ BarrelRecoilSpeed = -2
 BarrelReturnForce = 0.03
 
 TriggerProjectileAgeAction = true
-MinAgeTrigger = 1.255
-MaxAgeTrigger = 1.255
+MinAgeTrigger = 1
+MaxAgeTrigger = 1
 
 dofile("effects/device_smoke.lua")
 SmokeEmitter = StandardDeviceSmokeEmitter
@@ -86,8 +89,8 @@ BeamTable =
 {
 	{ 0,	1,	0, },
 	{ 0.5,  3,  0, },
-	{ 1,	50, 1500, },
-	{ 2,	50, 1500, }, -- 1000
+	{ 1,	50, 2000, },
+	{ 2,	50, 2000, }, -- 1000
 	{ 3,	0,	0, },
 }
 

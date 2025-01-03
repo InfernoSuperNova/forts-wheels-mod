@@ -93,7 +93,8 @@ function SoundAdd(saveName, deviceId)
     --attaches an effect to a new device that tracks sound
     --engine
     if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
-        local id = SpawnEffect(path .. "/effects/engine_loop.lua", GetDevicePosition(deviceId))
+        
+        local id = EffectManager:CreateEffect(path .. "/effects/engine_loop.lua", GetDevicePosition(deviceId))
         SetAudioParameter(id, "rpm", 100)
         EffectsList.engine[tostring(deviceId)] = id
     --wheel
@@ -108,13 +109,13 @@ function SoundRemove(saveName, deviceId)
     --engine
     if CheckSaveNameTable(saveName, ENGINE_SAVE_NAME) then
         if EffectsList.engine[tostring(deviceId)] then
-            CancelEffect(EffectsList.engine[tostring(deviceId)])
+            EffectManager:DestroyEffect(EffectsList.engine[tostring(deviceId)])
         end
         EffectsList.engine[tostring(deviceId)] = nil
     --wheel
     elseif saveName == WHEEL_SAVE_NAME[1] or saveName == WHEEL_SAVE_NAME[2] then
         if EffectsList.wheel[tostring(deviceId)] then
-            CancelEffect(EffectsList.wheel[tostring(deviceId)])
+            EffectManager:DestroyEffect(EffectsList.wheel[tostring(deviceId)])
         end
         EffectsList.wheel[tostring(deviceId)] = nil
     end

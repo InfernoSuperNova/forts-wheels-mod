@@ -51,6 +51,7 @@ function InitializeScript()
     InitializeDrill()
     InitializeCoreShield()
     InitializeEffects()
+    EffectManager:Load()
     IndexDevices()
     LoadWeapons()
     data.previousVals = {}
@@ -85,9 +86,12 @@ function AlertReducedVisuals()
 end
 
 
+local justUpdated = false
 local lastUpdate = 0
+CurrentFrame = 0
 function Update(frame)
-
+    CurrentFrame = frame
+    justUpdated = true
     local rotation = AngleToVector(frame)
     SetEffectDirection(WheelSprite, rotation)
     LocalScreen = GetCamera()
@@ -97,6 +101,7 @@ function Update(frame)
     if not ModDebug.update then
         ClearDebugControls()
     end
+    EffectManager:Update()
     UpdateFunction("ClearTerrainDebugControls", frame)
     DebugHighlightTerrain(frame)
     UpdateFunction("GetDeviceCounts", frame)
@@ -115,6 +120,7 @@ function Update(frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("UpdateWeapons", frame)
+    MissileManager:Update()
     
     JustJoined = false
     DebugLog("---------End of update---------")
@@ -122,6 +128,11 @@ function Update(frame)
     if ModDebug.update then
         DebugLog("Update took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
         DebugLog("Memory Usage: " .. FormatNumberWithCommas(gcinfo()) .. " KB")
+
+        DebugLog("EffectManager:")
+        DebugLog("Current effect id: " .. FormatNumberWithCommas(EffectManager.MaxEffectId))
+        EffectManager:DebugUpdate()
+
         UpdateFunction("DebugUpdate", frame)
     end
     
@@ -178,7 +189,25 @@ function OnInstantReplay()
 end
 
 LocalSide = 0
+local previousDrawFrameTime = 0
+local previousDrawFrameDelta = 0
 function OnDraw()
+    local startTime = previousDrawFrameTime
+    OnDrawBody()
+    local endTime = GetRealTime()
+    local delta = (endTime - startTime) * 1000
+    
+    if (delta > 30 and previousDrawFrameDelta > 30 and not justUpdated and previousDrawFrameTime ~= 0 and CurrentFrame > 10) then -- Updating slower than 60fps
+        Notice(RGBAtoHex(255, 255, 50, 255) .. "Drawing related performance dips detected, reduced visuals have been enabled. Press LCtrl + LShift + LAlt + V to toggle them back on.")
+        ReducedVisuals = true
+        OnDraw = OnDrawBody
+    end
+    previousDrawFrameTime = endTime
+    previousDrawFrameDelta = delta
+    justUpdated = false
+end
+
+function OnDrawBody()
     if not IsPaused() then
         local currentTime = GetRealTime()
         local deltaTime = currentTime - lastUpdate
@@ -191,6 +220,10 @@ function OnDraw()
     end
 end
 
+
+
+
+
 function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     DrillPlaceEffect(saveName, deviceId)
@@ -198,6 +231,8 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
     CheckTurrets(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
     IndexDevice(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId)
 end
+
+
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
     FillOLTable(saveName, weaponId)
     --add weapon velocity to projectile
@@ -212,7 +247,7 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
         --apply force
         dlc2_ApplyForce(projectileNodeId, force)
     end
-
+    MissileManager:RegisterNewMissile(projectileNodeId)
 end
 
 

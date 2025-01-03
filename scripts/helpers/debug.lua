@@ -108,6 +108,8 @@ function DebugLog(string)
         DebugText = DebugText .. string .. "\n"
     end 
 end
+
+PreviousLineCount = 0
 function DebugUpdate()
     SetControlFrame(0)
 
@@ -115,7 +117,7 @@ function DebugUpdate()
     DebugLog(string.format("Mouse: %.2f, %.2f", mpos.x, mpos.y))
 
     DebugLog("Press LCTRL + LSHIFT + LALT + T to hide")
-    if not ControlExists("root", "debugControl") then
+    if not ControlExists("", "debugControl") then
         AddTextControl("", "debugControl", "", ANCHOR_TOP_RIGHT, {x = 1050, y = 0}, false, "Console")
     end
 
@@ -132,8 +134,14 @@ function DebugUpdate()
         end
         
     end
+    if #lines < PreviousLineCount then
+        for i = #lines + 1, PreviousLineCount do
+            DeleteControl("debugControl", "debugLine" .. i)
+        end
+    end
     
-    
+
+    PreviousLineCount = #lines
     DebugText = ""
 end
 

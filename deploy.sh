@@ -14,6 +14,12 @@ CustomFolderName="landcruisersMain"
 NewFolder="$TargetDirectory/$CustomFolderName"
 mkdir -p "$NewFolder"
 
+# copy the itemversion.lua file from the deploy location to the project location
+cp "$NewFolder/itemversion.lua" "$ParentFolder/itemversion.lua"
+
+# clear the entire new folder
+rm -rf "$NewFolder"
+
 # Use rsync for faster and more efficient copying
 rsync -a --exclude="$NewFolder" --exclude="$ParentFolder" "$ParentFolder/" "$NewFolder"
 
@@ -33,5 +39,10 @@ DISPLAY= wine "$LuaPlusCPath" -o "$NewFolder/config/premiumIds.lua" "$NewFolder/
 # Remove this deploy.sh script from the new folder
 rm "$NewFolder/deploy.sh"
 rm "$NewFolder/copy.bat"
+rm "$NewFolder/upload.py"
+
+# Finally, run generation files
+
+python3 "$NewFolder/autogen/wheelEffects/autogen_effects.py"
 
 echo "Compilation complete."
