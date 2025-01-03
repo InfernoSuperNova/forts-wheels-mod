@@ -59,8 +59,9 @@ function WheelCollisionHandler()
 
             if ModDebug.collision then
                 SpawnCircle(snapResultPos, 25, Blue(), 0.04)
-                SpawnLine(snapResultPos, snapResultPos + 75 * normal, Blue(), 0.04)
-                SpawnCircle(snapResultPos + 75 * normal, 75, Red(), 0.04)
+                local secondPos = {x = snapResultPos.x + 75 * normal.x, y = snapResultPos.y + 75 * normal.y, z = 0}
+                SpawnLine(snapResultPos, secondPos, Blue(), 0.04)
+                SpawnCircle(secondPos, 75, Red(), 0.04)
             end
 
 

@@ -4,7 +4,7 @@ LifeSpan = 10e11
 Sprites =
 {
 	{
-		Name = "track_link",
+		Name = "track_[placeholder]",
 
 		States =
 		{
@@ -12,10 +12,10 @@ Sprites =
 			{
 				Frames =
 				{
-					{ texture = path .. "/effects/media/tracklink.png" },
+					{ texture = path .. "/effects/wheels/[placeholder]/track.png" },
 					
 
-					duration = 0.04,
+					duration = 0.05,
 					blendColour = false,
 					blendCoordinates = false,
 				},
@@ -32,11 +32,11 @@ Effects =
 	{
 		Type = "sprite",
 		TimeToTrigger = 0,
-		LocalPosition = { x = 5, y = 0, z = -0.2 },
+		LocalPosition = { x = 0, y = 0, z = 0 },
 		LocalVelocity = { x = 0, y = 0, z = 0 },
 		Acceleration = { x = 0, y = 0, z = 0 },
 		Drag = 0.0,
-		Sprite = "track_link",
+		Sprite = "track_[placeholder]",
 		Additive = false,
 		TimeToLive = 10e11,
 		Angle = 0,

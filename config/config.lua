@@ -81,7 +81,6 @@ data.motors = {}
 data.gearboxes = {}
 TrackOffsets = {}
 Tracks = {}
-OffscreenEffects = {}
 SortedTracks = {}
 PushedTracks = {}
 LocalEffects = {}

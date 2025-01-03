@@ -25,6 +25,8 @@ FileList = {
             "resources",
             "terrain",
             "premiumWheels",
+            "WheelTypeDefinitions",
+            "MissileManager"
         },
         ["helpers"] = {
             "BetterLog",
@@ -41,6 +43,7 @@ FileList = {
             "input",
             "localization",
         },
+        "EffectManager",
         "forceManager",
     },
 

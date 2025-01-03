@@ -1,5 +1,5 @@
 --frame time, not compatible with mods that change hz rate unfortunately
-LifeSpan = 0.05
+LifeSpan = 10e11
 
 Sprites =
 {
@@ -38,7 +38,7 @@ Effects =
 		Drag = 0.0,
 		Sprite = "track",
 		Additive = false,
-		TimeToLive = 0.05,
+		TimeToLive = 10e11,
 		Angle = 0,
 		InitialSize = 1.0,
 		ExpansionRate = 0,
