@@ -21,9 +21,7 @@ FileList = {
             "coreShield",
             "editor",
             "effects",
-            "links",
             "resources",
-            "terrain",
             "premiumWheels",
             "WheelTypeDefinitions",
             "MissileManager"

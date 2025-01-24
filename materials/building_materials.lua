@@ -35,6 +35,19 @@ FreeNode =
 ]]
 	},
 }
+FoundationTestNode =
+{
+    Priority = 2,
+    Foundations =
+    {
+        { angle = 145, material = "lc-fndtest" },
+        { material = "lc-fndtest"},
+    },
+    Plates =
+    {
+        { material = "core-brc1" },
+    },
+}
 
 table.insert(Sprites, 
     {
@@ -69,10 +82,10 @@ table.insert(Sprites,
 				{
 					-- durations must add up to 1 for the damage keying to work properly
 					-- anything beyond 1 will never show
-					{ texture = path .. "/materials/structural.dds", duration = 0.01 },
-					{ texture = path .. "/materials/structural.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structural.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structural.dds", duration = 0.331 },
+					{ texture = path .. "/materials/structural.png", duration = 0.01 },
+					{ texture = path .. "/materials/structural.png", duration = 0.33 },
+					{ texture = path .. "/materials/structural.png", duration = 0.33 },
+					{ texture = path .. "/materials/structural.png", duration = 0.331 },
 					mipmap = true,
 					repeatS = true,
 				},
@@ -91,10 +104,10 @@ table.insert(Sprites,
 				{
 					-- durations must add up to 1 for the damage keying to work properly
 					-- anything beyond 1 will never show
-					{ texture = path .. "/materials/structuralBackground.dds", duration = 0.01 },
-					{ texture = path .. "/materials/structuralBackground.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structuralBackground.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structuralBackground.dds", duration = 0.331 },
+					{ texture = path .. "/materials/structuralBackground.png", duration = 0.01 },
+					{ texture = path .. "/materials/structuralBackground.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralBackground.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralBackground.png", duration = 0.331 },
 					mipmap = true,
 					repeatS = true,
 				},
@@ -113,10 +126,10 @@ table.insert(Sprites,
 				{
 					-- durations must add up to 1 for the damage keying to work properly
 					-- anything beyond 1 will never show
-					{ texture = path .. "/materials/structuralHazard2.dds", duration = 0.01 },
-					{ texture = path .. "/materials/structuralHazard2.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structuralHazard2.dds", duration = 0.33 },
-					{ texture = path .. "/materials/structuralHazard2.dds", duration = 0.331 },
+					{ texture = path .. "/materials/structuralHazard2.png", duration = 0.01 },
+					{ texture = path .. "/materials/structuralHazard2.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralHazard2.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralHazard2.png", duration = 0.331 },
 					mipmap = true,
 					repeatS = true,
 				},
@@ -126,10 +139,70 @@ table.insert(Sprites,
 )
 table.insert(Sprites, ButtonSprite("hud-structural-icon", "HUD/HUD-structural", nil, 0.664, nil, nil, path))
 table.insert(Sprites, ButtonSprite("hud-structuralbackground-icon", "HUD/HUD-structuralBackground", nil, 0.664, nil, nil, path))
+table.insert(Sprites, ButtonSprite("hud-road-icon", "HUD/HUD-road", nil, 0.664, nil, nil, path))
+table.insert(Sprites, {
+    Name = "magnesium_fire",
+
+    States =
+    {
+        Normal =
+        {
+            Frames =
+            {
+                { texture = path .. "/effects/media/Fire01.png", colour = { 1, 1, 1, 0 }, },
+            },
+            NextState = "Normal",
+        },
+        
+        Lit =
+        {
+            Frames =
+            {
+                { texture = path .. "/effects/media/FireStart01.png" },
+                { texture = path .. "/effects/media/FireStart02.png" },
+                { texture = path .. "/effects/media/FireStart03.png" },
+                { texture = path .. "/effects/media/FireStart04.png" },
+                { texture = path .. "/effects/media/FireStart05.png" },
+                { texture = path .. "/effects/media/FireStart06.png" },
+                { texture = path .. "/effects/media/FireStart07.png" },
+
+                duration = 0.1,
+                blendColour = false,
+                blendCoordinates = false,
+                mipmap = true,
+            },
+            NextState = "FireLoop",
+        },
+        
+        FireLoop =
+        {
+            RandomStartFrame = true,
+            Frames =
+            { 
+                { texture = path .. "/effects/media/Fire01.png" },
+                { texture = path .. "/effects/media/Fire02.png" },
+                { texture = path .. "/effects/media/Fire03.png" },
+                { texture = path .. "/effects/media/Fire04.png" },
+                { texture = path .. "/effects/media/Fire05.png" },
+                { texture = path .. "/effects/media/Fire06.png" },
+                { texture = path .. "/effects/media/Fire07.png" },
+                { texture = path .. "/effects/media/Fire08.png" },
+                { texture = path .. "/effects/media/Fire09.png" },
+
+                duration = 0.1,
+                blendColour = false,
+                blendCoordinates = false,
+                mipmap = true,
+            },
+            NextState = "FireLoop",
+        },
+    },
+})
 local road = DeepCopy(FindMaterial("armour"))
 if road then
     road.SaveName = "RoadLink"
     road.Sprite = "road"
+    road.Icon = "hud-road-icon"
 	road.BuildTime = 60
 	road.ScrapTime = 60
 	road.HitPoints = 100
@@ -139,6 +212,7 @@ end
 
 local structuralAluminium = DeepCopy(FindMaterial("armour"))
 if structuralAluminium then
+    structuralAluminium.FireSprite = "magnesium_fire"
 	structuralAluminium.SaveName = "StructuralAluminium"
 	structuralAluminium.Sprite = "structural"
     structuralAluminium.Icon = "hud-structural-icon"
@@ -147,6 +221,7 @@ if structuralAluminium then
 	structuralAluminium.EnergyBuildCost = 0.5
 	structuralAluminium.EnergyReclaim = 0.0
 	structuralAluminium.SupportsDevices = true
+    structuralAluminium.CatchesFire = true
 	structuralAluminium.Stiffness = 1000000
 	structuralAluminium.MaxCompression = 0.5
 	structuralAluminium.MaxExpansion = 1.5
@@ -163,6 +238,7 @@ end
 
 local structuralAluminiumBackground = DeepCopy(FindMaterial("armour"))
 if structuralAluminiumBackground then
+    structuralAluminiumBackground.FireSprite = "magnesium_fire"
 	structuralAluminiumBackground.SaveName = "StructuralAluminiumBackground"
 	structuralAluminiumBackground.Sprite = "structuralBackground"
     structuralAluminiumBackground.Icon = "hud-structuralbackground-icon"
@@ -171,6 +247,7 @@ if structuralAluminiumBackground then
 	structuralAluminiumBackground.EnergyBuildCost = 0.4
 	structuralAluminiumBackground.EnergyReclaim = 0.0
 	structuralAluminiumBackground.SupportsDevices = false
+    structuralAluminiumBackground.CatchesFire = true
 	structuralAluminiumBackground.CollidesWithFriendlyProjectiles = false
 	structuralAluminiumBackground.CollidesWithEnemyProjectiles = false
 	structuralAluminiumBackground.CollidesWithFriendlyBeams = false
@@ -185,7 +262,7 @@ if structuralAluminiumBackground then
 	structuralAluminiumBackground.MaxExpansion = 1.5
 	structuralAluminiumBackground.Mass = 0.15
 	structuralAluminiumBackground.RecessionTargetSaveName = "StructuralAluminiumBackground"
-	structuralAluminiumBackground.HitPoints = 100
+	structuralAluminiumBackground.HitPoints = 130
 	structuralAluminiumBackground.ForegroundTargetSaveName = "StructuralAluminium"
 	table.insert(Materials, structuralAluminiumBackground)
 end
@@ -209,18 +286,27 @@ if hazardAluminium then
 	hazardAluminium.BackgroundCladding = true
 	hazardAluminium.CollidesWithWind = false
 	hazardAluminium.FullExtrusion = true
-	hazardAluminium.Stiffness = 800000
+	hazardAluminium.Stiffness = 1000000
 	hazardAluminium.MaxCompression = 0.5
 	hazardAluminium.MaxExpansion = 1.5
 	hazardAluminium.Mass = 0.15
 	hazardAluminium.BuildTime = 0
 	hazardAluminium.ScrapTime = 0
-	hazardAluminium.RequiresFoundationSupport = false
+	hazardAluminium.RequiresFoundationSupport = true
 	hazardAluminium.Node = FreeNode
 	hazardAluminium.HitPoints = 100
-	hazardAluminium.MaxLength = 99999
+	hazardAluminium.MaxLength = 10e11
+    hazardAluminium.MaxLinkLength = 10e11
 	hazardAluminium.MinLength = 0
+    hazardAluminium.AirDrag = 6400
+    hazardAluminium.NodeGravity = 0
 
 	hazardAluminium.Enabled = false
 	table.insert(Materials, hazardAluminium)
 end
+
+local foundationTestMat = DeepCopy(hazardAluminium)
+
+foundationTestMat.SaveName = "FoundationTest"
+foundationTestMat.Node = FoundationTestNode
+table.insert(Materials, foundationTestMat)

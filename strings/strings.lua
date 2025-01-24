@@ -8,6 +8,10 @@ LocalEnglish = {
     PowerText = "Power: ",
     TrackGroupText = "Set suspension to track group ",
     WheelGroupText = "Set suspension to wheel",
+    WelcomeText = "Welcome ",
+    ChooseWheelText = ". Choose your wheel type.",
+    ResetToDefaultText = "Reset to default",
+    DrawPerformanceWarningText = "Drawing related performance dips detected, reduced visuals have been enabled. Press LCtrl + LShift + LAlt + V to toggle them back on."
 }
 LocalChinese = {
     PromptRightClick = "右键世界关闭界面",
@@ -19,5 +23,24 @@ LocalChinese = {
     PowerText = "功率: ",
     TrackGroupText = "设置悬架绑定组 ",
     WheelGroupText = "设置车轮悬架",
+    WelcomeText = "Welcome ",
+    ChooseWheelText = ". Choose your wheel type.",
+    ResetToDefaultText = "Reset to default",
+    DrawPerformanceWarningText = "Drawing related performance dips detected, reduced visuals have been enabled. Press LCtrl + LShift + LAlt + V to toggle them back on."
+}
+LocalGerman = {
+    PromptRightClick = "Rechtsklick auf Spielwelt zum schließen",
+    SpeedText = "Geschwindigkeit: ",
+    TopSpeedText = "Höchstgeschwindigkeit: ",
+    SpeedUnitKmph = " km/h",
+    SpeedUnitMph = " mph",
+    GearText = "Gang: ",
+    PowerText = "Leistung: ",
+    TrackGroupText = "Anzeige: Ketten-Gruppe ",
+    WheelGroupText = "Anzeige: Rad",
+    WelcomeText = "Willkommen ",
+    ChooseWheelText = ". Wähle deinen Radtyp.",
+    ResetToDefaultText = "Auf Standard zurücksetzen",
+    DrawPerformanceWarningText = "Drawing related performance dips detected, reduced visuals have been enabled. Press LCtrl + LShift + LAlt + V to toggle them back on."
 }
 Language = {}

@@ -12,9 +12,16 @@ local smallui_scale = 0.225
 local smallui_size
 local smallui_pos   = {}
 
-function UpdateControls()
+
+
+
+function UpdateControls(frame)
     EvalMoveKeybinds()
-    ThrottleControl()
+
+    if frame % 3 == 0 then
+        ThrottleControl()
+    end
+    
     UpdateSmallUI()
 end
 
@@ -53,7 +60,6 @@ function OnControlActivated(name, code, doubleClick)
         end
 
     elseif string.sub(name, 1, 16) == "button_cosmetic_" then
-        
         GetCosmeticWheelChoice(code)
     end
 end
@@ -491,6 +497,10 @@ SelectedData = {Name = true, Group = {}}
         SelectedData.Group = {}
     end
 
+
+    local previousThrottleX = 0
+    local previousBrakeX = 0
+
     function ThrottleControl()
         local uid = GetLocalClientIndex()
         for _, id in pairs(SelectedData.Group) do
@@ -508,13 +518,15 @@ SelectedData = {Name = true, Group = {}}
                 else
                     local throttlePos = GetControlRelativePos("ThrottleSlider", "SliderBar")
                     --send the pos to the throttles table
-                    if ControlExists("root", "ThrottleSlider") then
+                    if ControlExists("root", "ThrottleSlider") and previousThrottleX ~= throttlePos.x then
                         SendScriptEvent("UpdateThrottles", IgnoreDecimalPlaces(throttlePos.x, 3) .. "," .. throttlePos.y .. "," .. deviceStructureId, "", false)
                     end
                     local brakePos = GetControlRelativePos("BrakeSlider", "SliderBar")
-                    if ControlExists("root", "BrakeSlider") then
+                    if ControlExists("root", "BrakeSlider") and previousBrakeX ~= brakePos.x then
                         SendScriptEvent("UpdateBrakeSliders", IgnoreDecimalPlaces(brakePos.x, 3) .. "," .. brakePos.y .. "," .. deviceStructureId, "", false)
                     end
+                    previousThrottleX = throttlePos.x
+                    previousBrakeX = brakePos.x
                 end
 
                 UpdateVehicleInfo(deviceStructureId, uid)
@@ -524,6 +536,8 @@ SelectedData = {Name = true, Group = {}}
                 if ControlExists("HUD", "throttle backdrop") then
                     DestroyUI(uid)
                 end
+                previousThrottleX = 0
+                previousBrakeX = 0
             end
         end      
         if #SelectedData.Group == 0 then

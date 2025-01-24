@@ -48,10 +48,12 @@ end
 LocalPlayerHasAccessToPremiumWheels = false
 LocalPlayerIsModAuthor = false
 function HandleCosmeticWheel(def)
+    SetControlFrame(0)
     -- local type = types[1]
-    AddTextControl("HUD", "cosmeticWheelContainer", "Welcome " .. def.Name .. ". Choose your wheel type.", ANCHOR_TOP_LEFT, {x = 25, y = 50}, false, "Console")
+    AddTextControl("HUD", "cosmeticWheelContainer", CurrentLanguage.WelcomeText .. def.Name .. CurrentLanguage.ChooseWheelText, ANCHOR_TOP_LEFT, {x = 25, y = 50}, false, "Console")
+    
     local y = 50
-    AddTextButtonControl("cosmeticWheelContainer", "button_cosmetic_SetDefault", "Reset to default", ANCHOR_TOP_LEFT, {x = 0, y = 25}, false, "Readout")
+    AddTextButtonControl("cosmeticWheelContainer", "button_cosmetic_SetDefault", CurrentLanguage.ResetToDefaultText, ANCHOR_TOP_LEFT, {x = 0, y = 25}, false, "Readout")
     if def.ModAuthor then
         for name, wheelDefinition in pairs(WheelTable) do
             local index = WheelNameToIndex[name]
@@ -73,7 +75,6 @@ end
 function GetCosmeticWheelChoice(index)
     local name = WheelIndexToName[index]
     local teamId = GetLocalTeamId()
-    BetterLog(index)
     if not index or index == 0 then 
         Notice("Default selected! Press CTRL + LSHIFT + LALT + C to change selection.")
         name = teamId % MAX_SIDES
@@ -99,6 +100,7 @@ end
 
 function ShowWheelSelectionScreen()
     if LocalPlayerHasAccessToPremiumWheels then
+        SetControlFrame(0)
         ShowControl("HUD", "cosmeticWheelContainer", true)
     end
 end

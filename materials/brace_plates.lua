@@ -17,3 +17,18 @@ table.insert(BracingPlates, {
     EnergyReclaim = 0,
     MetalReclaim = 0,
 })
+table.insert(BracingPlates, {
+    -- roof foundation
+    DisplayName = "No cost foundation",
+    SaveName = "lc-fndtest",
+    Effect = "",
+    Sprite = "",
+    Sprite1 = "",
+    Sprite2 = "",
+    SpriteBG = "",
+    Up = { x = 0, y = -1 },
+    EnergyBuildCost = 0,
+    MetalBuildCost = 0,
+    EnergyReclaim = 0,
+    MetalReclaim = 0,
+})

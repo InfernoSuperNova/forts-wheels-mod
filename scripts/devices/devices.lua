@@ -153,6 +153,7 @@ function HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
     if not device then return end
     EnumerateDestroyedCarDevice(saveName, device.strucId)
     local index = FindDeviceIndexInMasterIndex(deviceId)
+    data.roadNormalOfWheel[deviceId] = nil
     if WheelSmokeEffects[deviceId] then
         DisableEffect(WheelSmokeEffects[deviceId])
         CancelEffect(WheelSmokeEffects[deviceId])
