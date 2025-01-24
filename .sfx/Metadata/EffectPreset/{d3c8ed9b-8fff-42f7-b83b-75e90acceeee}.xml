@@ -15,14 +15,27 @@
 		<property name="filterTypeA">
 			<value>3</value>
 		</property>
+		<property name="filterTypeB">
+			<value>9</value>
+		</property>
 		<property name="frequencyA">
 			<value>266.566376</value>
+		</property>
+		<property name="frequencyB">
+			<value>250</value>
 		</property>
 		<property name="qualityA">
 			<value>0.518620729</value>
 		</property>
+		<property name="qualityB">
+			<value>0.900000036</value>
+		</property>
+		<property name="gainB">
+			<value>9</value>
+		</property>
 		<relationship name="automators">
 			<destination>{570c06c9-93fe-43e8-aade-760cd74d2a72}</destination>
+			<destination>{0655b950-a320-4b5b-aaec-975815c22757}</destination>
 		</relationship>
 		<relationship name="modulators">
 			<destination>{828ddd16-2e0b-4b30-bb8a-fcfa901124d9}</destination>
@@ -34,6 +47,14 @@
 		</property>
 		<relationship name="automationCurves">
 			<destination>{2f327e95-c64e-4869-8476-927bfec71b1a}</destination>
+		</relationship>
+	</object>
+	<object class="Automator" id="{0655b950-a320-4b5b-aaec-975815c22757}">
+		<property name="nameOfPropertyBeingAutomated">
+			<value>gainB</value>
+		</property>
+		<relationship name="automationCurves">
+			<destination>{58e3e96c-8ece-457c-a450-6715ffb1f0c4}</destination>
 		</relationship>
 	</object>
 	<object class="ADSRModulator" id="{828ddd16-2e0b-4b30-bb8a-fcfa901124d9}">
@@ -66,6 +87,15 @@
 			<destination>{f1efd2a3-863c-4a68-a7bc-ca9bf92a564c}</destination>
 		</relationship>
 	</object>
+	<object class="AutomationCurve" id="{58e3e96c-8ece-457c-a450-6715ffb1f0c4}">
+		<relationship name="parameter">
+			<destination>{f1aa7dab-76df-423b-8b51-a579b29b668c}</destination>
+		</relationship>
+		<relationship name="automationPoints">
+			<destination>{64db8864-6016-421a-ac01-cf8e6898eef1}</destination>
+			<destination>{946187c0-dd41-4c20-8a07-c77dd99f0354}</destination>
+		</relationship>
+	</object>
 	<object class="AutomationPoint" id="{ecadfe9c-c4a5-4f0f-96e2-4a77222074ca}">
 		<property name="position">
 			<value>0.90263582571274881</value>
@@ -88,6 +118,22 @@
 		</property>
 		<property name="value">
 			<value>266.566437</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{64db8864-6016-421a-ac01-cf8e6898eef1}">
+		<property name="position">
+			<value>10000</value>
+		</property>
+		<property name="value">
+			<value>3.99999976</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{946187c0-dd41-4c20-8a07-c77dd99f0354}">
+		<property name="position">
+			<value>1000</value>
+		</property>
+		<property name="value">
+			<value>0</value>
 		</property>
 	</object>
 </objects>
