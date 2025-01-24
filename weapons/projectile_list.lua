@@ -77,7 +77,6 @@ turretLaserShock.Effects.Age = {
 }
 turretLaserShock.Gravity = 0
 
-BetterLog(FindProjectile("howitzer"))
 table.insert(Projectiles, turretLaserShock)
 
 
