@@ -114,6 +114,10 @@ function InitializePremiumIds()
             Name = "TareTar",
             Wheels = {"Discord"},
         },
+        ["9013347108"] = {
+            Name = "Cloud",
+            Wheels = {"Discord", "Cloud"},
+        }
     }
 
 

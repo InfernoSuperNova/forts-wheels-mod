@@ -26,7 +26,7 @@ function SubtractVectors(vector1, vector2)
 end
 
 -- Normalize a vector
----@param vector {x:number, y:number} Vector to normalize
+---@param vector Vector3 to normalize
 ---@return {x:number, y:number}
 function NormalizeVector(vector)
     local length = ((vector.x) ^ 2 + (vector.y) ^ 2) ^ 0.5
@@ -80,7 +80,12 @@ function Vec3Lerp(vec1, vec2, t)
         vec1.z + (vec2.z - vec1.z) * t
     )
 end
-
+function Vec2Lerp(vec1, vec2, t)
+    return Vec3(
+        vec1.x + (vec2.x - vec1.x) * t,
+        vec1.y + (vec2.y - vec1.y) * t
+    )
+end
 
 --gets a perpendicular angle as a vector
 function GetPerpendicularVector(point1, point2)
@@ -239,7 +244,7 @@ function SubdivideLineSegmentWithBowing(startPoint, endPoint, distance, starting
     local segmentLength = Distance(startPoint, endPoint)
     local directionX = (endPoint.x - startPoint.x) / segmentLength
     local directionY = (endPoint.y - startPoint.y) / segmentLength
-    local normal = PerpendicularVector(Vec3(directionX, directionY))
+    local normal = {x = -directionY, y = directionX}
     local points = {}
 
     local t = startingOffset or 0 -- Starting offset
@@ -256,7 +261,8 @@ function SubdivideLineSegmentWithBowing(startPoint, endPoint, distance, starting
         local bowSinValue = ((i - 1 + startingOffset / distance) / (#points))
         local bowValue = bowing * math.sin(bowSinValue * math.pi)
 
-        point.pos = point.pos + bowValue * normal
+        point.pos.x = point.pos.x + bowValue * normal.x
+        point.pos.y = point.pos.y + bowValue * normal.y
     end
     local remainder = segmentLength - t + distance
     points.remainder = remainder
@@ -272,9 +278,11 @@ function rotateVector(vector, angle)
 end
 
 function PointsAroundArc(center, radius, point1, point2, pointDistance, offset, clockwise)
-    local startingDistance =  Distance(point1, point2)
-    if startingDistance < pointDistance then
-        return { points = { }, remainder = offset + startingDistance }
+    local point1ToPoint2x = point2.x - point1.x
+    local point1ToPoint2y = point2.y - point1.y
+    local distSquared = point1ToPoint2x * point1ToPoint2x + point1ToPoint2y * point1ToPoint2y
+    if distSquared < pointDistance * pointDistance then
+        return { points = { }, remainder = offset + math.sqrt(distSquared) }
     end
     local startAngle = math.atan2(point1.y - center.y, point1.x - center.x) + offset / radius
     local endAngle = math.atan2(point2.y - center.y, point2.x - center.x)
@@ -302,8 +310,12 @@ function PointsAroundArc(center, radius, point1, point2, pointDistance, offset, 
         local x = center.x + radius * math.cos(angle)
         local y = center.y + radius * math.sin(angle)
         
-        local point = Vec3(x, y)
-        local perp = NormalizeVector(PerpendicularVector(center - point))
+        local point = {x = x, y = y}
+        local centerToPointX = point.x - center.x
+        local centerToPointY = point.y - center.y
+        local dist = math.sqrt(centerToPointX * centerToPointX + centerToPointY * centerToPointY)
+
+        local perp = { x = -centerToPointY / dist, y = centerToPointX / dist }
         table.insert(points, {perp = perp, pos = point})
     end
 

@@ -1,4 +1,6 @@
+dofile("scripts/interpolate.lua")
 --needs fixing
+
 EngineToDeviceDamage = function()
    for index, ProjectileTable in ipairs(Projectiles) do
       if ProjectileTable.WeaponDamageBonus then
@@ -32,21 +34,121 @@ table.insert(Projectiles, turretCannon)
 
 
 local laser = FindProjectile("laser")
-laser.DamageMultiplier[#laser.DamageMultiplier + 1] = { SaveName = "turretCannon", Direct = 0, }
+laser.DamageMultiplier[#laser.DamageMultiplier + 1] = { SaveName = "turretCannon", AntiAir = 0, }
 local turretLaser = DeepCopy(laser)
 
 turretLaser.SaveName = "turretLaser"
 turretLaser.BeamMaxTravel = 15000
 turretLaser.Impact = 1200000
+turretLaser.EnemyCanTeleport = false
 
 turretLaser.Effects.Age = {["t1"] = "effects/energy_absorb.lua"}
 turretLaser.BeamOcclusionDistanceWater = 15000
 turretLaser.BeamOcclusionDistance = 15000
 turretLaser.DeflectedByShields = false
-turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "shield", Direct = 0.05}
+turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "shield", Direct = 0.07}
+turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "portal", Direct = 0.07}
+turretLaser.ProjectileSprite = nil
+turretLaser.Effects.Impact = {
+    ["default"] = {	Projectile = {	Speed = 0.1, Type = "turretLaserShock", Count = 1, StdDev = 0 }, Terminate = false, Offset = 0, Effect = "effects/beam_hit.lua", },
+    ["terrain"] = {	Projectile = {	Speed = 0.1, Type = "turretLaserShock", Count = 1, StdDev = 0 }, Terminate = false, Offset = 0, Effect = "effects/beam_hit_ground.lua", }
+}
+-- turretLaser.Effects.Impact = {
+--     ["default"] = {	Projectile = {	Speed = 0.1, Type = "turretLaserShockSpawner", Count = 1, StdDev = 0 }, Terminate = false, Offset = 0, Effect = "effects/beam_impact.lua", }
+-- }
+
+local turretLaserShock = DeepCopy(FindProjectile("cannon"))
+
+turretLaserShock.SaveName = "turretLaserShock"
+turretLaserShock.CollidesWithStructure = false
+turretLaserShock.CollidesWithProjectiles = false
+turretLaserShock.CollidesWithBeams = false
+turretLaserShock.ProjectileSplashDamage = 300
+turretLaserShock.ProjectileSplashDamageMaxRadius = 200
+turretLaserShock.ProjectileSplashMaxForce = 1000000
+turretLaserShock.TrailEffect = nil
+
+turretLaserShock.DetonatesOnExpiry = true
+turretLaserShock.Effects.Age = {
+    ["t2950"] = {
+        Terminate = true,
+        Effect = path .. "/effects/turretLaser_shock.lua"
+    }
+}
+turretLaserShock.Gravity = 0
+
+BetterLog(FindProjectile("howitzer"))
+table.insert(Projectiles, turretLaserShock)
+
+
+table.insert(Sprites,
+{
+	Name = "turretlaser_beam",
+	States =
+	{
+		Normal = { Frames = { { texture = "weapons/media/beam.tga" }, repeatS = true, } },
+	},
+})
+table.insert(Sprites,
+{
+    Name = "turretlaser_electricity",
+    States =
+    {
+        Normal = { Frames = { { texture = path .. "/weapons/media/electricBeam.png" }, repeatS = true, } },
+    },
+})
+
+turretLaser.Beam = {
+    Sprites = {
+        {Sprite = "turretlaser_beam", ThicknessFunction = "BeamThickness", ScrollRate = -2, TileRate = 400 * 1},
+        {Sprite = "turretlaser_electricity", ThicknessFunction = "BeamElectricityThickness", ScrollRate = -2, TileRate = 400 * 1},
+    }
+}
+function turretLaser.BeamThickness(t)
+	return InterpolateTable(BeamTableTurretLaser, t, 2)
+end
+
+function turretLaser.BeamElectricityThickness(t)
+    return InterpolateTable(BeamTableTurretLaser, t, 3)
+
+end
+
+function turretLaser.BeamDamage(t)
+	return InterpolateTable(BeamTableTurretLaser, t, 4)
+end
+
+
+
+BeamTableTurretLaser =
+{
+	{ 0,	0,	0, 0},
+	{ 0.5,  3,  0, 0},
+	{ 1,	50,  0, 2000},
+	{ 2,	50,  0, 2000}, -- 1000
+    { 2.95,  2.5,  0, 100},
+	{ 3,	0,	150, 0},
+}
+
+
+
+
+
 table.insert(Projectiles, turretLaser)
 
 MakeFlamingVersion("turretCannon", 1.25, 0.4, flamingTrail, 80, nil, nil)
 
+
+for k , v in pairs(Projectiles) do
+    if(v.SaveName == "missile2") then 
+        v.ProjectileMass = v.ProjectileMass * 3
+        v.MaxAge = 300
+        v.Missile.MaxSteerPerSecond = v.Missile.MaxSteerPerSecond * 2
+    end
+    if (v.SaveName == "missile") then
+        v.ProjectileMass = v.ProjectileMass * 3
+        v.MaxAge = 300
+        v.Missile.MaxSteerPerSecond = v.Missile.MaxSteerPerSecond * 2
+    end
+ end
 
 dofile(path .. "/scripts/helpers/BetterLog.lua")

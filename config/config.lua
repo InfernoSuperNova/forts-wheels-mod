@@ -86,7 +86,6 @@ PushedTracks = {}
 LocalEffects = {}
 TrackGroups = {}
 Terrain = {}
-TerrainCorners ={}
 SpecialTerrain = {moving = {}, ignored = {}}
 DeviceCounts = {}
 DrivechainDetails = {}

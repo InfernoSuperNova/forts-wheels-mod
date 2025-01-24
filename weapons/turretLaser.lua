@@ -1,4 +1,3 @@
-dofile("scripts/interpolate.lua")
 
 
 Scale = 1
@@ -85,30 +84,7 @@ BeamDuration = 3
 -- first column is time keypoint
 -- second coloumn is thickness at that keypoint
 -- third column is damage at that keypoint
-BeamTable =
-{
-	{ 0,	1,	0, },
-	{ 0.5,  3,  0, },
-	{ 1,	50, 2000, },
-	{ 2,	50, 2000, }, -- 1000
-	{ 3,	0,	0, },
-}
 
---[[
-BeamTable =
-{
-	{ 0,   1,  0, },
-	{ 0.01, 1,  0, },
-}
-]]
-function BeamThickness(t)
-	return InterpolateTable(BeamTable, t, 2)
-end
-
-function BeamDamage(t)
---	return 0
-	return InterpolateTable(BeamTable, t, 3)
-end
 
 
 

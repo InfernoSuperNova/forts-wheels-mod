@@ -3,11 +3,9 @@
 function LocalizeStrings()
     local language = Language()
 
-    if language == "English" then
-        CurrentLanguage = LocalEnglish
-    elseif language == "Chinese" then
-        CurrentLanguage = LocalChinese
-    else
+
+    CurrentLanguage = _G["Local" .. language]
+    if not CurrentLanguage then
         CurrentLanguage = LocalEnglish
     end
 end

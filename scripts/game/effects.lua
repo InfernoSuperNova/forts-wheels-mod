@@ -30,20 +30,24 @@ function WheelSmoke(frame)
             local offset = OffsetPerpendicular(NodePosition(nodeA), NodePosition(nodeB), offsetNum)
             local finalOffset = {x = pos.x + offset.x, y = pos.y + offset.y}
             if math.abs(wheelIsTouchingGround.x + wheelIsTouchingGround.y) > 0 then
-                local velocityMag = VecMagnitude(velocity)
 
+                local velocityMagSquared = velocity.x * velocity.x + velocity.y * velocity.y
+                local velocityMag = math.sqrt(velocityMagSquared)
                 --we want spawnfrequency to be a lower number as the velocity gets higher
-                local spawnFrequency = math.floor(5000 / velocityMag)
+                
                 --BetterLog(spawnFrequency)
-                if frame % spawnFrequency == 0 then
-
-                    if velocityMag and velocityMag > VelocityToSpawnSmokePuff then
+                local spawnFrequency = math.floor(5000 / velocityMag)
+                if velocityMagSquared and velocityMagSquared > VelocityToSpawnSmokePuff * VelocityToSpawnSmokePuff then
+                    if frame % spawnFrequency == 0 then
                         SpawnEffect(path .. "/effects/smoke_poof.lua", finalOffset)
                     end
-                    if velocityMag and velocityMag > VelocityToSpawnSmokeCloud then
+                end
+                if velocityMagSquared and velocityMagSquared > VelocityToSpawnSmokeCloud * VelocityToSpawnSmokeCloud then
+                    if frame % spawnFrequency == 0 then
                         SpawnEffect(path .. "/effects/smoke_cloud.lua", finalOffset)
                     end
                 end
+
             end
         end
     end

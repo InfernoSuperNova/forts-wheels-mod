@@ -9,12 +9,19 @@
 --Table : table to log
 --IndentLevel : indentation level of the table content (ex : 1 if it's the first time the function is called)
 
+
+
 function LogTables(Table, IndentLevel)
     if Table == nil then
         Log("nil")
     else
+        
         IndentLevel = IndentLevel or 1
         local indent = string.rep("    ", IndentLevel)
+        if (Table == _G and IndentLevel ~= 1) then
+            Log(indent .. '[Global Table]')
+            return
+        end
         local indentinf = string.rep("    ", IndentLevel-1)
         local metatable = getmetatable(Table)
         if metatable and metatable.__tostring then
@@ -102,4 +109,45 @@ function ShallowLogTable(t)
         BetterLog(t)
     end
 
+end
+
+
+function ShallowLogTableSubtableActualLengths(t)
+    if type(t) == "table" then
+        Log("{")
+        for k, v in pairs(t) do
+            if type(v) == "table" then
+                Log("\t" .. tostring(k) .. " = " .. GetActualTableLength(v) .. ",")
+            else
+
+            end
+        end
+        Log("}")
+    else
+        BetterLog(t)
+    end
+end
+
+function GetActualTableLength(t)
+    local count = 0
+    for k, v in pairs(t) do
+        count = count + 1
+    end
+    return count
+end
+
+function LogTableComplexity(t)
+    Log("Complexity : " .. GetTableComplexity(t))
+end
+
+function GetTableComplexity(t)
+    local complexity = 0
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            complexity = complexity + GetTableComplexity(v)
+        else
+            complexity = complexity + 1
+        end
+    end
+    return complexity
 end

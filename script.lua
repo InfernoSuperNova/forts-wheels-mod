@@ -2,10 +2,12 @@
 
 dofile("scripts/forts.lua")
 dofile(path .. "/config/fileList.lua")
+dofile(path .. "/PhysLibAPI/PhysLib.lua")
 LoadFiles()
 
 
 function Load(GameStart)
+    
     if not type(dlc2_ApplyForce) == "function" then
         BetterLog("Error: Landcruisers will not function without High Seas. Please get someone who owns High Seas to host the game, or buy it yourself.")
         BetterLog(RGBAtoHex(100, 200, 100, 255, false) .. "This is because applyforce is not available in the base game, and is required for the suspension system.")
@@ -14,6 +16,13 @@ function Load(GameStart)
         InEditor = true 
         ModDebug.update = true
         ModDebug.collision = true
+        Notice("Tip: Blocks can be applied special landcruisers properties based on how they are named.")
+        Notice("Blocks can be named by selecting a block, and typing \\name_block <name>.")
+        Notice("Current available types are:\n")
+        Notice("\"ignored\", \"doNotIndex\" - Sets a block to be entirely ignored.")
+        Notice("\"late\", \"indexAfterLoad\" - Sets a block to index after the game has loaded, useful for procedural terrain.")
+        Notice("\"dynamic\", \"moving\" - Sets a block to be dynamic, useful for moving terrain.")
+        Notice("Blocks should be named with a number after the tag, for example, \\name_block \"ignored0\", \\name_block \"late1\", \\name_block \"dynamic2\". The number must be completely unique and cannot be higher than your total block count.")
     end
     data.roadLinks = {}
     GetDeviceCounts()
@@ -27,8 +36,13 @@ function Load(GameStart)
     Gravity = GetConstant("Physics.Gravity")
     Fps = GetConstant("Physics.FramesRate")
     ScreenMaxY = GetMaxScreenY()
-end
 
+
+    ScheduleCall(1, LateLoad)
+end
+function LateLoad()
+    PhysLib:LateLoad()
+end
 
 WheelSprite = 0
 
@@ -44,8 +58,6 @@ function InitializeScript()
         EnableDevice("turbine", true, side)
         EnableDevice("smokestack", true, side)
     end
-    IndexLinks()
-    IndexTerrainBlocks()
     InitializeTracks()
     InitializePropulsion()
     InitializeDrill()
@@ -86,20 +98,61 @@ function AlertReducedVisuals()
 end
 
 
+
+
+--Save existing SystemUpdate(manages scheduled calls so it's necessary to keep it)
+_G["SystemUpdate2"] = SystemUpdate
+
+-- Wraps the LoadAfterSync function with this function which calls LoadAfterSync once on it's first call and then replaces itself
+_G["SystemUpdate"] = function(param1)
+    
+    LoadAfterSync()
+    SystemUpdate = SystemUpdate2
+    SystemUpdate2(param1)
+    _G["SystemUpdate2"] = nil
+end
+
+
+
+
+AfterSyncLoaded = false
+function LoadAfterSync()
+    AfterSyncLoaded = true
+    PhysLib:Load()
+end
+
 local justUpdated = false
 local lastUpdate = 0
 CurrentFrame = 0
 function Update(frame)
+    -- ShallowLogTable(data)
+    -- LogTableComplexity(data)
+    
+
+
+
+    local startUpdateTime = GetRealTime()
     CurrentFrame = frame
     justUpdated = true
-    local rotation = AngleToVector(frame)
-    SetEffectDirection(WheelSprite, rotation)
     LocalScreen = GetCamera()
-    local startUpdateTime = GetRealTime()
+    
     
     DebugLog("---------Start of update---------")
     if not ModDebug.update then
         ClearDebugControls()
+    end
+    if ModDebug.collision then
+        local pos = ScreenToWorld(GetMousePos())
+        local radius = 150
+        local result = PhysLib:CircleCollider(pos, radius, true)
+        pos.z = -100
+        SpawnCircle(pos, radius, White(), 0.04)
+        local displacement = result.displacement
+        local normal = result.normal
+        displacement = Vec3(displacement * normal.x, displacement * normal.y)
+        local displacedPos = Vec3(pos.x + displacement.x, pos.y + displacement.y, 0)
+        displacedPos.z = -100
+        SpawnCircle(displacedPos, radius, Blue(), 0.04)
     end
     EffectManager:Update()
     UpdateFunction("ClearTerrainDebugControls", frame)
@@ -107,10 +160,8 @@ function Update(frame)
     UpdateFunction("GetDeviceCounts", frame)
     --UpdateFunction("IndexDevices", frame)
     UpdateFunction("UpdateDevices", frame)
-    UpdateFunction("IndexMovingBlocks", frame)
-    UpdateFunction("UpdateLinks", frame)
+    UpdateFunction("UpdatePhysLib", frame)
     UpdateFunction("WheelCollisionHandler", frame)
-    UpdateFunction("UpdateRoads", frame)
     UpdateFunction("UpdateControls", frame)
     UpdateFunction("UpdatePropulsion", frame)
     UpdateFunction("UpdateTracks", frame)
@@ -120,24 +171,29 @@ function Update(frame)
     UpdateFunction("UpdateResources", frame)
     UpdateFunction("UpdateCoreShields", frame)
     UpdateFunction("UpdateWeapons", frame)
-    MissileManager:Update()
+    UpdateFunction("MissileManagerUpdate", frame)
     
     JustJoined = false
     DebugLog("---------End of update---------")
     local delta = (GetRealTime() - startUpdateTime) * 1000
     if ModDebug.update then
-        DebugLog("Update took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        DebugLog("Update took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%, " .. string.format("%.2f", 1000/delta) .. "FPS")
         DebugLog("Memory Usage: " .. FormatNumberWithCommas(gcinfo()) .. " KB")
 
         DebugLog("EffectManager:")
         DebugLog("Current effect id: " .. FormatNumberWithCommas(EffectManager.MaxEffectId))
         EffectManager:DebugUpdate()
 
+        DebugLog("Current client time: " .. FormatNumberWithCommas(GetRealTime()) .. "s")
+        DebugLog("Current game frame: " .. FormatNumberWithCommas(frame))
         UpdateFunction("DebugUpdate", frame)
     end
     
     --RogueTableChecker()
     lastUpdate = GetRealTime()
+    -- if (frame == 19128) then
+    --     BetterLog(_G)
+    -- end
 end
 
 function FormatNumberWithCommas(number)
@@ -184,6 +240,15 @@ function OnSeekStart()
     SoundOnJoin()
 end
 
+function OnSeek()
+    EffectManager:Load()
+    PhysLib:Load()
+    WheelSpriteIds = {}
+end
+-- function OnSeek()
+--     PhysLib:Load()
+-- end
+
 function OnInstantReplay()
     InitializeScript()
 end
@@ -197,8 +262,8 @@ function OnDraw()
     local endTime = GetRealTime()
     local delta = (endTime - startTime) * 1000
     
-    if (delta > 30 and previousDrawFrameDelta > 30 and not justUpdated and previousDrawFrameTime ~= 0 and CurrentFrame > 10) then -- Updating slower than 60fps
-        Notice(RGBAtoHex(255, 255, 50, 255) .. "Drawing related performance dips detected, reduced visuals have been enabled. Press LCtrl + LShift + LAlt + V to toggle them back on.")
+    if (delta > 50 and previousDrawFrameDelta > 50 and not justUpdated and previousDrawFrameTime ~= 0 and CurrentFrame > 10) then -- Updating slower than 60fps
+        Notice(RGBAtoHex(255, 255, 50, 255) .. CurrentLanguage.DrawPerformanceWarningText)
         ReducedVisuals = true
         OnDraw = OnDrawBody
     end
@@ -207,18 +272,18 @@ function OnDraw()
     justUpdated = false
 end
 
+
 function OnDrawBody()
     if not IsPaused() then
-        local currentTime = GetRealTime()
-        local deltaTime = currentTime - lastUpdate
-        local t = deltaTime / data.updateDelta
-        DrawTracks(LocalSide, t)
+
+        DrawTracks(LocalSide)
     end
     
     if InEditor then
         UpdateEditor()
     end
 end
+
 
 
 
@@ -247,7 +312,12 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
         --apply force
         dlc2_ApplyForce(projectileNodeId, force)
     end
-    MissileManager:RegisterNewMissile(projectileNodeId)
+    
+    if (projectileNodeIdFrom == 0) then
+        MissileManager:RegisterNewMissile(projectileNodeId, saveName)
+    else
+        MissileManager:RegisterFromExistingProjectile(projectileNodeIdFrom, projectileNodeId)
+    end
 end
 
 
@@ -280,14 +350,10 @@ function OnDeviceTeamUpdated(oldTeamId, newTeamId, deviceId, saveName)
     UpdateDeviceTeam(oldTeamId, newTeamId, deviceId, saveName)
 end
 
-function OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
-    CheckNewRoadLinks(saveName, nodeA, nodeB)
-end
-
 function OnLinkHit(nodeIdA, nodeIdB, objectId, objectTeamId, objectSaveName, damage, pos, reflectedByEnemy)
     FillAwaitingOLTable(nodeIdA, nil)
-    
 end
+
 function OnDeviceHit(teamId, deviceId, saveName, newHealth, projectileNodeId, projectileTeamId, pos, reflectedByEnemy)
     FillAwaitingOLTable(nil, deviceId)
 end
@@ -295,13 +361,25 @@ end
 function OnTerrainHit(terrainId, damage, projectileNodeId, projectileSaveName, surfaceType, pos, normal, reflectedByEnemy)
     FillAwaitingOLTable(nil, nil)
 end
-function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
---broken until beeman fixes
---     DestroyOldRoadLinks(saveName, nodeA, node
 
--- 29/01/2024: I don't remember what was broken? - DeltaWing
+function OnNodeCreated(nodeId, teamId, pos, foundation, selectable, extrusion)
+    PhysLib:OnNodeCreated(nodeId, teamId, pos, foundation, selectable, extrusion)
 end
 
+function OnNodeDestroyed(nodeId, selectable)
+    PhysLib:OnNodeDestroyed(nodeId, selectable)
+end
+
+function OnNodeBroken(thisNodeId, nodeIdNew)
+    PhysLib:OnNodeBroken(thisNodeId, nodeIdNew)
+end
+
+function OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
+    PhysLib:OnLinkCreated(teamId, saveName, nodeA, nodeB, pos1, pos2, extrusion)
+end
+function OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
+    PhysLib:OnLinkDestroyed(teamId, saveName, nodeA, nodeB, breakType)
+end
 
 function AddVehicleController(saveName, teamId, deviceId, nodeA, nodeB, t)
     --check savename matches

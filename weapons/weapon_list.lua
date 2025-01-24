@@ -94,7 +94,7 @@ table.insert(Weapons, InheritType(Weapons[1], nil, {
 
 table.insert(Weapons, IndexOfWeapon("missile2") + 1,
 {	
-	SaveName = "missilestructure",
+	SaveName = "lc_missilestructure",
 	FileName = path.. "/weapons/missileswarmstructure.lua",
 	Enabled = true,
 	Icon = "hud-missileswarm-icon",
@@ -125,7 +125,7 @@ table.insert(Weapons, IndexOfWeapon("missile2") + 1,
 		["missilestructure2"] =
 		{
 			Enabled = true,
-			SaveName = "missilestructure2",
+			SaveName = "lc_missilestructure2",
 			MetalCost = 200,
 			EnergyCost = 2000,
 		},
@@ -135,18 +135,18 @@ table.insert(Weapons, IndexOfWeapon("missile2") + 1,
 	{
 		"missile",
 		"missileinv",
-		"missilestructure",
-		"missilestructureinv",
+		"lc_missilestructure",
+		"lc_missilestructureinv",
 		"missile2",
 		"missile2inv",
-		"missilestructure2",
-		"missilestructure2inv",
+		"lc_missilestructure2",
+		"lc_missilestructure2inv",
 	},
 })
 
-table.insert(Weapons, IndexOfWeapon("missilestructure") + 1,
+table.insert(Weapons, IndexOfWeapon("lc_missilestructure") + 1,
 {	
-	SaveName = "missilestructure2",
+	SaveName = "lc_missilestructure2",
 	FileName = path.. "/weapons/missilelauncherstructure.lua",
 	Enabled = false,
 	Icon = "hud-missile-icon",
@@ -176,18 +176,18 @@ table.insert(Weapons, IndexOfWeapon("missilestructure") + 1,
 	{
 		"missile",
 		"missileinv",
-		"missilestructure",
-		"missilestructureinv",
+		"lc_missilestructure",
+		"lc_missilestructureinv",
 		"missile2",
 		"missile2inv",
-		"missilestructure2",
-		"missilestructure2inv",
+		"lc_missilestructure2",
+		"lc_missilestructure2inv",
 	},
 })
 
-table.insert(Weapons, IndexOfWeapon("missilestructure2") + 1,
+table.insert(Weapons, IndexOfWeapon("lc_missilestructure2") + 1,
 {	
-	SaveName = "missilestructureinv",
+	SaveName = "lc_missilestructureinv",
 	FileName = path.. "/weapons/missileswarmstructure_inverted.lua",
 	Enabled = true,
 	Inverted = true,
@@ -216,10 +216,10 @@ table.insert(Weapons, IndexOfWeapon("missilestructure2") + 1,
 		
 	Upgrades =
 	{
-		["missilestructure2inv"] =
+		["lc_missilestructure2inv"] =
 		{
 			Enabled = true,
-			SaveName = "missilestructure2inv",
+			SaveName = "lc_missilestructure2inv",
 			MetalCost = 200,
 			EnergyCost = 2000,
 		},
@@ -229,18 +229,18 @@ table.insert(Weapons, IndexOfWeapon("missilestructure2") + 1,
 	{
 		"missile",
 		"missileinv",
-		"missilestructure",
-		"missilestructureinv",
+		"lc_missilestructure",
+		"lc_missilestructureinv",
 		"missile2",
 		"missile2inv",
-		"missilestructure2",
-		"missilestructure2inv",
+		"lc_missilestructure2",
+		"lc_missilestructure2inv",
 	},
 })
 
-table.insert(Weapons, IndexOfWeapon("missilestructureinv") + 1,
+table.insert(Weapons, IndexOfWeapon("lc_missilestructureinv") + 1,
 {	
-	SaveName = "missilestructure2inv",
+	SaveName = "lc_missilestructure2inv",
 	FileName = path.. "/weapons/missilelauncherstructure_inverted.lua",
 	Enabled = false,
 	Inverted = true,
@@ -271,12 +271,12 @@ table.insert(Weapons, IndexOfWeapon("missilestructureinv") + 1,
 	{
 		"missile",
 		"missileinv",
-		"missilestructure",
-		"missilestructureinv",
+		"lc_missilestructure",
+		"lc_missilestructureinv",
 		"missile2",
 		"missile2inv",
-		"missilestructure2",
-		"missilestructure2inv",
+		"lc_missilestructure2",
+		"lc_missilestructure2inv",
 	},
 })
 

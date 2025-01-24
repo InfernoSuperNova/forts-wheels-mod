@@ -9,8 +9,18 @@ function UntrackDevice(deviceId)
     end
     data.trackGroups[deviceId] = nil
 end
+
+local lastFrameTime = 0
+local totalFrameTime = data.updateDelta
+
 function UpdateTracks(frame)
     
+
+    local currentTime = GetRealTime()
+    totalFrameTime = currentTime - lastFrameTime
+    lastFrameTime = currentTime
+
+
     local localSide = GetLocalTeamId() % MAX_SIDES
     ClearEffects()
     FillTracks()
@@ -153,7 +163,11 @@ function GetTrackSetPositions()
     end
 end
 
-function DrawTracks(localSide, t)
+function DrawTracks(localSide)
+
+    local currentTime = GetRealTime()
+    local deltaTime = currentTime - lastFrameTime
+    local t = deltaTime / totalFrameTime
 
     for i = 1, #TrackEffectIdsThisFrame do
         EffectManager:DestroyEffect(TrackEffectIdsThisFrame[i])
@@ -195,7 +209,7 @@ function DrawTrackSprockets(base, trackGroup, t)
 
 
             if not pos.previousPos then pos.previousPos = pos end
-            local actualPos = Vec3Lerp(pos.previousPos, pos, t)
+            local actualPos = Vec2Lerp(pos.previousPos, pos, t)
             
             local effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["small"]
             local newAngle = angle
@@ -241,9 +255,12 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
 
         local arc = PointsAroundArc(segment.wheelPosA, segment.radiusA, prevSegment.posB,segment.posA, TRACK_LINK_DISTANCE, previousRemainder, false)
         local remainder = TRACK_LINK_DISTANCE - arc.remainder
-        local segmentNormal = PerpendicularVector(SubtractVectors(segment.posA, segment.posB))
-        local gravity= Vec3(0, 1)
-        local bowing = -0.01 * Dot(segmentNormal, gravity)
+        local posAToPosBX = segment.posA.x - segment.posB.x
+        local posAToPosBY = segment.posA.y - segment.posB.y
+        local segmentNormal = {x = -posAToPosBY, y = posAToPosBX}
+        
+        local gravity= {x = 0, y = 1}
+        local bowing = -0.01 * (segmentNormal.x * gravity.x + segmentNormal.y * gravity.y)
         local straightPoints = SubdivideLineSegmentWithBowing(segment.posA, segment.posB, TRACK_LINK_DISTANCE, remainder, bowing)
         previousRemainder = straightPoints.remainder
         for i = 1, #arc.points do
@@ -269,7 +286,7 @@ function DrawTrackTreads(trackSet, base, trackGroup, teamId)
         trackDirection = NormalizeVector(trackDirection)
         -- I hate this so much
         -- I wish I chose oop
-        local linkPos = Vec3Lerp(point.pos, nextPoint.pos, 0.5)
+        local linkPos = Vec2Lerp(point.pos, nextPoint.pos, 0.5)
         local linkId = EffectManager:CreateEffect(path .. trackLink, linkPos, trackDirection)
         trackDirection = NormalizeVector(AverageCoordinates({trackDirection, previousTrackDirection}))
         local linkId2 = EffectManager:CreateEffect(path .. track, point.pos, trackDirection)

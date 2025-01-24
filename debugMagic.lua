@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global
 --debugMagic.lua
 
 if preG == nil then

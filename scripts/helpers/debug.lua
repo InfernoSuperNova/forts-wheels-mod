@@ -9,6 +9,23 @@ function HighlightCoords(coords)
     end
 end
 
+function HighlightExtents(extents, duration, color)
+    duration = duration or 0.06
+    color = color or White()
+    local topLeft = Vec3(extents.minX, extents.minY)
+    local topRight = Vec3(extents.maxX, extents.minY)
+    local bottomRight = Vec3(extents.maxX, extents.maxY)
+    local bottomLeft = Vec3(extents.minX, extents.maxY)
+
+
+
+
+    SpawnLine(topLeft, topRight, color, duration)
+    SpawnLine(topRight, bottomRight, color, duration)
+    SpawnLine(bottomRight, bottomLeft, color, duration)
+    SpawnLine(bottomLeft, topLeft, color, duration)
+end
+
 function HighlightPolygon(coords, colour1)
     if not colour1 then colour1 = {r = 255, g = 255, b = 255, a = 255} end
     local newCoords = FlattenTable(coords)
@@ -55,13 +72,14 @@ end
 ---@param direction Vector2D the direction (and magnitude)
 ---@param mag number the magnitude
 ---@param col Colour the colour
-function HighlightDirectionalVector(pos, direction, mag, col)
+function HighlightDirectionalVector(pos, direction, mag, col, duration)
     col = col or {r = 255, g = 255, b= 255, a = 255}
+    duration = duration or 0.04
     local pos2 = {x = pos.x + direction.x * mag, y = pos.y + direction.y * mag, z = -100}
     pos.z = -100
-    SpawnLine(pos, pos2, col, 0.04)
+    SpawnLine(pos, pos2, col, duration)
 
-    SpawnCircle(pos, Distance(pos, pos2) / 5, col, 0.04)
+    SpawnCircle(pos, Distance(pos, pos2) / 5, col, duration)
 end
 
 
@@ -177,18 +195,17 @@ function InitializeTerrainBlockSats()
 end
 
 function EnableTerrainDebug()
-    local largestBlock
-    if BlockStatistics.largestBlock > 20 then 
-        largestBlock = BlockStatistics.largestBlock .. " WARNING: There are too many nodes in this block! Consider splitting it into smaller blocks"
-    else
-        largestBlock = BlockStatistics.largestBlock
-    end
+    SetControlFrame(0)
+
+    local largestBlock = BlockStatistics.largestBlock
+
     SetControlText("", "terrainStat1", "Largest block: " .. largestBlock)
     SetControlText("", "terrainStat2", "Total vertex count: " .. BlockStatistics.totalNodes)
     SetControlText("", "terrainStat3", "Total block count: " .. BlockStatistics.totalBlocks)
     SetControlText("", "terrainStat4", "Press LCTRL + LSHIFT + LALT + D to hide")
 end
 function DisableTerrainDebug()
+    SetControlFrame(0)
     SetControlText("", "terrainStat1", "")
     SetControlText("", "terrainStat2", "")
     SetControlText("", "terrainStat3", "")
