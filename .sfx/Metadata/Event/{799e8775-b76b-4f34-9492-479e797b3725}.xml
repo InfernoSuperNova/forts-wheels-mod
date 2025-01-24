@@ -48,6 +48,9 @@
 		</relationship>
 	</object>
 	<object class="MasterTrack" id="{8c384d59-e4a3-4bce-a184-3c7040edd7cb}">
+		<relationship name="automationTracks">
+			<destination>{6381a877-fce0-4422-aa97-e0ee784a75c1}</destination>
+		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{455744ce-4578-4872-a593-ba86562c9848}</destination>
 		</relationship>
@@ -68,7 +71,7 @@
 			<value>6</value>
 		</property>
 		<property name="minimumDistance">
-			<value>600</value>
+			<value>2000</value>
 		</property>
 		<property name="maximumDistance">
 			<value>10000</value>
@@ -113,6 +116,11 @@
 		</relationship>
 		<relationship name="mixer">
 			<destination>{a3fcc041-17f1-4790-85f9-5bdc742d422b}</destination>
+		</relationship>
+	</object>
+	<object class="AutomationTrack" id="{6381a877-fce0-4422-aa97-e0ee784a75c1}">
+		<relationship name="automator">
+			<destination>{5ee01ec8-c382-4355-b47e-2ad38acaa22a}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusEffectChain" id="{47e737ec-ba58-4352-b527-4df245a0e558}">
