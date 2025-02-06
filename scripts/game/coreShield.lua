@@ -26,15 +26,9 @@ function RemoveCoreShield(id)
 end
 
 function UpdateCoreShields()
+    if DrillsEnabled then return end
     ActiveShields = {}
-    for side = 1, 2 do
-        if #data.coreShields > 0 then
-            for id, coords in pairs(data.coreShields[side]) do
-                local deviceSide = 3 - side
-                EnumerateDevicesInShieldRadius(coords, deviceSide, side, id)
-            end
-        end
-    end
+    EnumerateDevicesInShieldRadius()
     for side = 1, 2 do
         if #data.coreShields > 0 then
             for id, coords in pairs(data.coreShields[side]) do
@@ -48,17 +42,37 @@ function UpdateCoreShields()
     end
 end
 
-function EnumerateDevicesInShieldRadius(shieldCoords, deviceSide, shieldSide, id)
+function EnumerateDevicesInShieldRadius()
     for _, device in pairs(data.devices) do
-        if device.isGroundDevice then continue end
-        if TURRET_ANIM_NAMES[device.saveName] then continue end
-        if device.side ~= deviceSide then continue end
+        if device.isGroundDevice or TURRET_ANIM_NAMES[device.saveName] then continue end
         
-        if not IsWithinDistance(device.pos, shieldCoords, SHIELD_RADIUS) then continue end
+        local devicePos = device.pos
+        local devicePosX = devicePos.x
+        local devicePosY = devicePos.y
+
+
+
+        local shieldSide = 3 - device.side
+        if device.side ~= 1 and device.side ~= 2 then continue end
+            for id, shieldPos in pairs(data.coreShields[shieldSide]) do
+                local shieldPosX = shieldPos.x
+                local shieldPosY = shieldPos.y
+                local toX = devicePosX - shieldPosX
+                local toY = devicePosY - shieldPosY
+                local distSqr = toX * toX + toY * toY
+                if distSqr > SHIELD_RADIUS * SHIELD_RADIUS then continue end
+                shieldPos.z = -100
+                ActiveShields[id] = true
+                EvaluatePositionInShield(device, shieldPos)
+            end
+       
+
+
         
-        shieldCoords.z = -100
-        ActiveShields[id] = true
-        EvaluatePositionInShield(device, shieldCoords)
+        
+        
+        
+        
     end
 end
 

@@ -95,6 +95,9 @@ end
 function ToggleUpdateDebug()
     ModDebug.update = not ModDebug.update
     Notice("Update debug: " .. tostring(ModDebug.update))
+    if ModDebug.update then
+        SetupUpdateProfiling()
+    end
 end
 
 function ToggleForcesDebug()
@@ -114,13 +117,6 @@ function ClearDebugControls()
         DeleteControl("", "debugControl")  
 end
 
-function ClearTerrainDebugControls()
-    SetControlFrame(1)
-    for _, id in pairs (ScheduledDeleteControls) do
-        DeleteControl("worldBlockDebug", id)
-    end
-    ScheduledDeleteControls = {}
-end
 function DebugLog(string)
     if ModDebug.update then 
         DebugText = DebugText .. string .. "\n"

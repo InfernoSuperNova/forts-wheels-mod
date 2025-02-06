@@ -194,8 +194,10 @@ end
 ValidStructures = {}
 
 function UpdateDevices(frame)
+    
     SellExtraControllers()
     ValidStructures = {}
+    
     for _, device in pairs(data.devices) do
         -- unavoidable api calls
         
@@ -219,6 +221,7 @@ function UpdateDevices(frame)
         end
         if not ValidStructures[device.strucId] then ValidStructures[device.strucId] = true end
     end
+    
 
     for structureId, _ in pairs(data.motors) do
         if not ValidStructures[structureId] then
@@ -240,6 +243,7 @@ function UpdateDevices(frame)
             data.brakeSliders[structureId] = nil
         end
     end
+
 end
 
 function SellExtraControllers()

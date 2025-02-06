@@ -21,6 +21,9 @@
 		<property name="maximumDistance">
 			<value>10000</value>
 		</property>
+		<property name="extentMode">
+			<value>1</value>
+		</property>
 		<property name="soundSize">
 			<value>4000</value>
 		</property>

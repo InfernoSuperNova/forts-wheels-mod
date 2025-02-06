@@ -132,7 +132,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     local velocities = {}
     for deviceKey, device in pairs(devices) do
         if WheelsTouchingGround[structureKey][deviceKey] then
-            table.insert(velocities, NodeVelocity(device.nodeA))
+            table.insert(velocities, NodeVelocity(device.nodeA)) -- Todo, make unified device thing
             table.insert(velocities, NodeVelocity(device.nodeB))
         end
     end
@@ -141,7 +141,7 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
 
     
     
-    --now that we have the average velocity magnitude, we should select which gear should be used
+    -- --now that we have the average velocity magnitude, we should select which gear should be used
 
     local currentGear = GetCurrentGearFromVelocity(applicableGears, velocityMag)
 
@@ -199,6 +199,7 @@ function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFacto
             mag = Clamp(mag, -1.0, 1.0)
             
             
+            
             --get average between new magnitude and previous one to reduce vibrations
             if data.previousThrottleMags[structureKey] and data.previousThrottleMags[structureKey][deviceKey] then
                 mag = (mag + data.previousThrottleMags[structureKey][deviceKey] * 4) / 5
@@ -235,13 +236,11 @@ function GetCurrentGearFromVelocity(applicableGears, velocityMag)
     for gear = 1, #applicableGears do
         if math.abs(velocityMag) < applicableGears[gear].maxSpeed * GEAR_CHANGE_RATIO then
             currentGear = applicableGears[gear]
-            SetControlText("root", tostring(GetLocalTeamId()), "Gear: " .. gear)
             break
         end
     end
     if currentGear == nil then 
         currentGear = applicableGears[#applicableGears] 
-        SetControlText("root", tostring(GetLocalTeamId()), "Gear: " .. #applicableGears)
     end
     return currentGear
 end

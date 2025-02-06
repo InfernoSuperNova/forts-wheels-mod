@@ -32,10 +32,11 @@ function Terrain:Index()
 
     local blockCount = GetBlockCount()
     self:IndexSpecialBlocks(blockCount)
-
     for block = 0, blockCount - 1 do
         
-        if Terrain.SpecialBlocks["Late"][block] or Terrain.SpecialBlocks["Ignored"][block] then continue end
+        if Terrain.SpecialBlocks["Late"][block] or Terrain.SpecialBlocks["Ignored"][block] then
+            continue
+        end
         BlockStatistics.totalBlocks = BlockStatistics.totalBlocks + 1
         self:IndexBlock(block)
     end
@@ -46,10 +47,6 @@ function PhysLib.Terrain:IndexLate()
         self:IndexBlock(blockIndex)
     end
 
-end
-
-function Terrain:LateIndex()
-    --TBE
 end
 
 function Terrain:DynamicIndex()
@@ -63,7 +60,6 @@ function Terrain:IndexSpecialBlocks(blockCount)
         for blockName, blockType in pairs(self.SpecialTypeConverter) do
             local index = GetTerrainBlockIndex(blockName .. i)
             if index ~= -1 then
-
                 local tbl = self.SpecialBlocks[blockType]
                 tbl[index] = true
             end
@@ -73,8 +69,8 @@ end
 
 function Terrain:IndexBlock(blockIndex)
 
-    self.Blocks[blockIndex] = {}
-    local block = self.Blocks[blockIndex]
+    self.Blocks[#self.Blocks+1] = {}
+    local block = self.Blocks[#self.Blocks]
     local vertexCount = GetBlockVertexCount(blockIndex)
     BlockStatistics.totalNodes = BlockStatistics.totalNodes + vertexCount
     if vertexCount > BlockStatistics.largestBlock then
@@ -99,6 +95,8 @@ function Terrain:IndexBlock(blockIndex)
 
         local lineX = currentNode.x - nextNode.x
         local lineY = currentNode.y - nextNode.y
+
+
 
         local lineMagnitude = math.sqrt(lineX * lineX + lineY * lineY)
 

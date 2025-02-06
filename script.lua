@@ -124,6 +124,15 @@ end
 local justUpdated = false
 local lastUpdate = 0
 CurrentFrame = 0
+
+function table.average(t)
+    local sum = 0
+    for i = 1, #t do
+        sum = sum + t[i]
+    end
+    return sum / #t
+end
+
 function Update(frame)
     -- ShallowLogTable(data)
     -- LogTableComplexity(data)
@@ -137,7 +146,7 @@ function Update(frame)
     LocalScreen = GetCamera()
     
     
-    DebugLog("---------Start of update---------")
+    
     if not ModDebug.update then
         ClearDebugControls()
     end
@@ -152,32 +161,79 @@ function Update(frame)
         displacement = Vec3(displacement * normal.x, displacement * normal.y)
         local displacedPos = Vec3(pos.x + displacement.x, pos.y + displacement.y, 0)
         displacedPos.z = -100
-        SpawnCircle(displacedPos, radius, Blue(), 0.04)
+        SpawnCircle(displacedPos, radius, Blue(), 2)
     end
     EffectManager:Update()
-    UpdateFunction("ClearTerrainDebugControls", frame)
-    DebugHighlightTerrain(frame)
-    UpdateFunction("GetDeviceCounts", frame)
-    --UpdateFunction("IndexDevices", frame)
-    UpdateFunction("UpdateDevices", frame)
-    UpdateFunction("UpdatePhysLib", frame)
-    UpdateFunction("WheelCollisionHandler", frame)
-    UpdateFunction("UpdateControls", frame)
-    UpdateFunction("UpdatePropulsion", frame)
-    UpdateFunction("UpdateTracks", frame)
-    UpdateFunction("UpdateDrill", frame)
-    UpdateFunction("UpdateEffects", frame)
-    UpdateFunction("UpdateForceManager", frame)
-    UpdateFunction("UpdateResources", frame)
-    UpdateFunction("UpdateCoreShields", frame)
-    UpdateFunction("UpdateWeapons", frame)
-    UpdateFunction("MissileManagerUpdate", frame)
+
+    data.team1ActiveThisFrame = IsCommanderActive(1)
+    data.team2ActiveThisFrame = IsCommanderActive(2)
+
+    -- All of the major mod logic is done in here
+    for i = 1, #MainLoop do
+        ProfileFunction(MainLoop[i].name, MainLoop[i].func, frame)
+    end
+    -- everything beyond here is just for debugging and profiling
     
+
+
+
     JustJoined = false
-    DebugLog("---------End of update---------")
+
     local delta = (GetRealTime() - startUpdateTime) * 1000
+
+    UpdateProfiling(frame, delta)
+    
+end
+
+-- This is the main loop of the mod, it specifies the order in which the functions are called
+MainLoop = {
+    {name = "DebugHighlightTerrain", func = DebugHighlightTerrain},
+    {name = "GetDeviceCounts", func = GetDeviceCounts},
+    {name = "UpdateDevices", func = UpdateDevices},
+    {name = "UpdatePhysLib", func = UpdatePhysLib},
+    {name = "WheelCollisionHandler", func = WheelCollisionHandler},
+    {name = "UpdateControls", func = UpdateControls},
+    {name = "UpdatePropulsion", func = UpdatePropulsion},
+    {name = "UpdateTracks", func = UpdateTracks},
+    {name = "UpdateDrill", func = UpdateDrill},
+    {name = "UpdateEffects", func = UpdateEffects},
+    {name = "UpdateForceManager", func = UpdateForceManager},
+    {name = "UpdateResources", func = UpdateResources},
+    {name = "UpdateCoreShields", func = UpdateCoreShields},
+    {name = "UpdateWeapons", func = UpdateWeapons},
+    {name = "MissileManagerUpdate", func = MissileManagerUpdate},
+}
+
+function UpdateProfiling(frame, delta)
+    
     if ModDebug.update then
-        DebugLog("Update took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%, " .. string.format("%.2f", 1000/delta) .. "FPS")
+        local totalDelta = 0
+
+        DebugLog("---------Start of update---------")
+        -- Profile update functions
+        for i = 1, #MainLoop do
+            local name = MainLoop[i].name
+            local tbl = UpdateFunctionProfiling[name]
+            totalDelta = totalDelta + table.average(tbl)
+        end
+        for i = 1, #MainLoop do
+            local name = MainLoop[i].name
+            
+            local tbl = UpdateFunctionProfiling[name]
+            
+            local delta = table.average(tbl)
+            DebugLog(name .. " avg " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%, total " .. string.format("%.1f", delta/totalDelta * 100) .. "%")
+        end
+        DebugLog("---------End of update---------")
+
+        -- Profile update
+        local tbl = UpdateFunctionProfiling["Update"]
+        if #tbl > ProfilingMaxFrames then
+            table.remove(tbl, 1)
+        end
+        tbl[#tbl + 1] = delta
+        local averageDelta = table.average(tbl)
+        DebugLog("Update took " .. string.format("%.3f", averageDelta) .. "ms, " .. string.format("%.1f", averageDelta/(data.updateDelta * 1000) * 100) .. "%, " .. string.format("%.2f", 1000/averageDelta) .. "FPS")
         DebugLog("Memory Usage: " .. FormatNumberWithCommas(gcinfo()) .. " KB")
 
         DebugLog("EffectManager:")
@@ -186,29 +242,44 @@ function Update(frame)
 
         DebugLog("Current client time: " .. FormatNumberWithCommas(GetRealTime()) .. "s")
         DebugLog("Current game frame: " .. FormatNumberWithCommas(frame))
-        UpdateFunction("DebugUpdate", frame)
+        ProfileFunction("DebugUpdate", DebugUpdate, frame)
     end
-    
-    --RogueTableChecker()
-    lastUpdate = GetRealTime()
-    -- if (frame == 19128) then
-    --     BetterLog(_G)
-    -- end
 end
+
 
 function FormatNumberWithCommas(number)
     return string.format("%d", number):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
 end
-function UpdateFunction(callback, frame)
+
+function ProfileFunction(name, func, frame)
     if ModDebug.update then
         local prevTime = GetRealTime()
-        _G[callback](frame)
-        local delta = (GetRealTime() - prevTime) * 1000
-        DebugLog(callback .. " took " .. string.format("%.3f", delta) .. "ms, " .. string.format("%.1f", delta/(data.updateDelta * 1000) * 100) .. "%")
+        func(frame)
+        local delta = (GetRealTime() - prevTime) * 1000     
+        
+        local tbl = UpdateFunctionProfiling[name]
+        if #tbl > ProfilingMaxFrames then
+            table.remove(tbl, 1)
+        end
+        tbl[#tbl + 1] = delta
     else
-        _G[callback](frame)
+        func(frame)
     end
 end
+
+function SetupUpdateProfiling()
+    for i = 1, #MainLoop do
+        UpdateFunctionProfiling[MainLoop[i].name] = {}
+    end
+    UpdateFunctionProfiling["DebugUpdate"] = {}
+    UpdateFunctionProfiling["Update"] = {}
+end
+ProfilingMaxFrames = 100
+UpdateFunctionProfiling = {}
+
+
+
+
 
 function CheckSaveNameTable(input, t)
     for k, v in ipairs(t) do
@@ -258,11 +329,13 @@ local previousDrawFrameTime = 0
 local previousDrawFrameDelta = 0
 function OnDraw()
     local startTime = previousDrawFrameTime
+    local onDrawStartTime = GetRealTime()
     OnDrawBody()
     local endTime = GetRealTime()
     local delta = (endTime - startTime) * 1000
+    local onDrawDelta = (endTime - onDrawStartTime) * 1000
     
-    if (delta > 50 and previousDrawFrameDelta > 50 and not justUpdated and previousDrawFrameTime ~= 0 and CurrentFrame > 10) then -- Updating slower than 60fps
+    if (onDrawDelta > 16.66 and CurrentFrame > 10) then -- Updating slower than 60fps
         Notice(RGBAtoHex(255, 255, 50, 255) .. CurrentLanguage.DrawPerformanceWarningText)
         ReducedVisuals = true
         OnDraw = OnDrawBody
@@ -298,7 +371,11 @@ function OnDeviceCreated(teamId, deviceId, saveName, nodeA, nodeB, t, upgradedId
 end
 
 
+data.projectileWeaponIds = {}
+
+
 function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileNodeIdFrom)
+    data.projectileWeaponIds[projectileNodeId] = weaponId
     FillOLTable(saveName, weaponId)
     --add weapon velocity to projectile
     if projectileNodeIdFrom == 0 and IsGroundDevice(weaponId) == false then
@@ -317,7 +394,30 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
         MissileManager:RegisterNewMissile(projectileNodeId, saveName)
     else
         MissileManager:RegisterFromExistingProjectile(projectileNodeIdFrom, projectileNodeId)
+
+        
     end
+    if saveName == "turretLaserShock" then
+        ScheduleCall(2.95, CreateLaserImpactEffect, projectileNodeId, projectileNodeIdFrom)
+    end
+end
+
+
+function CreateLaserImpactEffect(projectileNodeId, projectileIdFrom)
+    local weaponId = data.projectileWeaponIds[projectileIdFrom]
+    if not weaponId or not NodeExists(projectileNodeId) then return end
+    local pos = NodePosition(projectileNodeId)
+    local weaponPos = GetWeaponHardpointPosition(weaponId)
+    local dir = {x = weaponPos.x - pos.x, y = weaponPos.y - pos.y}
+    local dirLength = math.sqrt(dir.x * dir.x + dir.y * dir.y)
+    dir.x = dir.x / dirLength
+    dir.y = dir.y / dirLength
+    local effect = path .. "/effects/turretLaser_shock.lua"
+    SpawnEffectEx(effect, pos, dir)
+end
+
+function OnProjectileDestroyed(nodeId, teamId, saveName, structureIdHit, destroyType)
+    data.projectileWeaponIds[nodeId] = nil
 end
 
 
@@ -340,10 +440,6 @@ function OnDeviceDeleted(teamId, deviceId, saveName, nodeA, nodeB, t)
     RemoveTurretDirection(deviceId)
     HandleDestroyedDevice(teamId, deviceId, saveName, nodeA, nodeB, t)
     UntrackDevice(deviceId)
-end
-
-function OnNodeBroken(nodeId, nodeIdNew)
-    HandleBrokenNode(nodeId, nodeIdNew)
 end
 
 function OnDeviceTeamUpdated(oldTeamId, newTeamId, deviceId, saveName)
@@ -371,6 +467,7 @@ function OnNodeDestroyed(nodeId, selectable)
 end
 
 function OnNodeBroken(thisNodeId, nodeIdNew)
+    HandleBrokenNode(thisNodeId, nodeIdNew)
     PhysLib:OnNodeBroken(thisNodeId, nodeIdNew)
 end
 

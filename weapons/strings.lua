@@ -25,7 +25,7 @@ Merge(Weapon,
     turretCannonTip3 = L"Upgrade to rotate the turret around.",
 
     turretLaser = L"Laser Turret",
-    turretLaserTip2 = L"A large and well protected laser. Fires a powerful, short range beam with high recoil.",
+    turretLaserTip2 = L"A large and well protected laser. Fires a powerful, short range beam with a small explosion at the end. High recoil.",
     turretLaserTip3 = L"Upgrade to rotate the turret around.",
 
 })
