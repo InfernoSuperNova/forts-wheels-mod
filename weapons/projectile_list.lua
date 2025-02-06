@@ -46,8 +46,8 @@ turretLaser.Effects.Age = {["t1"] = "effects/energy_absorb.lua"}
 turretLaser.BeamOcclusionDistanceWater = 15000
 turretLaser.BeamOcclusionDistance = 15000
 turretLaser.DeflectedByShields = false
-turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "shield", Direct = 0.07}
-turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "portal", Direct = 0.07}
+turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "shield", Direct = 0.00}
+turretLaser.DamageMultiplier[#turretLaser.DamageMultiplier+1] = { SaveName = "portal", Direct = 0.00}
 turretLaser.ProjectileSprite = nil
 turretLaser.Effects.Impact = {
     ["default"] = {	Projectile = {	Speed = 0.1, Type = "turretLaserShock", Count = 1, StdDev = 0 }, Terminate = false, Offset = 0, Effect = "effects/beam_hit.lua", },
@@ -57,6 +57,7 @@ turretLaser.Effects.Impact = {
 --     ["default"] = {	Projectile = {	Speed = 0.1, Type = "turretLaserShockSpawner", Count = 1, StdDev = 0 }, Terminate = false, Offset = 0, Effect = "effects/beam_impact.lua", }
 -- }
 
+
 local turretLaserShock = DeepCopy(FindProjectile("cannon"))
 
 turretLaserShock.SaveName = "turretLaserShock"
@@ -65,14 +66,14 @@ turretLaserShock.CollidesWithProjectiles = false
 turretLaserShock.CollidesWithBeams = false
 turretLaserShock.ProjectileSplashDamage = 300
 turretLaserShock.ProjectileSplashDamageMaxRadius = 200
-turretLaserShock.ProjectileSplashMaxForce = 1000000
+turretLaserShock.ProjectileSplashMaxForce = 100000
 turretLaserShock.TrailEffect = nil
 
 turretLaserShock.DetonatesOnExpiry = true
 turretLaserShock.Effects.Age = {
     ["t2950"] = {
         Terminate = true,
-        Effect = path .. "/effects/turretLaser_shock.lua"
+        --Effect = path .. "/effects/turretLaser_shock.lua"
     }
 }
 turretLaserShock.Gravity = 0
@@ -100,7 +101,7 @@ table.insert(Sprites,
 turretLaser.Beam = {
     Sprites = {
         {Sprite = "turretlaser_beam", ThicknessFunction = "BeamThickness", ScrollRate = -2, TileRate = 400 * 1},
-        {Sprite = "turretlaser_electricity", ThicknessFunction = "BeamElectricityThickness", ScrollRate = -2, TileRate = 400 * 1},
+        {Sprite = "turretlaser_electricity", ThicknessFunction = "BeamElectricityThickness", ScrollRate = -20, TileRate = 400 * 1},
     }
 }
 function turretLaser.BeamThickness(t)
@@ -108,27 +109,52 @@ function turretLaser.BeamThickness(t)
 end
 
 function turretLaser.BeamElectricityThickness(t)
-    return InterpolateTable(BeamTableTurretLaser, t, 3)
-
+    return InterpolateTable(BeamTableTurretLaserShock, t, 2)
 end
 
 function turretLaser.BeamDamage(t)
 	return InterpolateTable(BeamTableTurretLaser, t, 4)
 end
 
+function turretLaser.BeamCollisionThickness(t)
+    return 0
+end
 
 
 BeamTableTurretLaser =
 {
 	{ 0,	0,	0, 0},
-	{ 0.5,  3,  0, 0},
-	{ 1,	50,  0, 2000},
-	{ 2,	50,  0, 2000}, -- 1000
-    { 2.95,  2.5,  0, 100},
+	{ 0.5,  3,  3, 0},
+	{ 1,	50,  50, 1000},
+	{ 2,	50,  50, 1000}, -- 1000
+    { 2.95,  2.5,  50, 100},
 	{ 3,	0,	150, 0},
 }
 
 
+BeamTableTurretLaserShock = 
+{
+    {0, 0},
+    {0.5, 3},
+    {1, 20},
+    {1.2, 50},
+    {1.4, 20},
+    {1.6, 50},
+    {1.8, 30},
+    {2, 70},
+    {2.1, 30},
+    {2.2, 70},
+    {2.3, 40},
+    {2.4, 80},
+    {2.5, 40},
+    {2.6, 80},
+    {2.7, 50},
+    {2.8, 100},
+    {2.9, 50},
+    {2.95, 100},
+    {3, 200},
+
+}
 
 
 
@@ -147,6 +173,9 @@ for k , v in pairs(Projectiles) do
         v.ProjectileMass = v.ProjectileMass * 3
         v.MaxAge = 300
         v.Missile.MaxSteerPerSecond = v.Missile.MaxSteerPerSecond * 2
+    end
+    if v.ProjectileType == "missile" then
+        v.Missile.MinTargetUpdateDistance = 0
     end
  end
 

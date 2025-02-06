@@ -63,7 +63,7 @@ function SoundUpdate()
     for structureIndex, engine in pairs(data.currentRevs) do
         --pow engine 2 for better revs
         local throttle = math.abs(NormalizeThrottleVal(structureIndex))
-        local rpm = ((math.max(engine * 6500, 500) * 3) + math.max(throttle * 6000, 500)) / 4
+        local rpm = ((math.max(engine * 5000, 500) * 3) + math.max(throttle * 5000, 500)) / 4
         for engine, effect in pairs(EffectsList.engine) do
             if GetDeviceStructureId(tonumber(engine)) == structureIndex then
                 if throttle < 0.1 or data.brakes[structureIndex] then rpm = 500 end

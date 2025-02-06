@@ -14,18 +14,19 @@ local lastFrameTime = 0
 local totalFrameTime = data.updateDelta
 
 function UpdateTracks(frame)
-    
 
+    
     local currentTime = GetRealTime()
     totalFrameTime = currentTime - lastFrameTime
     lastFrameTime = currentTime
 
 
-    local localSide = GetLocalTeamId() % MAX_SIDES
+    LocalSide = GetLocalTeamId() % MAX_SIDES
     ClearEffects()
     FillTracks()
-    SortTracks(localSide)
+    SortTracks(LocalSide)
     GetTrackSetPositions()
+
 end
 
 TrackEffectIdsThisFrame = {}
@@ -80,8 +81,7 @@ end
 
 function PlaceSuspensionPosInTable(device)
     
-    if DeviceExists(device.id) 
-    and 
+    if  
     (WHEEL_SAVE_NAMES_RAW[device.saveName]
     )
     and IsDeviceFullyBuilt(device.id) then
@@ -92,7 +92,7 @@ function PlaceSuspensionPosInTable(device)
         if not previousPos then previousPos = actualPos end
         previousPos = {x = previousPos.x, y = previousPos.y}
         previousPos.z = 0
-        if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 then
+        if actualPos.x < LocalScreen.MaxX + 500 and actualPos.x > LocalScreen.MinX - 500 and not IsEnemyPhantomAndActive(device.team, LocalSide) then
 
             --get the structure that the track set belongs to
             local structureId = device.strucId
@@ -134,14 +134,13 @@ function SortTracks(localSide)
     if ReducedVisuals then PushedTracks = Tracks return end
     for structure, trackSets in pairs(Tracks) do
         local team = GetStructureTeam(structure)
+        if IsEnemyPhantomAndActive(team, localSide) then continue end
+
         if not PushedTracks[structure] then PushedTracks[structure] = {} end
         for trackGroup, trackSet in pairs(trackSets) do
             if not SortedTracks[structure] then SortedTracks[structure] = {} end
             --Don't do unnecessary track calculations if the wheel is a wheel
-            if trackGroup ~= 11 and not IsCommanderAndEnemyActive("phantom", team, localSide) then
-                
-
-                
+            if trackGroup ~= 11 then
 
                 --have to reverse it since I was using a bad algorithm before that reversed the whole table, and based the rest of the code around that
                 SortedTracks[structure][trackGroup] = ReverseTable(GiftWrapping(trackSet))
@@ -179,7 +178,7 @@ function DrawTracks(localSide)
     for base, trackSets in pairs(PushedTracks) do
         local team = GetStructureTeam(base)
             --hide tracks on phantom
-        if not IsCommanderAndEnemyActive("phantom", team, localSide) then
+        if not IsEnemyPhantomAndActive(team, localSide) then
             for trackGroup, trackSet in pairs(trackSets) do
                 local teamId = Tracks[base][trackGroup][1].teamId
                 DrawTrackTreads(trackSet, base, trackGroup, teamId)

@@ -282,3 +282,5 @@ if drill then
     table.insert(Devices, 1, drill2)
     table.insert(Devices, 1, drill)
 end
+
+dofile(path .. "/scripts/helpers/BetterLog.lua")

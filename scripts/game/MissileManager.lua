@@ -14,7 +14,7 @@ MissileManager = {
     MaxMissileGuideAttempts = 100,
     GroundAvoidanceDistance = 2000,
     ProportionalNavigationConstant = 5, -- Values between 3 and 5 are common
-    DoPropNav = true -- Set to false to disable proportional navigation
+    DoPropNav = false -- Set to false to disable proportional navigation
 }
 
 function MissileManagerUpdate()
@@ -38,116 +38,120 @@ function MissileManager:RegisterFromExistingProjectile(oldId, newId)
 end 
 
 function MissileManager:Update()
-
      -- Searching for new targets
-     for nodeId, obj in pairs(data.missilesNotTargetingStructureYet) do
-        obj.time = obj.time + 1
-        if obj.time < self.ScanInterval then return end  
-        obj.time = 0
-        if not NodeExists(nodeId) then
-            data.missilesNotTargetingStructureYet[nodeId] = nil
-            self:Log("Search: Missile destroyed, stopping search")
-            self:Log("Search: Switching guidance from search to none")
-            return
-        end
-
-        local pos = NodePosition(nodeId)
-        local velocity = NodeVelocity(nodeId)
-        local direction = NormalizeVector(velocity)
-        local target = {x = pos.x + direction.x * self.ScanDistance, y = pos.y + direction.y * self.ScanDistance, z = pos.z + direction.z * self.ScanDistance}
-
-    --    SpawnLine(pos, target, {r = 255, g = 0, b = 0, a = 255}, 2)
-        local result = CastRay(NodePosition(nodeId), target, RAY_EXCLUDE_BG_MATERIALS, 0)
-        if result == RAY_HIT_STRUCTURE then
-            local structureNode = GetRayHitLinkNodeIdA()
-            local structureId =  NodeStructureId(structureNode)
-
-                local structureTeamId = NodeTeam(structureNode)
-                if structureTeamId ~= NodeTeam(nodeId) then
-                    data.missilesNotTargetingStructureYet[nodeId] = nil
-                    
-                    data.missileCruiseGuidance[nodeId] = {targetStructureId = structureId, topAttackFactor = obj.topAttackFactor, targetTeamId = structureTeamId}
-                    self:Log("Search: Found new target, starting guidance")
-                    self:Log("Search: Switching guidance from search to cruise")
-                end
-
-            -- SpawnLine(pos, NodePosition(structureNode), {r = 0, g = 255, b = 0, a = 255}, 2)
-        end
-        
+    for nodeId, obj in pairs(data.missilesNotTargetingStructureYet) do
+        self:FindTarget(nodeId, obj)
     end
 
     for projectileNodeId, obj in pairs(data.missileCruiseGuidance) do
-        local targetStructureId = obj.targetStructureId
-        if not NodeExists(projectileNodeId) then
-            data.missileCruiseGuidance[projectileNodeId] = nil
-            self:Log("Cruise: Missile destroyed, stopping guidance")
-            return
-        end
-
-        if not IsMissileAttacking(projectileNodeId) then return end
-        local targetPosition = GetStructurePos(targetStructureId)
-
-
-        -- if the target structure is destroyed, stop guiding the missile and search for a new target
-        if targetPosition.x == 0 and targetPosition.y == 0 then
-            data.missileCruiseGuidance[projectileNodeId] = nil
-            data.missilesNotTargetingStructureYet[projectileNodeId] = {time = 0, topAttackFactor = obj.topAttackFactor}
-            self:Log("Cruise: Target structure destroyed, searching for new target")
-            self:Log("Cruise: Switching guidance from cruise to search")
-            return
-        end
-        local missilePosition = NodePosition(projectileNodeId)
-        local distanceX = math.abs(targetPosition.x - missilePosition.x)
-
-        local topAttackFactor = math.sign(obj.topAttackFactor) * math.pow(distanceX, math.abs(obj.topAttackFactor))
-
-        local targetPos = {x = targetPosition.x, y = targetPosition.y + topAttackFactor}
-        SetMissileTarget(projectileNodeId, targetPos)
-
-        --SpawnLine(missilePosition, targetPos, {r = 255, g = 0, b = 0, a = 255}, 0.04)
-
-        local distanceY = math.abs(targetPos.y - missilePosition.y)
-
-        -- if the missile is close enough to the target, switch to terminal guidance
-        if (distanceX * distanceX + distanceY * distanceY) < self.TerminalGuidanceDistance * self.TerminalGuidanceDistance then
-
-            self:Log("Cruise: Missile close to target, switching to terminal guidance")
-            self:Log("Cruise: Switching guidance from cruise to terminal")
-            local targetTeamId = obj.targetTeamId
-            local targetSide = targetTeamId % MAX_SIDES
-            data.missileCruiseGuidance[projectileNodeId] = nil
-
-            local nodeCount = NodeCount(targetSide)
-
-            local satisfied = false
-            local newTargetNode = -1
-            local attempts = 0
-            while not satisfied do
-                attempts = attempts + 1
-                if attempts > self.MaxMissileGuideAttempts then
-                    data.missileTerminalGuidance[projectileNodeId] = nil
-                    data.missilesNotTargetingStructureYet[projectileNodeId] = {time = 0, topAttackFactor = obj.topAttackFactor}
-                    self:Log("Cruise: Failed to find a new target, searching for new target")
-                    self:Log("Cruise: Switching guidance from terminal to search")
-                    return
-                end
-                local index = GetRandomInteger(0, nodeCount - 1, "")
-                newTargetNode = GetNodeId(targetSide, index)
-                local newTargetStructureId = NodeStructureId(newTargetNode)
-                if newTargetStructureId == targetStructureId then
-                    satisfied = true
-                end
-            end
-            data.missileTerminalGuidance[projectileNodeId] = {targetNodeId = newTargetNode, topAttackFactor = obj.topAttackFactor, RTM_oldX = 0, RTM_oldY = 0, previousTargetStructurePos = {x = 0, y = 0}, targetStructureId = targetStructureId, targetTeamId = targetTeamId}
-        end
+        self:CruiseGuidance(projectileNodeId, obj)
     end
-
 
     for projectileNodeId, obj in pairs(data.missileTerminalGuidance) do
         self:TerminalGuidance(projectileNodeId, obj)
     end
 end
 
+function MissileManager:FindTarget(nodeId, obj)
+    obj.time = obj.time + 1
+    if obj.time < self.ScanInterval then return end  
+    obj.time = 0
+    if not NodeExists(nodeId) then
+        data.missilesNotTargetingStructureYet[nodeId] = nil
+        self:Log("Search: Missile destroyed, stopping search")
+        self:Log("Search: Switching guidance from search to none")
+        return
+    end
+
+    local pos = NodePosition(nodeId)
+    local velocity = NodeVelocity(nodeId)
+    local direction = NormalizeVector(velocity)
+    local target = {x = pos.x + direction.x * self.ScanDistance, y = pos.y + direction.y * self.ScanDistance, z = pos.z + direction.z * self.ScanDistance}
+
+--    SpawnLine(pos, target, {r = 255, g = 0, b = 0, a = 255}, 2)
+    local result = CastRay(NodePosition(nodeId), target, RAY_EXCLUDE_BG_MATERIALS, 0)
+    if result == RAY_HIT_STRUCTURE then
+        local structureNode = GetRayHitLinkNodeIdA()
+        local structureId =  NodeStructureId(structureNode)
+
+            local structureTeamId = NodeTeam(structureNode) % MAX_SIDES
+            if structureTeamId ~= NodeTeam(nodeId) % MAX_SIDES then
+                data.missilesNotTargetingStructureYet[nodeId] = nil
+                
+                data.missileCruiseGuidance[nodeId] = {targetStructureId = structureId, topAttackFactor = obj.topAttackFactor, targetTeamId = structureTeamId}
+                self:Log("Search: Found new target, starting guidance")
+                self:Log("Search: Switching guidance from search to cruise")
+            end
+
+        -- SpawnLine(pos, NodePosition(structureNode), {r = 0, g = 255, b = 0, a = 255}, 2)
+    end
+end
+
+function MissileManager:CruiseGuidance(projectileNodeId, obj)
+    local targetStructureId = obj.targetStructureId
+    if not NodeExists(projectileNodeId) then
+        data.missileCruiseGuidance[projectileNodeId] = nil
+        self:Log("Cruise: Missile destroyed, stopping guidance")
+        return
+    end
+
+    if not IsMissileAttacking(projectileNodeId) then return end
+    local targetPosition = GetStructurePos(targetStructureId)
+
+
+    -- if the target structure is destroyed, stop guiding the missile and search for a new target
+    if targetPosition.x == 0 and targetPosition.y == 0 then
+        data.missileCruiseGuidance[projectileNodeId] = nil
+        data.missilesNotTargetingStructureYet[projectileNodeId] = {time = 0, topAttackFactor = obj.topAttackFactor}
+        self:Log("Cruise: Target structure destroyed, searching for new target")
+        self:Log("Cruise: Switching guidance from cruise to search")
+        return
+    end
+    local missilePosition = NodePosition(projectileNodeId)
+    local distanceX = math.abs(targetPosition.x - missilePosition.x)
+
+    local topAttackFactor = math.sign(obj.topAttackFactor) * math.pow(distanceX, math.abs(obj.topAttackFactor))
+
+    local targetPos = {x = targetPosition.x, y = targetPosition.y + topAttackFactor}
+    SetMissileTarget(projectileNodeId, targetPos)
+
+    --SpawnLine(missilePosition, targetPos, {r = 255, g = 0, b = 0, a = 255}, 0.04)
+
+    local distanceY = math.abs(targetPos.y - missilePosition.y)
+
+    -- if the missile is close enough to the target, switch to terminal guidance
+    if (distanceX * distanceX + distanceY * distanceY) < self.TerminalGuidanceDistance * self.TerminalGuidanceDistance then
+
+        self:Log("Cruise: Missile close to target, switching to terminal guidance")
+        self:Log("Cruise: Switching guidance from cruise to terminal")
+        local targetTeamId = obj.targetTeamId
+        local targetSide = targetTeamId % MAX_SIDES
+        data.missileCruiseGuidance[projectileNodeId] = nil
+
+        local nodeCount = NodeCount(targetSide)
+
+        local satisfied = false
+        local newTargetNode = -1
+        local attempts = 0
+        while not satisfied do
+            attempts = attempts + 1
+            if attempts > self.MaxMissileGuideAttempts then
+                data.missileTerminalGuidance[projectileNodeId] = nil
+                data.missilesNotTargetingStructureYet[projectileNodeId] = {time = 0, topAttackFactor = obj.topAttackFactor}
+                self:Log("Cruise: Failed to find a new target, searching for new target")
+                self:Log("Cruise: Switching guidance from terminal to search")
+                return
+            end
+            local index = GetRandomInteger(0, nodeCount - 1, "")
+            newTargetNode = GetNodeId(targetSide, index)
+            local newTargetStructureId = NodeStructureId(newTargetNode)
+            if newTargetStructureId == targetStructureId then
+                satisfied = true
+            end
+        end
+        data.missileTerminalGuidance[projectileNodeId] = {targetNodeId = newTargetNode, topAttackFactor = obj.topAttackFactor, RTM_oldX = 0, RTM_oldY = 0, previousTargetStructurePos = {x = 0, y = 0}, targetStructureId = targetStructureId, targetTeamId = targetTeamId}
+    end
+end
 function MissileManager:TerminalGuidance(projectileNodeId, obj)
 
     local targetNodeId = obj.targetNodeId
@@ -276,7 +280,7 @@ function MissileManager:PropNav(projectileNodeId, obj, targetNodeId)
     local lataxMissileRight = {x = turnValue * missileRight.x, y = turnValue * missileRight.y   }
 
 
-    local target = {x = missilePos.x + lataxMissileRight.x + missileForward.x * 250, y = missilePos.y + lataxMissileRight.y + missileForward.y * 250}
+    local target = {x = missilePos.x + lataxMissileRight.x + missileForward.x * 750, y = missilePos.y + lataxMissileRight.y + missileForward.y * 750}
     -- Set the missile's new target position
     SetMissileTarget(projectileNodeId, target)
 

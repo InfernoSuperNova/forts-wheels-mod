@@ -44,7 +44,7 @@ FireClearanceOffsetOuter = 40
 AttractZoomOutDuration = 5
 ReloadTime = 45.0
 ReloadTimeIncludesBurst = false
-MinFireSpeed = 15000.0 -- Move to Ammo
+MinFireSpeed = 15000.0 -- Should match the max range of the beam
 MaxFireSpeed = 15000.0 -- Move to Ammo
 MinFireRadius = 600.0
 MaxFireRadius = 1200.0
@@ -59,7 +59,7 @@ PanDuration = 0
 FireStdDev = 0.01 -- Move to Ammo
 FireStdDevAuto = 0.012 -- Move to Ammo
 Recoil = 1200000
-EnergyFireCost = 6000.0 -- Move to Ammo
+EnergyFireCost = 8000.0 -- Move to Ammo
 MetalFireCost = 25.0 -- Move to Ammo
 
 BeamThicknessMultiplier = 1.0

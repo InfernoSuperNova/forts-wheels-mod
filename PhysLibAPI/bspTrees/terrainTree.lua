@@ -17,15 +17,9 @@ end
 function PhysLib.BspTrees.TerrainTree:SubdivideTerrainSegmentGroup(terrainSegments, depth, parentCount)
     local rect = self:GetTerrainSegmentRectangle(terrainSegments) -- approximate
     local count = rect.count
-    --Degenerate case: two nodes positioned mathematically perfectly on top of each other (this occurs when nodes rotate too far and split)
-    if count == parentCount then
 
-        rect = terrainSegments[1]
-        return {children = terrainSegments, rect = rect, deepest = true}
 
-    end
-
-    if count <= 1 or (rect.width * rect.height == 0) then
+    if count <= 1 or (rect.width * rect.height == 0) or count == parentCount then
         rect = terrainSegments[1]
 
         for i = 1, count do
@@ -34,6 +28,7 @@ function PhysLib.BspTrees.TerrainTree:SubdivideTerrainSegmentGroup(terrainSegmen
             rect.maxX = (rect.maxX > node.maxX) and rect.maxX or node.maxX
             rect.minY = (rect.minY < node.minY) and rect.minY or node.minY
             rect.maxY = (rect.maxY > node.maxY) and rect.maxY or node.maxY
+            
         end
         return {children = terrainSegments, rect = rect, deepest = true}
     end
@@ -202,6 +197,8 @@ function PhysLib.BspTrees.TerrainTree:GetTerrainSegmentRectangle(nodes)
 end
 
 
+
+local testTerrainIndex = 100
 function PhysLib.BspTrees.TerrainTree:SplitBlocksIntoSegments(blocks, terrainSegments)
     for i = 0, #blocks do
         local block = blocks[i]
@@ -232,7 +229,6 @@ function PhysLib.BspTrees.TerrainTree:SplitBlocksIntoSegments(blocks, terrainSeg
                 y = averageY
 
             }
-
             -- EXPENSIVE, temporary, detects internal terrain segments
             -- Only eliminates terrain sides that are directly facing each other, not overlapping each other
             local overlap = false
@@ -240,7 +236,9 @@ function PhysLib.BspTrees.TerrainTree:SplitBlocksIntoSegments(blocks, terrainSeg
                 local otherLine = terrainSegments[k]
                 if (line.line.x * otherLine.line.x + line.line.y * otherLine.line.y < -0.999 and line.x == otherLine.x and line.y == otherLine.y) then
                     overlap = true
+                    if testTerrainIndex > k then testTerrainIndex = testTerrainIndex - 1 end
                     table.remove(terrainSegments, k)
+                    
                     break
                 end
             end
