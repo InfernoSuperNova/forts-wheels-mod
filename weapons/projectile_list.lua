@@ -65,7 +65,7 @@ turretLaserShock.CollidesWithStructure = false
 turretLaserShock.CollidesWithProjectiles = false
 turretLaserShock.CollidesWithBeams = false
 turretLaserShock.ProjectileSplashDamage = 300
-turretLaserShock.ProjectileSplashDamageMaxRadius = 200
+turretLaserShock.ProjectileSplashDamageMaxRadius = 150
 turretLaserShock.ProjectileSplashMaxForce = 100000
 turretLaserShock.TrailEffect = nil
 

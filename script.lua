@@ -391,9 +391,9 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
     end
     
     if (projectileNodeIdFrom == 0) then
-        MissileManager:RegisterNewMissile(projectileNodeId, saveName)
+        MissileManager:RegisterNewMissile(projectileNodeId, saveName, teamId)
     else
-        MissileManager:RegisterFromExistingProjectile(projectileNodeIdFrom, projectileNodeId)
+        MissileManager:RegisterFromExistingProjectile(projectileNodeIdFrom, projectileNodeId, teamId)
 
         
     end

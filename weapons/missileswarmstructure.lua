@@ -5,6 +5,10 @@ SelectionWidth = 42.0
 SelectionHeight = 70.0
 SelectionOffset = { -0, 20.5 }
 
+EnergyFireCost = 4000.0
+MetalFireCost = 100.0
+
+
 HitPoints = 300.0
 WeaponMass = WeaponMass * 3
 Root.Pivot = { 0, 0.11 }
