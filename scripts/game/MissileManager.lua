@@ -25,7 +25,9 @@ function MissileManager:Log(text)
     --BetterLog(text)
 end
 
-function MissileManager:RegisterFromExistingProjectile(oldId, newId)
+function MissileManager:RegisterFromExistingProjectile(oldId, newId, teamId)
+    local saveName = GetNodeProjectileSaveName(newId)
+    if GetProjectileParamBool(saveName, teamId, "LCIgnoreMissileGuidance", false) then return end
     if data.missileCruiseGuidance[oldId] then
         data.missileCruiseGuidance[newId] = DeepCopy(data.missileCruiseGuidance[oldId])
     end
@@ -292,8 +294,12 @@ function MissileManager:PropNav(projectileNodeId, obj, targetNodeId)
 end
 
 
-function MissileManager:RegisterNewMissile(projectileNodeId, weaponType)
-    
+function MissileManager:RegisterNewMissile(projectileNodeId, weaponType, teamId)
+    local saveName = GetNodeProjectileSaveName(projectileNodeId)
+
+    if GetProjectileParamBool(saveName, teamId, "LCIgnoreMissileGuidance", false) then return end
+
+
     local saveName = GetNodeProjectileSaveName(projectileNodeId)
     if saveName == "rocket" or saveName == "rocketemp" then return end
 
