@@ -1,3 +1,5 @@
+--Landcruisers.CoreShield
+
 ActiveShields = {}
 function InitializeCoreShield()
     data.coreShields = {}
@@ -98,8 +100,8 @@ function PushDeviceOutOfShield(insideShieldFactor, direction, devicePos, device)
         HighlightDirectionalVector(devicePos, force, 0.001, { r = 150, g = 220, b = 255, a = 255 })
     end
 
-    dlc2_ApplyForce(device.nodeA, force)
-    dlc2_ApplyForce(device.nodeB, force)
+    ForceManager:ApplyForce(device.nodeA, force)
+    ForceManager:ApplyForce(device.nodeB, force)
 end
 
 --in limbo until beeman fixes GetStructurePos

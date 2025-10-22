@@ -35,11 +35,20 @@ FileList = {
         ["math"] = {
             "PID",
             "VectorFunctions",
+            ["PolyBool"] = {
+                "terrainConverter"
+            },
+            ["polyman"] = {
+                "init"
+            }
         },
         ["player"] = {
             "controls",
             "input",
             "localization",
+        },
+        ["wireframe"] = {
+            "drawableWheel"
         },
         "EffectManager",
         "forceManager",

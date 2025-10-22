@@ -19,24 +19,24 @@ WHEEL_SPRINGS = {
 }
 
 WHEEL_POWER_INPUT_RATIOS = {
-    smallSuspension = 1,
-    smallSuspensionInverted = 1,
-    suspension = 1,
-    suspensionInverted = 1,
-    largeSuspension = 2,
-    largeSuspensionInverted = 2,
-    extraLargeSuspension = 4,
-    extraLargeSuspensionInverted = 4,
+    smallSuspension = 8,
+    smallSuspensionInverted = 8,
+    suspension = 8,
+    suspensionInverted = 8,
+    largeSuspension = 16,
+    largeSuspensionInverted = 16,
+    extraLargeSuspension = 32,
+    extraLargeSuspensionInverted = 32,
 }
 WHEEL_BRAKE_FACTORS = {
     smallSuspension = 240000,   
     smallSuspensionInverted = 240000,
     suspension = 240000,
     suspensionInverted = 240000,
-    largeSuspension = 240000,
-    largeSuspensionInverted = 240000,
-    extraLargeSuspension = 240000,
-    extraLargeSuspensionInverted = 240000,
+    largeSuspension = 600000,
+    largeSuspensionInverted = 600000,
+    extraLargeSuspension = 1200000,
+    extraLargeSuspensionInverted = 1200000,
 }
 
 WHEEL_SUSPENSION_HEIGHTS = {
@@ -59,6 +59,28 @@ WHEEL_SAVE_NAMES =
     large = {"largeSuspension", "largeSuspensionInverted"},
     extraLarge = {"extraLargeSuspension", "extraLargeSuspensionInverted"},
 }
+WHEEL_SAVENAME_KEY_TYPES = {
+    smallSuspension = "small",
+    smallSuspensionInverted = "small",
+    suspension = "medium",
+    suspensionInverted = "medium",
+    largeSuspension = "large",
+    largeSuspensionInverted = "large",
+    extraLargeSuspension = "extraLarge",
+    extraLargeSuspensionInverted = "extraLarge"
+}
+WHEEL_INVERTED_KEY = {
+    smallSuspension = false,
+    smallSuspensionInverted = true,
+    suspension = false,
+    suspensionInverted = true,
+    largeSuspension = false,
+    largeSuspensionInverted = true,
+    extraLargeSuspension = false,
+    extraLargeSuspensionInverted = true
+    
+}
+
 WHEEL_SAVE_NAMES_RAW = {
     ["smallSuspension"] = true,
     ["smallSuspensionInverted"] = true,

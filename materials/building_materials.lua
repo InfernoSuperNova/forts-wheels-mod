@@ -71,6 +71,8 @@ table.insert(Sprites,
 		},
 	}
 )
+
+
 table.insert(Sprites, 
     {
 		Name = "structural",
@@ -83,9 +85,9 @@ table.insert(Sprites,
 					-- durations must add up to 1 for the damage keying to work properly
 					-- anything beyond 1 will never show
 					{ texture = path .. "/materials/structural.png", duration = 0.01 },
-					{ texture = path .. "/materials/structural.png", duration = 0.33 },
-					{ texture = path .. "/materials/structural.png", duration = 0.33 },
-					{ texture = path .. "/materials/structural.png", duration = 0.331 },
+					{ texture = path .. "/materials/structuralDamage1.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralDamage2.png", duration = 0.33 },
+					{ texture = path .. "/materials/structuralDamage3.png", duration = 0.331 },
 					mipmap = true,
 					repeatS = true,
 				},
@@ -216,9 +218,9 @@ if structuralAluminium then
 	structuralAluminium.SaveName = "StructuralAluminium"
 	structuralAluminium.Sprite = "structural"
     structuralAluminium.Icon = "hud-structural-icon"
-	structuralAluminium.MetalBuildCost = 0.5
+	structuralAluminium.MetalBuildCost = 0.4
 	structuralAluminium.MetalReclaim = 0.25
-	structuralAluminium.EnergyBuildCost = 0.5
+	structuralAluminium.EnergyBuildCost = 0.4
 	structuralAluminium.EnergyReclaim = 0.0
 	structuralAluminium.SupportsDevices = true
     structuralAluminium.CatchesFire = true
@@ -242,9 +244,9 @@ if structuralAluminiumBackground then
 	structuralAluminiumBackground.SaveName = "StructuralAluminiumBackground"
 	structuralAluminiumBackground.Sprite = "structuralBackground"
     structuralAluminiumBackground.Icon = "hud-structuralbackground-icon"
-	structuralAluminiumBackground.MetalBuildCost = 0.4
+	structuralAluminiumBackground.MetalBuildCost = 0.3
 	structuralAluminiumBackground.MetalReclaim = 0.2
-	structuralAluminiumBackground.EnergyBuildCost = 0.4
+	structuralAluminiumBackground.EnergyBuildCost = 0.3
 	structuralAluminiumBackground.EnergyReclaim = 0.0
 	structuralAluminiumBackground.SupportsDevices = false
     structuralAluminiumBackground.CatchesFire = true

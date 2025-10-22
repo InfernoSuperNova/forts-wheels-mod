@@ -4,6 +4,7 @@ data.missilesNotTargetingStructureYet = {}
 
 
 MissileManager = {
+    blacklist = {rocket=true, rocketemp=true},
     SnapTargetDistance = 1000,
     ScanDistance = 10000,
     ScanInterval = 1, -- frames
@@ -301,7 +302,7 @@ function MissileManager:RegisterNewMissile(projectileNodeId, weaponType, teamId)
 
 
     local saveName = GetNodeProjectileSaveName(projectileNodeId)
-    if saveName == "rocket" or saveName == "rocketemp" then return end
+    if self.blacklist[saveName] then return end
 
     if GetNodeProjectileType(projectileNodeId) ~= PROJECTILE_TYPE_MISSILE then
         return

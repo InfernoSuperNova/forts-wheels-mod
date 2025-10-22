@@ -20,8 +20,9 @@ function UpdateTracks(frame)
     totalFrameTime = currentTime - lastFrameTime
     lastFrameTime = currentTime
 
-
-    LocalSide = GetLocalTeamId() % MAX_SIDES
+    LocalTeam = GetLocalTeamId()
+    LocalSide = LocalTeam % MAX_SIDES
+    MousePos = ScreenToWorld(GetMousePos())
     ClearEffects()
     FillTracks()
     SortTracks(LocalSide)
@@ -110,8 +111,7 @@ function PlaceSuspensionPosInTable(device)
                 previousPos.y = previousPos.y + Displacement[device.id].y
             end
 
-            --bad coding practices, don't do this kids
-            suspensionPos.radius = GetWheelStats(device).radius
+            suspensionPos.radius = GetWheelRadius(device.saveName)
             suspensionPos.saveName = device.saveName
             if not TracksId[structureId] then TracksId[structureId] = {} end
             TracksId[structureId][device.id] = suspensionPos
@@ -182,14 +182,14 @@ function DrawTracks(localSide)
             for trackGroup, trackSet in pairs(trackSets) do
                 local teamId = Tracks[base][trackGroup][1].teamId
                 DrawTrackTreads(trackSet, base, trackGroup, teamId)
-                DrawTrackSprockets(base, trackGroup, t)
+                DrawTrackSprockets(base, trackGroup, t, deltaTime)
             end
         end
     end
     if not LocalScreen then return end
 end
 
-function DrawTrackSprockets(base, trackGroup, t)
+function DrawTrackSprockets(base, trackGroup, t, delta)
     local wheelType
     local angle
 
@@ -205,11 +205,12 @@ function DrawTrackSprockets(base, trackGroup, t)
         end
 
         for device, pos in pairs(Tracks[base][trackGroup]) do
-
+            
 
             if not pos.previousPos then pos.previousPos = pos end
-            local actualPos = Vec2Lerp(pos.previousPos, pos, t)
-            
+            local interpolatedPos = Vec2Lerp(pos.previousPos, pos, t)
+
+
             local effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["small"]
             local newAngle = angle
             if CheckSaveNameTable(pos.saveName, WHEEL_SAVE_NAMES.large) then
@@ -220,13 +221,32 @@ function DrawTrackSprockets(base, trackGroup, t)
                 effectPath = path .. data.teamWheelTypes[pos.teamId][wheelType]["extraLarge"]
                 newAngle = newAngle / 5
             end
+
+
+            if LocalTeam == pos.teamId then
+                local posXToMousePosX = pos.x - MousePos.x
+                local posYToMousePosY = pos.y - MousePos.y
+                if (posXToMousePosX * posXToMousePosX + posYToMousePosY * posYToMousePosY) < pos.radius * pos.radius * 3 then
+                    if (WheelSpriteIds[pos.deviceId] ) then
+                        EffectManager:DestroyEffect(WheelSpriteIds[pos.deviceId])
+                        WheelSpriteIds[pos.deviceId] = nil
+                    end
+                    DrawableWheel.Draw(interpolatedPos, pos.radius, newAngle, delta)
+                    continue
+                end
+            end
+
+
+            
+            
+
             local vecAngle = AngleToVector(newAngle)
             
 
             if not ReducedVisuals and not WheelSpriteIds[pos.deviceId] then 
                 WheelSpriteIds[pos.deviceId] = EffectManager:CreateEffect(effectPath, pos, vecAngle) 
             else
-                SetEffectPosition(WheelSpriteIds[pos.deviceId], actualPos)
+                SetEffectPosition(WheelSpriteIds[pos.deviceId], interpolatedPos)
                 SetEffectDirection(WheelSpriteIds[pos.deviceId], vecAngle)
             end
         end

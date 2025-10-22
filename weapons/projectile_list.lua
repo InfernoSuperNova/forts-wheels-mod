@@ -22,8 +22,8 @@ RegisterApplyMod(EngineToDeviceDamage)
 local turretCannon = DeepCopy(FindProjectile("cannon"))
 
 turretCannon.SaveName = "turretCannon"
-turretCannon.ProjectileDamage = 1100
-turretCannon.ProjectileSplashDamage = 50
+turretCannon.ProjectileDamage = 800 -- Was 1100
+turretCannon.ProjectileSplashDamage = 40
 turretCannon.ProjectileSplashDamageMaxRadius = 400
 turretCannon.ProjectileThickness = 15
 turretCannon.SpeedIndicatorFactor = 1
@@ -180,3 +180,83 @@ for k , v in pairs(Projectiles) do
  end
 
 dofile(path .. "/scripts/helpers/BetterLog.lua")
+
+
+
+
+local buzzsaw = FindProjectile("buzzsaw")
+if (buzzsaw) then
+
+    -- Make aluminium like wood, for balance reasons
+    if (buzzsaw.DamageMultiplier == nil) then
+        buzzsaw.DamageMultiplier = {}
+    end
+
+    local foregroundAluminiumMultiplier = {
+        SaveName = "StructuralAluminium",
+        Direct = 8, -- 7.8 * (200/100)
+        Ray = 14, -- 12.5 * (200/100)
+        Splash = 1,
+    }
+    table.insert(buzzsaw.DamageMultiplier, foregroundAluminiumMultiplier)
+
+    local backgroundAluminiumMultiplier = {
+        SaveName = "StructuralAluminiumBackground",
+        Direct = 8, -- 7.8 * (130/100) = 10.14
+        Ray = 14, -- 12.5 * (130/100) = 16.25
+        Splash = 1,
+    }
+    table.insert(buzzsaw.DamageMultiplier, backgroundAluminiumMultiplier)
+
+    local hazardAluminiumMultiplier = {
+        SaveName = "StructuralAluminiumHazard",
+        Direct = 7.8,
+        Ray = 12.5,
+        Splash = 1,
+    }
+    table.insert(buzzsaw.DamageMultiplier, hazardAluminiumMultiplier)
+
+    -- Disable reflection for aluminium
+    if (buzzsaw.MomentumThreshold == nil) then
+        buzzsaw.MomentumThreshold = {}
+    end
+    
+    buzzsaw.MomentumThreshold["StructuralAluminium"] = { Reflect = 0 }
+    buzzsaw.MomentumThreshold["StructuralAluminiumBackground"] = { Reflect = 0 }
+    buzzsaw.MomentumThreshold["StructuralAluminiumHazard"] = { Reflect = 0 }
+
+end
+
+
+local howitzer = FindProjectile("howitzer")
+if (howitzer) then
+
+    -- Make aluminium like wood, for balance reasons
+    if (howitzer.DamageMultiplier == nil) then
+        howitzer.DamageMultiplier = {}
+    end
+
+    -- multiplier of background * ratio of material hp and background bracing (100 hp) 
+
+    local foregroundAluminiumMultiplier = {
+        SaveName = "StructuralAluminium",
+        Direct = 1,
+        Splash = 6.4, -- 3.2 * (200/100) = 6.4
+    }
+    table.insert(howitzer.DamageMultiplier, foregroundAluminiumMultiplier)
+
+    local backgroundAluminiumMultiplier = {
+        SaveName = "StructuralAluminiumBackground",
+        Direct = 1,
+        Splash = 6.4, -- 3.2 * (130/100) = 4.16
+    }
+    table.insert(howitzer.DamageMultiplier, backgroundAluminiumMultiplier)
+
+    local hazardAluminiumMultiplier = {
+        SaveName = "StructuralAluminiumHazard",
+        Direct = 1,
+        Splash = 1,
+    }
+    table.insert(howitzer.DamageMultiplier, hazardAluminiumMultiplier)
+    
+end

@@ -7,6 +7,7 @@ Root =
     Size = { 0, 0, },
     Children =
     {
+        
         {
             Type = "SliderBar",
             Name = "ThrottleSlider",

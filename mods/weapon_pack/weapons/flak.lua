@@ -1,4 +1,4 @@
-ReloadTime = 0.3
+ReloadTime = 1
 RoundsEachBurst = 1 
 RoundPeriod = 0.15
 MaxFireAngle = 88

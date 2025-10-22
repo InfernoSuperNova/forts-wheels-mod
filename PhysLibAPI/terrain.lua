@@ -29,6 +29,7 @@ Terrain.SpecialBlocks = {
 
 function Terrain:Index()
     self.Blocks = {}
+    self.UnionTestBlocks = {}
 
     local blockCount = GetBlockCount()
     self:IndexSpecialBlocks(blockCount)
@@ -40,9 +41,20 @@ function Terrain:Index()
         BlockStatistics.totalBlocks = BlockStatistics.totalBlocks + 1
         self:IndexBlock(block)
     end
+    --local unionTest = UnionAllTerrain(self.UnionTestBlocks)
+
+    -- BetterLog(unionTest)
+    -- for i = 1, #unionTest do
+    --     local a = unionTest[i]
+    --     local b = unionTest[i % #unionTest + 1]
+    --     a.z = -100
+    --     b.z = -100
+    --     SpawnLine(a, b, White(), 10)
+    -- end
 end
 
 function PhysLib.Terrain:IndexLate()
+    Log("Indexing late!!")
     for blockIndex, _ in pairs(self.SpecialBlocks[self.SpecialTypes.Late]) do
         self:IndexBlock(blockIndex)
     end
@@ -82,8 +94,9 @@ function Terrain:IndexBlock(blockIndex)
     for currentVertex = 0, vertexCount - 1 do
         local pos = GetBlockVertexPos(blockIndex, currentVertex)
         nodes[currentVertex] = pos
+        
     end
-
+    self.UnionTestBlocks[#self.UnionTestBlocks+1] = nodes
     -- Loop 2: Get all vectors from node to next node and normalize
     local lines = {}
     for currentVertex = 0, vertexCount - 1 do
@@ -149,14 +162,14 @@ function Terrain:IndexBlock(blockIndex)
         block[currentVertex] = terrainNode
     end
     -- loop 4: assign next node
-    for currentVertex = 0, vertexCount - 1 do
-        local nextIndex = (currentVertex + 1) % vertexCount
+    -- for currentVertex = 0, vertexCount - 1 do
+    --     local nextIndex = (currentVertex + 1) % vertexCount
 
-        local currentNode = block[currentVertex]
-        local nextNode = block[nextIndex]
+    --     local currentNode = block[currentVertex]
+    --     local nextNode = block[nextIndex]
 
-        currentNode.nextNode = nextNode
-        nextNode.previousNode = currentNode
+    --     currentNode.nextNode = nextNode
+    --     nextNode.previousNode = currentNode
 
-    end
+    -- end
 end

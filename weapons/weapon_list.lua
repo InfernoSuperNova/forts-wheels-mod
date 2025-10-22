@@ -293,8 +293,8 @@ table.insert(Weapons, IndexOfWeapon("cannon") + 1, {
     Prerequisite = "munitions",
     BuildTimeComplete = 150.0,
     ScrapPeriod = 8,
-    MetalCost = 1500,
-    EnergyCost = 9000,
+    MetalCost = 1800,
+    EnergyCost = 11000,
     MetalRepairCost = 500,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters
@@ -478,6 +478,7 @@ table.insert(Weapons, IndexOfWeapon("turretCannon") + 1, {
 LCAddComp({"turretCannon", "turretCannon2", "turretCannon3", "turretCannonFlip1", "turretCannonFlip2", "turretCannonFlip3"})
 
 
+
 table.insert(Sprites, ButtonSprite("hud-turretLaser-icon", "HUD/HUD-turretlaser", nil, ButtonSpriteBottom, nil, nil, path))
 table.insert(Sprites, DetailSprite("hud-detail-turretlaser", "turretlaser", path))
 table.insert(Weapons, IndexOfWeapon("laser") + 1, {
@@ -490,8 +491,8 @@ table.insert(Weapons, IndexOfWeapon("laser") + 1, {
     Prerequisite = "factory",
     BuildTimeComplete = 150.0,
     ScrapPeriod = 8,
-    MetalCost = 2000,
-    EnergyCost = 12000,
+    MetalCost = 3000,
+    EnergyCost = 15000,
     MetalRepairCost = 500,
     EnergyRepairCost = 3000,
     MaxSpotterAssistance = 1, -- major benefit from spotters

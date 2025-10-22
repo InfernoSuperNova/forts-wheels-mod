@@ -1,23 +1,21 @@
 --scripts/forceManager.lua
 
 ForceManager = {
-
-}
-ForceTable = {}
-
-function ForceManager.Load()
     ForceTable = {}
-end 
-function UpdateForceManager(frame)
-    for node, force in pairs(ForceTable) do
+}
+
+function ForceManager.Update(frame)
+    for node, force in pairs(ForceManager.ForceTable) do
         dlc2_ApplyForce(node, force)
     end
-    ForceTable = {}
+    ForceManager.ForceTable = {}
 end
 
-function ApplyForce(node, force)
+function ForceManager:ApplyForce(node, force)
     if node == nil or force == nil then
         return
     end
-    ForceTable[node] = (ForceTable[node] or Vec3(0,0,0)) + force
+    local existingForce = ForceManager.ForceTable[node] or Vec3(0,0,0)
+    
+    ForceManager.ForceTable[node] = {x = existingForce.x + force.x, y = existingForce.y + force.y}
 end

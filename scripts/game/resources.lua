@@ -10,7 +10,7 @@ function UpdateResources()
             else
                 cost = data.motors[structure] * throttle ^ 2 * ENGINE_RUN_COST * data.updateDelta
             end
-            AddResources(teamId, {metal = -cost}, false, {x = 0, y = 0})
+            AddResourcesContinuous(teamId, {metal = -cost}, false, {x = 0, y = 0})
         end
         
     end

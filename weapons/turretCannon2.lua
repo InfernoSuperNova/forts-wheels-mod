@@ -4,6 +4,7 @@ DestroyEffect = ""
 ConstructEffect = ""
 CompleteEffect = ""
 HurtEffect = ""
+Projectile = ""
 
 SelectionWidth = 0
 SelectionHeight = 0

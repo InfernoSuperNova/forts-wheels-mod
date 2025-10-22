@@ -11,7 +11,7 @@ RecessionBox =
 }
 CanFlip = true
 
-WeaponMass = 1200.0
+WeaponMass = 1800.0
 HitPoints = 500.0
 EnergyProductionRate = 0.0
 MetalProductionRate = 0.0
@@ -42,7 +42,7 @@ MinFireClearance = 500
 FireClearanceOffsetInner = 20
 FireClearanceOffsetOuter = 40
 AttractZoomOutDuration = 5
-ReloadTime = 45.0
+ReloadTime = 25.0
 ReloadTimeIncludesBurst = false
 MinFireSpeed = 15000.0 -- Should match the max range of the beam
 MaxFireSpeed = 15000.0 -- Move to Ammo

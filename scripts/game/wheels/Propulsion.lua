@@ -17,6 +17,14 @@ function UpdatePropulsion()
 
 end
 
+function InitializeThrottleBrakeData(structureId)
+    if not structureId then return end
+    if not data.brakes[structureId] then data.brakes[structureId] = false end
+    if not data.throttles[structureId] then data.throttles[structureId] = {x = 273.5, y = 15} end
+
+end
+
+
 
 --takes a value between -1 and 1
 function UpdateThrottlesFromMapScript(structureId, val) 
@@ -57,7 +65,7 @@ function LoopStructures()
         local motorCount = data.motors[structureKey] or 0
         --Gearboxes[structureKey] + 1 doesn't work if it's nil
         local gearboxCount = data.gearboxes[structureKey] or 0
-        gearboxCount = gearboxCount + 1
+        gearboxCount = gearboxCount + 3 -- Min 3 gears
         --max power input per wheels is 1 motor per 2 wheels
         
 
@@ -93,7 +101,8 @@ function NormalizeThrottleVal(structure)
     if not data.throttles[structure] then return 0 end
     local min = 33
     local max = 514
-    return (data.throttles[structure].x - min) / ((max - min) / 2) - 1
+    local throttle = (data.throttles[structure].x - min) / ((max - min) / 2) - 1
+    return math.max(math.min(throttle, 1), -1)
 end
 
 function NormalizeBrakeVal(structure)
@@ -115,14 +124,18 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     local propulsionFactor = PROPULSION_FACTOR * motorCount / wheelGroundCount
     local applicableGears = {}
     --sets up applicable gears for the structure
+
+    local baseRatio = 1.35
+    local wheelModifier = wheelCount
     for gear = 1, gearCount do
-        local gearFactor = 2 ^ (gear - 1)
+        local ratio = baseRatio ^ (gear - 1)
         applicableGears[gear] = {
             
-            propulsionFactor = propulsionFactor / (gearFactor ^ 0.7),
-            maxSpeed = (gearFactor * VEL_PER_GEARBOX)^0.95/wheelCount/wheelCount^0.01,
-            gear = gear
-            
+            propulsionFactor = propulsionFactor / ratio * wheelModifier,
+            maxSpeed = (ratio * VEL_PER_GEARBOX) / wheelModifier,
+            netPropulsionFactor = PROPULSION_FACTOR * motorCount / ratio * wheelModifier,
+            gear = gear,    
+            ratio = ratio / wheelModifier,
         }
 
     end
@@ -130,10 +143,17 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
     
     --get average velocity of every wheel
     local velocities = {}
+    local velocitiesKeyed = {}
+    local wheelsTouchingGroundCount = 0
     for deviceKey, device in pairs(devices) do
         if WheelsTouchingGround[structureKey][deviceKey] then
-            table.insert(velocities, NodeVelocity(device.nodeA)) -- Todo, make unified device thing
-            table.insert(velocities, NodeVelocity(device.nodeB))
+            wheelsTouchingGroundCount = wheelsTouchingGroundCount + 1
+            local velNodeA = NodeVelocity(device.nodeA)
+            local velNodeB = NodeVelocity(device.nodeB)
+            table.insert(velocities, velNodeA) -- Todo, make unified device thing
+            table.insert(velocities, velNodeB)
+            velocitiesKeyed[deviceKey] = {velNodeA, velNodeB}
+            
         end
     end
     local velocity = AverageCoordinates(velocities)
@@ -145,37 +165,63 @@ function ApplyPropulsionForces(devices, structureKey, throttle, gearCount, wheel
 
     local currentGear = GetCurrentGearFromVelocity(applicableGears, velocityMag)
 
+
+    --BetterLog(currentGear.ratio)
     if not DrivechainDetails[structureKey] then DrivechainDetails[structureKey] = {} end
     if math.abs(velocityMag) > 0 then
         DrivechainDetails[structureKey][1] = velocityMag
     end
     DrivechainDetails[structureKey][2] = applicableGears[#applicableGears].maxSpeed or 0
     DrivechainDetails[structureKey][3] = currentGear.gear
-    DrivechainDetails[structureKey][4] = currentGear.propulsionFactor
-    ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed,
-    velocity, velocityMag)
+    DrivechainDetails[structureKey][4] = currentGear.netPropulsionFactor
+    DrivechainDetails[structureKey][5] = currentGear.ratio
+    DrivechainDetails[structureKey][6] = PROPULSION_FACTOR * motorCount
+    DrivechainDetails[structureKey][7] = throttle
+    DrivechainDetails[structureKey][8] = gearCount
+    ApplyPropulsionForces2(devices, structureKey, throttle, currentGear.propulsionFactor, currentGear.maxSpeed, velocityMag, velocitiesKeyed)
     for nodeId, force in pairs(FinalPropulsionForces) do
-        ApplyForce(nodeId, force)
+        ForceManager:ApplyForce(nodeId, force)
     end
     FinalPropulsionForces = {}
 end
 
-function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocity, velocityMag)
-    if data.brakes[structureKey] == true then 
+function ApplyPropulsionForces2(devices, structureKey, throttle, propulsionFactor, maxSpeed, velocityMag, velocitiesKeyed)
+    if data.brakes[structureKey] == true then
+        local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3 -- 0.5 to 3.5
+    
         for deviceKey, device in pairs(devices) do
             if WheelsTouchingGround[structureKey][deviceKey] then
+                local velocityThis = velocitiesKeyed[deviceKey]
+                local vx = (velocityThis[1].x + velocityThis[2].x) / 2
+                local absVx = math.abs(vx)
                 local brakeFactor = WHEEL_BRAKE_FACTORS[device.saveName]
-                local signX = math.sign(velocity.x)
-                local brakeVelocity = velocity.x * math.pow(math.tanh(math.abs(velocity.x) / 1000), 1.1)
-                local brakeMul = 0.5 + NormalizeBrakeVal(structureKey) * 3 -- number ranging from 0.5 to 3.5
-                brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
-
-                FinalPropulsionForces[device.nodeA] = Vec3( -brakeVelocity * brakeFactor, 0)
-                FinalPropulsionForces[device.nodeB] = Vec3( -brakeVelocity * brakeFactor, 0)
+    
+                local brakeVelocity = 0
+    
+                -- Parameters you can tweak
+                local dynamicThreshold = 200   -- above this, use full braking
+                local staticThreshold  = 0.001  -- below this, fully hold
+    
+                if absVx > dynamicThreshold then
+                    local scaled = math.pow(math.tanh(absVx / 1000), 1.1)
+                    brakeVelocity = vx * scaled
+                    brakeVelocity = Clamp(brakeVelocity, -brakeMul, brakeMul)
+                elseif absVx > staticThreshold then
+                    local blend = (absVx - staticThreshold) / (dynamicThreshold - staticThreshold)
+                    brakeVelocity = vx * blend * brakeMul / 10
+                    brakeVelocity = Clamp(brakeVelocity, -brakeMul / 10, brakeMul / 10)
+                else
+                    brakeVelocity = 0
+                end
+    
+                FinalPropulsionForces[device.nodeA] = Vec3(-brakeVelocity * brakeFactor, 0)
+                FinalPropulsionForces[device.nodeB] = Vec3(-brakeVelocity * brakeFactor, 0)
             end
         end
         return
     end
+    
+    
     for deviceKey, device in pairs(devices) do
         if WheelsTouchingGround[structureKey][deviceKey] then
             local direction = PerpendicularVector(WheelsTouchingGround[structureKey][deviceKey])

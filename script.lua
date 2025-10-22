@@ -3,11 +3,13 @@
 dofile("scripts/forts.lua")
 dofile(path .. "/config/fileList.lua")
 dofile(path .. "/PhysLibAPI/PhysLib.lua")
+
 LoadFiles()
 
 
+
 function Load(GameStart)
-    
+    Log("load called")
     if not type(dlc2_ApplyForce) == "function" then
         BetterLog("Error: Landcruisers will not function without High Seas. Please get someone who owns High Seas to host the game, or buy it yourself.")
         BetterLog(RGBAtoHex(100, 200, 100, 255, false) .. "This is because applyforce is not available in the base game, and is required for the suspension system.")
@@ -24,23 +26,14 @@ function Load(GameStart)
         Notice("\"dynamic\", \"moving\" - Sets a block to be dynamic, useful for moving terrain.")
         Notice("Blocks should be named with a number after the tag, for example, \\name_block \"ignored0\", \\name_block \"late1\", \\name_block \"dynamic2\". The number must be completely unique and cannot be higher than your total block count.")
     end
-    data.roadLinks = {}
-    GetDeviceCounts()
-    data.teams = {
-        DiscoverTeams(1),
-        DiscoverTeams(2)
-    }
-    InitializeScript()
-    FillCoreShield()
-    LocalizeStrings()
-    Gravity = GetConstant("Physics.Gravity")
-    Fps = GetConstant("Physics.FramesRate")
-    ScreenMaxY = GetMaxScreenY()
+    Setup()
+    StateSet()
+    
 
-
-    ScheduleCall(1, LateLoad)
 end
+HasLoadedLate = false
 function LateLoad()
+    HasLoadedLate = true
     PhysLib:LateLoad()
 end
 
@@ -48,38 +41,71 @@ WheelSprite = 0
 
 
 
-function InitializeScript()
-    LocalTeam = GetLocalTeamId() % MAX_SIDES
-    CompileWheelSaveNames()
-    InitializeCommanders()
-    InitializeTerrainBlockSats()
+-- Stuff be initialized ONCE when the game is loaded the first time.
+function Setup()
+    local info = debug.getinfo(2, "nSl")
+    BetterLog("Called from: " .. (info.name or "unknown") .. " at " .. info.short_src .. ":" .. info.currentline)
+    Log("setup called")
+    
+
+
+    LocalizeStrings()
+
+    data.roadLinks = {}
+    GetDeviceCounts()
+    data.teams = {
+        DiscoverTeams(1),
+        DiscoverTeams(2)
+    }
+    DrawableWheel.Load()
+
+    Gravity = GetConstant("Physics.Gravity")
+    Fps = GetConstant("Physics.FramesRate")
+    ScreenMaxY = GetMaxScreenY()
+
     for side = 1, 2 do
         EnableWeapon("engine_wep", false, side)
         EnableDevice("turbine", true, side)
         EnableDevice("smokestack", true, side)
     end
-    InitializeTracks()
-    InitializePropulsion()
-    InitializeDrill()
     InitializeCoreShield()
-    InitializeEffects()
-    EffectManager:Load()
+    FillCoreShield()
+
+    data.previousVals = {}
+    data.wheelLinksColliding = {}
+
+
+
     IndexDevices()
     LoadWeapons()
-    data.previousVals = {}
-    WheelsTouchingGround = {}
-    WheelForces = {}
-    data.wheelLinksColliding = {}
-    -- local circle = MinimumBoundingCircle(terrain)
-    -- Log(""..circle.x .. " " .. circle.y .. " " .. circle.r)
-    -- local id = SpawnCircle(circle, circle.r, { r = 255, g = 20, b = 20, a = 255 }, 10)
-
+    
+    
     InitializePremiumIds()
     LoadWheelTypes()
     ScheduleCall(1, LoadPremiumWheels, "")
     ScheduleCall(5, AlertJoinDiscord, "")
     ScheduleCall(5, AlertReducedVisuals, "")
+
+
+    LocalTeam = GetLocalTeamId() % MAX_SIDES
+    CompileWheelSaveNames()
+    InitializeCommanders()
+    InitializeTerrainBlockSats()
     
+    InitializeTracks()
+    InitializePropulsion()
+    InitializeDrill()
+    
+    InitializeEffects()
+    BetterLog("Setup done")
+end
+
+
+-- Stuff to be re set every time the state is jumped.
+function StateSet()
+    WheelsTouchingGround = {}
+    WheelForces = {}
+    EffectManager:Load()
     SetControlFrame(1)
     AddTextControl("", "worldBlockDebug", "", ANCHOR_TOP_LEFT, {x = 0, y = 0, z = -100}, true, "Console")
 end
@@ -134,6 +160,7 @@ function table.average(t)
 end
 
 function Update(frame)
+    --if not HasLoadedLate then LateLoad() end
     -- ShallowLogTable(data)
     -- LogTableComplexity(data)
     
@@ -197,7 +224,7 @@ MainLoop = {
     {name = "UpdateTracks", func = UpdateTracks},
     {name = "UpdateDrill", func = UpdateDrill},
     {name = "UpdateEffects", func = UpdateEffects},
-    {name = "UpdateForceManager", func = UpdateForceManager},
+    {name = "UpdateForceManager", func = ForceManager.Update},
     {name = "UpdateResources", func = UpdateResources},
     {name = "UpdateCoreShields", func = UpdateCoreShields},
     {name = "UpdateWeapons", func = UpdateWeapons},
@@ -303,17 +330,16 @@ function IsWheelDevice(saveName)
 end
 
 function OnRestart()
-    InitializeScript()
+    StateSet()
 end
 
 function OnSeekStart()
-    InitializeScript()
+    StateSet()
     SoundOnJoin()
 end
 
 function OnSeek()
-    EffectManager:Load()
-    PhysLib:Load()
+    StateSet()
     WheelSpriteIds = {}
 end
 -- function OnSeek()
@@ -321,7 +347,7 @@ end
 -- end
 
 function OnInstantReplay()
-    InitializeScript()
+    StateSet()
 end
 
 LocalSide = 0
@@ -387,7 +413,7 @@ function OnWeaponFired(teamId, saveName, weaponId, projectileNodeId, projectileN
         local mass = GetProjectileParamFloat(GetNodeProjectileSaveName(projectileNodeId), teamId, "ProjectileMass", 1)
         local force = Vec3((mass * velocityAB.x) / (1/Fps), (mass * velocityAB.y) / (1/Fps))
         --apply force
-        dlc2_ApplyForce(projectileNodeId, force)
+        ForceManager:ApplyForce(projectileNodeId, force)
     end
     
     if (projectileNodeIdFrom == 0) then
@@ -698,3 +724,12 @@ function GetMaxScreenY()
 	end
 	return maxY
 end
+
+
+
+
+
+
+
+dofile(path .. "/scripts/stacktrace.lua")
+WrapEventFunctions()

@@ -18,11 +18,14 @@ local smallui_pos   = {}
 function UpdateControls(frame)
     EvalMoveKeybinds()
 
+    
     if frame % 3 == 0 then
         ThrottleControl()
     end
     
+    
     UpdateSmallUI()
+    
 end
 
 function OnControlActivated(name, code, doubleClick)
@@ -79,7 +82,8 @@ end
 function GetControlledStructureId(controllerId)
     if IsValidController(controllerId) then
         -- Getting structure ID directly from device maybe sometimes give wrong value, this is a workaround
-        return NodeStructureId(GetDevicePlatformA(controllerId))
+        return GetDeviceStructureId(controllerId)
+        --return NodeStructureId(GetDevicePlatformA(controllerId))
     else
         return nil
     end
@@ -92,22 +96,28 @@ function CreateUI(deviceStructureId, uid)
     SetControlFrame(0)
     local position = { x =200, y = ScreenMaxY - 150}
     local size = { x = 662, y = 371.25}
-    AddButtonControl("HUD", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
-    LoadControl(path .. "/ui/throttleSlider.lua", "HUD")
-    LoadControl(path .. "/ui/brakeSlider.lua", "HUD")
+    AddButtonControl("HUDPanel", "throttle backdrop", path .. "/ui/textures/HUD/HUD Box.png", ANCHOR_TOP_LEFT, size, position, "Panel")
+    LoadControl(path .. "/ui/throttleSlider.lua", "HUDPanel")
+    LoadControl(path .. "/ui/brakeSlider.lua", "HUDPanel")
 	SetControlRelativePos("GXWheelThrottle", "ThrottleSlider", Vec3(250, ScreenMaxY - 120))
 	SetControlRelativePos("GXWheelBrake", "BrakeSlider", Vec3(400, ScreenMaxY - 45))
 	
     for i = 1, 3 do
-        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 50 + i * 20, z = -10}, false, "Panel")
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 35 + i * 25, z = -10}, false, "Panel")
         SetButtonCallback("root", "info" .. uid .. i, deviceStructureId)
     end
+    AddTextButtonControl("throttle backdrop", "gridSpeed" .. uid, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 74, z = -10}, false, "Readout")
+    AddTextButtonControl("throttle backdrop", "powerWeightRatio" .. uid, CurrentLanguage.PromptRightClick, ANCHOR_TOP_LEFT, {x = 50, y = 99, z = -10}, false, "Readout")
+
     SetControlText("throttle backdrop", "info" .. uid .. "3", "Show hotkeys")
     SetControlStyle("throttle backdrop", "info" .. uid .. "3", "Fine")
 
-    for i = 4, 6 do
-        AddTextButtonControl("throttle backdrop", "info" .. uid .. i, CurrentLanguage.PromptRightClick, ANCHOR_TOP_RIGHT, {x = 612, y = -10 + i * 20, z = -10}, false, "Panel")
+    for i = 1, 3 do
+        AddTextButtonControl("throttle backdrop", "info" .. uid .. i+3, CurrentLanguage.PromptRightClick, ANCHOR_TOP_RIGHT, {x = 612, y = 35 + i * 25, z = -10}, false, "Panel")
     end
+    AddTextButtonControl("throttle backdrop", "gearRatio" .. uid, CurrentLanguage.PromptRightClick, ANCHOR_TOP_RIGHT, {x = 612, y = 74, z = -10}, false, "Readout")
+    AddTextButtonControl("throttle backdrop", "engineForce" .. uid, CurrentLanguage.PromptRightClick, ANCHOR_TOP_RIGHT, {x = 612, y = 99, z = -10}, false, "Readout")
+
     SetControlText("throttle backdrop", "info" .. uid .. "6", CurrentLanguage.PromptRightClick)
     SetControlStyle("throttle backdrop", "info" .. uid .. "6", "Fine")
 
@@ -117,7 +127,7 @@ function CreateUI(deviceStructureId, uid)
     CreateBrakeButton(deviceStructureId)
 
     --initialize throttle
-    local posThrottle = {x = 273.5, y = 15}
+    local posThrottle = {x = 273.5, y = 15} -- MAKE CONST PLSSS
     local posBrake = {x = 123, y = 15}
     --if the structure doesn't already have a throttle, create it
     if not data.throttles[deviceStructureId] then
@@ -145,7 +155,7 @@ function CreateUI(deviceStructureId, uid)
 end
 
 function CreateBrakeButton(deviceStructureId)
-    AddButtonControl("HUD", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = ScreenMaxY - 62}, "Normal")
+    AddButtonControl("HUDPanel", "brake", "hud-brake-icon", ANCHOR_CENTER_CENTER, {x = 51.56, y = 41.25}, {x = 524, y = ScreenMaxY - 62}, "Normal")
     SetButtonCallback("root", "brake", deviceStructureId)
     --if the structure doesn't already have a brake, then create it
 
@@ -165,16 +175,108 @@ function DestroyUI(uid)
     SetControlFrame(0)
     current_UI_deviceStructureId = nil
 
-    if ControlExists("HUD", "throttle backdrop") then
-        DeleteControl("HUD", "throttle backdrop")
-        DeleteControl("HUD", "GXWheelThrottle")
-        DeleteControl("HUD", "GXWheelBrake")
-        DeleteControl("HUD", "brake")
+    if ControlExists("HUDPanel", "throttle backdrop") then
+        DeleteControl("HUDPanel", "throttle backdrop")
+        DeleteControl("HUDPanel", "GXWheelThrottle")
+        DeleteControl("HUDPanel", "GXWheelBrake")
+        DeleteControl("HUDPanel", "brake")
     end
 end
 
+local function formatValue(value)
+    local units = {"", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"}
+    local unitIndex = 1
+
+    -- Keep dividing by 1000 until the number is below 1000,
+    -- but make sure the displayed number stays below 100
+    while value >= 1000 and unitIndex < #units do
+        value = value / 1000
+        unitIndex = unitIndex + 1
+    end
+
+    -- Round to 3 significant digits, up to 2 before decimal
+    local formatted
+    if value < 10 then
+        formatted = string.format("%.2f", value)
+    elseif value < 100 then
+        formatted = string.format("%.1f", value)
+    else
+        formatted = string.format("%.0f", value)
+    end
+
+    -- Trim trailing zeros and dots
+    formatted = formatted:gsub("(%..-)0+$", "%1"):gsub("%.$", "")
+
+    return formatted .. units[unitIndex]
+end
+
+
+-- TODO: Move to a new home
+StructureMass = {
+    Result = 0,
+    MaterialLookup = {},
+    DeviceLookup = {},
+    Visited = {}
+}
+
+function StructureMass:Get(structureId) 
+    self.Result = 0
+    self.TeamId = GetStructureTeam(structureId)
+    self.CommanderEnabled = IsCommanderActive(self.TeamId)
+    self.CommanderState = self.CommanderEnabled and COMMANDER_ACTIVE or COMMANDER_INACTIVE
+    self.Visited = {}
+    EnumerateStructureLinks(self.TeamId, structureId, "GetStructureMassCallback", false)
+    return math.floor(self.Result)
+end
+
+-- type = 0 for material 1 for device
+function StructureMass:GetMass(saveName, deviceId)
+    deviceId = deviceId or 0
+    if deviceId == 0 then
+        if not self.MaterialLookup[self.TeamId] then self.MaterialLookup[self.TeamId] = {} end
+        if not self.MaterialLookup[self.TeamId][self.CommanderState] then self.MaterialLookup[self.TeamId][self.CommanderState] = {} end
+
+        if not self.MaterialLookup[self.TeamId][self.CommanderState][saveName] then 
+            self.MaterialLookup[self.TeamId][self.CommanderState][saveName] = GetMaterialValue(saveName, self.TeamId, self.CommanderState, "Mass", 0)
+        end
+        return self.MaterialLookup[self.TeamId][self.CommanderState][saveName]
+    else
+        if not self.DeviceLookup[self.TeamId] then self.DeviceLookup[self.TeamId] = {} end
+        if not self.DeviceLookup[self.TeamId][self.CommanderState] then self.DeviceLookup[self.TeamId][self.CommanderState] = {} end
+        if not self.DeviceLookup[self.TeamId][self.CommanderState][saveName] then 
+            local massString = IsWeapon(deviceId) and "WeaponMass" or "Mass"
+            self.DeviceLookup[self.TeamId][self.CommanderState][saveName] = GetDeviceValue(GetDeviceType(deviceId), self.TeamId, self.CommanderState, massString, 0)
+        end
+        return self.DeviceLookup[self.TeamId][self.CommanderState][saveName]
+    end
+end
+
+
+local sqrt = math.sqrt
+function GetStructureMassCallback(nodeIdA, nodeIdB, linkPos, materialSaveName, deviceId) 
+    if (StructureMass.Visited[nodeIdB] and StructureMass.Visited[nodeIdB][nodeIdA]) or (StructureMass.Visited[nodeIdA] and StructureMass.Visited[nodeIdA][nodeIdB])  then return true end
+    if not StructureMass.Visited[nodeIdA] then StructureMass.Visited[nodeIdA] = {} end
+    StructureMass.Visited[nodeIdA][nodeIdB] = true
+    if not StructureMass.Visited[nodeIdB] then StructureMass.Visited[nodeIdB] = {} end
+    StructureMass.Visited[nodeIdB][nodeIdA] = true
+
+    if deviceId ~= 0 then
+        StructureMass.Result = StructureMass.Result + StructureMass:GetMass(GetDeviceType(deviceId), deviceId)
+    end
+
+    local materialMass = StructureMass:GetMass(materialSaveName)
+    local posA = PhysLib.NodesRaw[nodeIdA]
+    local posB = PhysLib.NodesRaw[nodeIdB]
+
+    local length = sqrt((posA.x - posB.x) * (posA.x - posB.x) + (posA.y - posB.y) * (posA.y - posB.y))
+    StructureMass.Result = StructureMass.Result + length * materialMass
+
+    return true
+end
+
+
+
 function UpdateVehicleInfo(structure, uid)
-    local uid = GetLocalClientIndex()
 
     --make sure the details exist
     if DrivechainDetails[structure] and DrivechainDetails[structure][1] then
@@ -186,27 +288,87 @@ function UpdateVehicleInfo(structure, uid)
             mph = string.format("%.0f", velocity / 100 * 2.23694),
             maxkmhr = string.format("%.0f", maxSpeed / 100 * 3.6),
             maxmph = string.format("%.0f", maxSpeed / 100 * 2.23694),
+            gridSpeed = string.format("%.0f", velocity),
+            maxGridSpeed = string.format("%.0f", maxSpeed),
             gear = DrivechainDetails[structure][3],
             power = DrivechainDetails[structure][4],
+            ratio = DrivechainDetails[structure][5],
+            engineForce = DrivechainDetails[structure][6],
+            throttleValue = DrivechainDetails[structure][7],
+            maxGear = DrivechainDetails[structure][8]
         }
         --to stop things from flashing around as much.
-        if tonumber(details.kmhr) < 10 then details.kmhr = "  " .. details.kmhr end
-        if tonumber(details.mph) < 10 then details.mph = "  " .. details.mph end
+        if tonumber(details.kmhr) < 10 then details.kmhr = "0" .. details.kmhr end
+        if tonumber(details.mph) < 10 then details.mph = "0" .. details.mph end
         --power
-        details.power = math.floor(details.power / 1000)
-        if details.power < 1000 then details.power = "  " .. details.power end
-        if not details.power == 0 then details.power = details.power .. "K" end
-        --set text
-        if Metric then
-            SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.kmhr .. CurrentLanguage.SpeedUnitKmph)
-            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxkmhr .. CurrentLanguage.SpeedUnitKmph)
+
+        details.power = formatValue(details.power / 100 * math.abs(details.throttleValue)) .. "/" .. formatValue(details.power / 100)
+        details.engineForce = formatValue(details.engineForce / 100)
+        
+
+
+
+        local ratio = details.ratio
+        local displayValue
+
+        if ratio < 1 then
+            -- Reduction gear (e.g. 0.12 means 8.33:1)
+            displayValue = 1 / ratio
         else
-            SetControlText("throttle backdrop", "info" .. uid .. "1", CurrentLanguage.SpeedText .. details.mph .. CurrentLanguage.SpeedUnitMph)
-            SetControlText("throttle backdrop", "info" .. uid .. "2", CurrentLanguage.TopSpeedText .. details.maxmph .. CurrentLanguage.SpeedUnitMph)
+            -- Overdrive or direct
+            displayValue = ratio
         end
 
-        SetControlText("throttle backdrop", "info" .. uid .. "4", CurrentLanguage.GearText .. details.gear)
+        -- Format and clean up decimals
+        local formatted = string.format("%.2f", displayValue)
+        formatted = formatted:gsub("(%..-)0+$", "%1") -- remove trailing zeros
+        formatted = formatted:gsub("%.$", "")         -- remove trailing dot
+
+        local displayRatio
+        if ratio < 1 then
+            displayRatio = formatted .. ":1"
+        else
+            displayRatio = "1:" .. formatted
+        end
+
+        --Top left header
+        if Metric then
+            SetControlText("throttle backdrop", "info" .. uid .. "1", details.kmhr .. "/" .. details.maxkmhr .. CurrentLanguage.SpeedUnitKmph)
+        else
+            SetControlText("throttle backdrop", "info" .. uid .. "1", details.mph .. "/" .. details.maxmph .. CurrentLanguage.SpeedUnitMph)
+        end
+        -- Top left subheader
+        SetControlText("throttle backdrop", "gridSpeed" .. uid, details.gridSpeed .. "/" .. details.maxGridSpeed .. "gu/s")
+
+
+        local structureMass = StructureMass:Get(structure)
+        -- Bottom left header
+        SetControlText("throttle backdrop", "info" .. uid .. "2", string.format("%.0f", structureMass / 100) .. "T")
+
+        -- Bottom left subheader
+        SetControlText("throttle backdrop", "powerWeightRatio" .. uid,  formatValue(DrivechainDetails[structure][4] / structureMass) .. "pwr/wt")
+       
+        -- Top right header
+        SetControlText("throttle backdrop", "info" .. uid .. "4", CurrentLanguage.GearText .. details.gear .. "/" .. details.maxGear)
+        
+        -- Top right subheader
+        SetControlText("throttle backdrop", "gearRatio" .. uid, displayRatio)
+
+        
+        -- Bottom right header
         SetControlText("throttle backdrop", "info" .. uid .. "5", CurrentLanguage.PowerText .. details.power)
+
+        -- Bottom right subheader
+        SetControlText("throttle backdrop", "engineForce" .. uid, details.engineForce .. "")
+
+
+
+
+
+
+
+
+
     end
 end
 
@@ -288,10 +450,12 @@ function UpdateSmallUI()
     end
 
     local deviceStructureId = GetControlledStructureId(last_selected_controllerId)
-    if not deviceStructureId or data.brakes[deviceStructureId] == nil or not data.throttles[deviceStructureId] then
+    if not deviceStructureId then
         DestroySmallUI()
         return
     end
+
+    if data.brakes[deviceStructureId] == nil or not data.throttles[deviceStructureId] then InitializeThrottleBrakeData(deviceStructureId) end
 
     if smallui_move then
         smallui_pos.x = math.min(math.max(GetMousePos().x - 30, smallui_min_x), smallui_max_x)
@@ -437,7 +601,7 @@ function ScaleUI()
 end
 
 --[[
- --call like e.g. Log_UI_Tree("", "HUD", "")
+ --call like e.g. Log_UI_Tree("", "HUDPanel", "")
  --might get stuck in inf loops sometimes
 
 function Log_UI_Tree(parent, name, ind)
@@ -513,7 +677,7 @@ SelectedData = {Name = true, Group = {}}
                     DestroyUI(uid) --recreate UI so button callbacks get updated to new structureid
                 end 
                 
-                if not ControlExists("HUD", "throttle backdrop") then
+                if not ControlExists("HUDPanel", "throttle backdrop") then
                     CreateUI(deviceStructureId, uid)
                 else
                     local throttlePos = GetControlRelativePos("ThrottleSlider", "SliderBar")
@@ -533,7 +697,7 @@ SelectedData = {Name = true, Group = {}}
 
                 DestroySmallUI()
             else
-                if ControlExists("HUD", "throttle backdrop") then
+                if ControlExists("HUDPanel", "throttle backdrop") then
                     DestroyUI(uid)
                 end
                 previousThrottleX = 0

@@ -1,0 +1,1 @@
+MinFireClearanceVsEnemy = 100

@@ -9,15 +9,16 @@ EffectManager = {
 
 -- Assign our offscreen position to store effects not in use
 function EffectManager:Load()
+    BetterLog("Loading effect manager")
     -- cancel all effects
     for _, effectType in pairs(self.All) do
         for _, effect in pairs(effectType) do
             CancelEffect(effect.Id)
         end
     end
-    EffectManager.Standby = {}
-    EffectManager.Active = {}
-    EffectManager.All = {}
+    self.Standby = {}
+    self.Active = {}
+    self.All = {}
     local screen = GetWorldExtents()
     self.StandbyPosition = {x = screen.MaxX + 5000, y = screen.MaxY + 5000}
 end

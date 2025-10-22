@@ -86,22 +86,21 @@ function UpdatePhysLib(frame)
 
     PhysLib:Update(frame)
 end
+data.framesSinceLastPhysLibStructureUpdate = 0
 function PhysLib:Update(frame)
 
-    if self.NodeTableNeedsUpdating then
-        self:UpdateNodeTable()
-        self.NodeTableNeedsUpdating = false
-    end
     self.Structures:UpdateNodePositions()
 
     PhysLib.ExistingLinks = {}
     
-
-    if frame % 25 == 0 then
+    data.framesSinceLastPhysLibStructureUpdate = data.framesSinceLastPhysLibStructureUpdate + 1
+    if data.framesSinceLastPhysLibStructureUpdate % 25 == 0 or self.NodeTableNeedsUpdating then
+        data.framesSinceLastPhysLibStructureUpdate = 0
         PhysLib.Links = {}
         EnumerateStructureLinks(0, -1, "d", true)
         EnumerateStructureLinks(1, -1, "d", true)
         EnumerateStructureLinks(2, -1, "d", true)
+        self.NodeTableNeedsUpdating = false
     end
     
     self.BspTrees.StructureTree:Subdivide(PhysLib.Links)

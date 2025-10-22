@@ -7,7 +7,7 @@ CollisionSubsteps = 8
 
 data.roadNormalOfWheel = {}
 
-
+PreviousMathematicalWheelPos = {}
 --Master wheel collision handling function. 
 function WheelCollisionHandler()
     Displacement = {}
@@ -32,7 +32,18 @@ function WheelCollisionHandler()
             local totalDisplacement = {x = 0, y = 0, z = 0}
             local touching = true
             local forceFactor = 2
+
+            --local prevPos = PreviousMathematicalWheelPos[device.id]
+            
+
+            local wheelVelocity = Vec3Lerp(NodeVelocity(device.nodeA), NodeVelocity(device.nodeB), device.platformPos)
+            -- if  prevPos then
+            --     wheelVelocity = {x = (wheelPos.x - prevPos.x) * 25, y = (wheelPos.y - prevPos.y) * 25}
+            -- end
+            PreviousMathematicalWheelPos[device.id] = wheelPos
             PreviousWheelPos[device.id] = WheelPos[device.id]
+
+            local spring = WHEEL_SPRINGS[device.saveName]
             for i = 1, CollisionSubsteps do
                 forceFactor = forceFactor / 2
                 local result = PhysLib:CircleCollider(testPos, wheelRadius)
@@ -52,7 +63,8 @@ function WheelCollisionHandler()
                 end
                 local displacedPos = {x = testPosX + displacement.x, y = testPosY + displacement.y, z = 0}
 
-                local spring = WHEEL_SPRINGS[device.saveName]
+
+                
                 
                 
                 
@@ -83,41 +95,60 @@ function WheelCollisionHandler()
                         displacedPos.y = testPosX + displacement.y
                     end
                     --local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, AverageCoordinates({device.nodeVelA, device.nodeVelB, -NodeVelocity(result.nodeA), -NodeVelocity(result.nodeB)}), normal)
-                    local averageDeviceVelocity = AverageCoordinates({device.nodeVelA, device.nodeVelB})
-                    local averageNodeVelocity = AverageCoordinates({NodeVelocity(result.nodeA), NodeVelocity(result.nodeB)})
-    
-                    local relativeVelocity = {x = averageDeviceVelocity.x / 2 - averageNodeVelocity.x / 2, y = averageDeviceVelocity.y / 2 - averageNodeVelocity.y / 2, z = 0}
+
                     
-                    local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, relativeVelocity, normal)
+                    local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, wheelVelocity, normal)
                     force.x = force.x * forceFactor
                     force.y = force.y * forceFactor
                     if data.brakes[structureKey] then force.x = 0 end
                     local negativeForce = {x = -force.x, y = -force.y, z = 0}
-                    ApplyForce(result.nodeA, negativeForce)
-                    ApplyForce(result.nodeB, negativeForce)
-                    ApplyForce(device.nodeA, force)
-                    ApplyForce(device.nodeB, force)
+                    ForceManager:ApplyForce(result.nodeA, negativeForce)
+                    ForceManager:ApplyForce(result.nodeB, negativeForce)
+                    ForceManager:ApplyForce(device.nodeA, force)
+                    ForceManager:ApplyForce(device.nodeB, force)
                     totalForce.x = totalForce.x + force.x
                     totalForce.y = totalForce.y + force.y
                 else
                     data.roadNormalOfWheel[device.id] = nil
-                    local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, AverageCoordinates({device.nodeVelA, device.nodeVelB}), normal)
+                    local force = DirectionalDampening(spring.springConst, displacement, spring.dampening, wheelVelocity, normal)
                     force.x = force.x * forceFactor
                     force.y = force.y * forceFactor
                     if data.brakes[structureKey] then force.x = 0 end
-                    ApplyForce(device.nodeA, force)
-                    ApplyForce(device.nodeB, force)
+                    ForceManager:ApplyForce(device.nodeA, force)
+                    ForceManager:ApplyForce(device.nodeB, force)
                     totalForce.x = totalForce.x + force.x
                     totalForce.y = totalForce.y + force.y
                 end
-    
+                
                 totalDisplacement.x = totalDisplacement.x + displacement.x
                 totalDisplacement.y = totalDisplacement.y + displacement.y
+
+
+                
+
+
 
                 testPos = displacedPos
                 testPosX = displacedPos.x
                 testPosY = displacedPos.y
             end
+            -- -- TORQUE
+            -- local wheelNormal = wheelStats.normal
+            -- local heightAndNormal = {x = wheelNormal.x * wheelStats.height, y = wheelNormal.y * wheelStats.height}
+            
+            -- local forceModifier = 200
+            -- local displacementWithForce = {x = totalForce.x / forceModifier, y = totalForce.y / forceModifier}
+            -- local torque = -CrossProduct(heightAndNormal, displacementWithForce)
+
+            
+            -- local platNormX = wheelNormal.x
+            -- local platNormY = wheelNormal.y
+            -- local torqueVec = Vec3(platNormX * torque, platNormY * torque)
+
+            -- ForceManager:ApplyForce(device.nodeA, torqueVec)
+            -- ForceManager:ApplyForce(device.nodeB, -torqueVec)
+            
+            -- -- END TORQUE
             if touching then
                 WheelsTouchingGround[structureKey][deviceKey] = totalDisplacement
                 WheelPos[device.id] = testPos
@@ -158,12 +189,6 @@ function GetDeviceStructureGroups()
     return structures
 end
 
-function GetOffsetDevicePos(device, offset)
-    
-    local offsetPos = OffsetPerpendicular(device.nodePosA, device.nodePosB, offset)
-    local newPos = offsetPos + device.pos
-    return newPos
-end
 
 function DirectionalDampening(springConst, displacement, dampening, velocity, surfacePerpVector)
     local velocityX = velocity.x

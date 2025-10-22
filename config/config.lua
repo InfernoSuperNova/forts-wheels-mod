@@ -8,12 +8,14 @@ DebugText = ""
 --config values
 
 
+WHEEL_REVEAL_RADIUS = 300
+
+
 --propulsion
-PROPULSION_FACTOR = 2000000                             --engine power
-MAX_POWER_INPUT_RATIO = 1                               --how much of an engine one wheel can recieve (0.5 is half an engine, 2 is 2 engines)
-VEL_PER_GEARBOX = 800                                   --velocity per engine, in grid units per sec
+PROPULSION_FACTOR = 200000                             --engine power
+VEL_PER_GEARBOX = 2000                                   --velocity per engine, in grid units per sec
 GEAR_CHANGE_RATIO = 0.95                                --upper threshold of current gear range to switch to the next one
-THROTTLE_DEADZONE = 0.02                                --portion of the throttle to ingore
+THROTTLE_DEADZONE = 0.008                                --portion of the throttle to ingore
 --devices
 
 ENGINE_SAVE_NAME = {"engine"}                           --savename of engine device
@@ -21,12 +23,12 @@ CONTROLLER_SAVE_NAME = {"vehicleControllerStructure", "vehicleControllerNoStruct
 MAX_CONTROLLERS = 2                                     --maximum amount of controllers                     
                                                         --savename of the controller
 GEARBOX_SAVE_NAME = {"gearbox"}                         --savename of the transmission
-ENGINE_RUN_COST = 5                                     --upper limit to the metal per second consumption of engines
+ENGINE_RUN_COST = 3                                     --upper limit to the metal per second consumption of engines
 TRACK_LINK_DISTANCE = 50                                --distance between track links (visual)
 --Core shields
 SHIELD_RADIUS = 1800                                    --radius of the base protecting shield
 SHIELD_DAMAGE = 2                                       --damage of the core shield at center (* 25 per sec)
-SHIELD_FORCE = 2500000                                  --pushback force of the shield at center
+SHIELD_FORCE = 5000000                                  --pushback force of the shield at center
 --roads
 ROAD_SAVE_NAME = {"RoadLink"}                           --SaveName for the road material
 --Turrets

@@ -140,11 +140,12 @@ function DebugUpdate()
     for i = 1, #lines do
         local text = lines[i]
         
-        
-        if not ControlExists("debugControl", "debugLine" .. i) then
-            AddTextControl("debugControl", "debugLine" .. i, text, ANCHOR_TOP_RIGHT, {x = 0, y = 0 + 9 * i}, false, "Readout")
+        local debugLine = "debugLine" .. i
+        if not ControlExists("debugControl", debugLine) then
+            AddTextControl("debugControl", debugLine, text, ANCHOR_TOP_RIGHT, {x = 0, y = 0 + 9 * i}, false, "Readout")
+            SetControlColour("debugControl", debugLine, Green())
         else
-            SetControlText("debugControl", "debugLine" .. i, text)
+            SetControlText("debugControl", debugLine, text)
         end
         
     end

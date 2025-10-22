@@ -8,12 +8,13 @@ SDTYPE_BOTH_THRESHOLD_MIN = 1/SDTYPE_BOTH_THRESHOLD_MAX
 
 
 function PhysLib.BspTrees.TerrainTree:Subdivide()
+    MaxDepthThisFrame = 0
     local blocks = PhysLib.Terrain.Blocks
     local terrainSegments = {}
     self:SplitBlocksIntoSegments(blocks, terrainSegments)
     PhysLib.TerrainTree = self:SubdivideTerrainSegmentGroup(terrainSegments, 0)
 end
-
+MaxDepthThisFrame = 0
 function PhysLib.BspTrees.TerrainTree:SubdivideTerrainSegmentGroup(terrainSegments, depth, parentCount)
     local rect = self:GetTerrainSegmentRectangle(terrainSegments) -- approximate
     local count = rect.count
@@ -30,6 +31,7 @@ function PhysLib.BspTrees.TerrainTree:SubdivideTerrainSegmentGroup(terrainSegmen
             rect.maxY = (rect.maxY > node.maxY) and rect.maxY or node.maxY
             
         end
+        MaxDepthThisFrame =  (depth > MaxDepthThisFrame and depth or MaxDepthThisFrame)
         return {children = terrainSegments, rect = rect, deepest = true}
     end
 
@@ -252,7 +254,7 @@ end
 function PhysLib.BspTrees.TerrainTree:CircleCollider(position, radius, debug)
     
     local results = {}
-    self:CircleCollisionsOnBranch(position, radius, PhysLib.TerrainTree, results, debug)
+    self:CircleCollisionsOnBranch(position, radius, PhysLib.TerrainTree, results, debug, 0)
 
     if #results == 0 then return { displacement = 0, normal = {x = 0, y = 0}} end
     local lowestDistance = math.huge
@@ -310,7 +312,7 @@ function PhysLib.BspTrees.TerrainTree:CircleCollider(position, radius, debug)
 
     -- return averageDisplacement
 end
-function PhysLib.BspTrees.TerrainTree:CircleCollisionsOnBranch(position, radius, branch, results, debug)
+function PhysLib.BspTrees.TerrainTree:CircleCollisionsOnBranch(position, radius, branch, results, debug, depth)
     if not branch then return end
     
     if branch.deepest then
@@ -324,7 +326,8 @@ function PhysLib.BspTrees.TerrainTree:CircleCollisionsOnBranch(position, radius,
             self:CircleCollisionOnLine(position, radius, link, results, debug)
         end
         if debug then
-            HighlightExtents(branch.rect, 0.06, Red())
+            local color = {r = 255, g = (0 + depth / MaxDepthThisFrame) * 255, b = 0, a = 255}
+            HighlightExtents(branch.rect, 0.06, color)
         end
         
         return
@@ -337,7 +340,8 @@ function PhysLib.BspTrees.TerrainTree:CircleCollisionsOnBranch(position, radius,
     local children = branch.children
 
     if debug then
-        HighlightExtents(rect, 0.06, Red())
+        local color = {r = 255, g = (0 + depth / MaxDepthThisFrame) * 255, b = 0, a = 255}
+        HighlightExtents(rect, 0.06, color)
     end
     for i = 1, #children do
         local child = children[i]
@@ -351,7 +355,7 @@ function PhysLib.BspTrees.TerrainTree:CircleCollisionsOnBranch(position, radius,
         -- Draw a line from child corners to parent corners
         
         if x > minX - radius and x < maxX + radius and y > minY - radius and y < maxY + radius then
-            self:CircleCollisionsOnBranch(position, radius, child, results, debug)
+            self:CircleCollisionsOnBranch(position, radius, child, results, debug, depth + 1)
 
         end
     end
@@ -451,6 +455,7 @@ function PhysLib.BspTrees.TerrainTree:CircleCollisionOnLine(position, radius, li
     if debug then
         posA.z = -100
         posB.z = -100
+        
         SpawnLine(posA, posB, Green(), 0.06)
     end
    
